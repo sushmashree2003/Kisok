@@ -5,5 +5,5 @@ import AlumniDashboard from "@/components/AlumniDashboard";
 
 export default function AlumniPage() {
   const router = useRouter();
-  return <AlumniDashboard onBackToKiosk={() => router.push("/")} />;
+  return <AlumniDashboard onBackToKiosk={() => router.push("/dashboard")} />;
 }
