@@ -42,13 +42,14 @@ import {
   Activity,
   Maximize,
   Minimize,
+  Send,
 } from "lucide-react";
 
 interface DashboardProps {
   onBackToKiosk: () => void;
 }
 
-type ActiveScreen = "dashboard" | "attendance" | "timetable" | "exam" | "profile";
+type ActiveScreen = "dashboard" | "attendance" | "timetable" | "exam" | "profile" | "aispace";
 
 // Inspiring Slogans & School Creed
 const SLOGANS = [
@@ -379,6 +380,116 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
     return <GraduationCap size={16} style={{ color: "#475569" }} />;
   };
 
+  // AI Space & Chatbot State
+  const [chatMessages, setChatMessages] = useState<
+    Array<{
+      id: string;
+      sender: "bot" | "user";
+      text: string;
+      time: string;
+      suggestions?: string[];
+    }>
+  >([
+    {
+      id: "msg-welcome-1",
+      sender: "bot",
+      text: "Hello Aarav! 👋 I'm GreenBot, your Green Valley AI campus companion! I have real-time access to your daily timetable, attendance records, exam scores, and campus circulars. Ask me anything!",
+      time: "Just now",
+      suggestions: [
+        "What is my timetable today?",
+        "How is my attendance?",
+        "Show my latest exam scores",
+        "What are the latest school notices?",
+        "Explain photosynthesis simply",
+      ],
+    },
+  ]);
+  const [chatInputText, setChatInputText] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
+  const chatMessagesEndRef = React.useRef<HTMLDivElement | null>(null);
+
+  const scrollToBottom = () => {
+    chatMessagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    if (currentScreen === "aispace") {
+      scrollToBottom();
+    }
+  }, [chatMessages, currentScreen, isTyping]);
+
+  const handleSendChatMessage = (customQuery?: string) => {
+    const query = (customQuery || chatInputText).trim();
+    if (!query) return;
+
+    const userMessageId = `msg-user-${Date.now()}`;
+    const userTime = new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
+
+    // Append user message
+    setChatMessages((prev) => [
+      ...prev,
+      {
+        id: userMessageId,
+        sender: "user",
+        text: query,
+        time: userTime,
+      },
+    ]);
+    setChatInputText("");
+    setIsTyping(true);
+
+    setTimeout(() => {
+      const lower = query.toLowerCase();
+      let botReply = "";
+      let suggestions: string[] = [];
+
+      if (lower.includes("timetable") || lower.includes("period") || lower.includes("class") || lower.includes("schedule")) {
+        botReply = `📅 Here is your schedule for Class 5-B today:\n\n• Period 1 (08:30 - 09:15 AM): Mathematics with Mr. Ramesh Kumar (Rm 102)\n• Period 2 (09:15 - 10:00 AM): English Literature (Rm 102)\n• Period 3 (10:15 - 11:00 AM): General Science Practical in Sci Lab 1\n• Period 4 (11:00 - 11:45 AM): Social Studies (Rm 102)\n• Period 5 (12:30 - 01:15 PM): Computer & Robotics in STEM Lab\n\n💡 Tip: Don't forget your science practical workbook!`;
+        suggestions = ["How is my attendance?", "Show my exam marks", "What are the latest circulars?"];
+      } else if (lower.includes("attendance") || lower.includes("present") || lower.includes("absent") || lower.includes("leave")) {
+        botReply = `📊 Official Attendance Overview for ${studentName} (${studentAdmNo}):\n\n• Overall Attendance: ${overallAttendancePct}%\n• Sessions Held: ${totalHeld || 115} Sessions\n• Sessions Present: ${totalPresent || 111} Sessions\n• Days Absent: ${totalAbsent || 4} Sessions\n• Status: ✅ Well above the mandatory 75% CBSE requirement!\n\nKeep up the great consistency, Aarav!`;
+        suggestions = ["What is my timetable today?", "Show my exam marks", "Explain photosynthesis simply"];
+      } else if (lower.includes("exam") || lower.includes("mark") || lower.includes("result") || lower.includes("grade") || lower.includes("score")) {
+        botReply = `📝 Periodic Assessment Term-1 Performance Report:\n\n• Overall Average: ${overallExamPct}% • Grade A+ (Distinction)\n• Mathematics: 94 / 100 (A+) — Outstanding\n• General Science: 89 / 100 (A) — Very Good\n• English Language: 95 / 100 (A+) — Excellent\n• Social Studies: 91 / 100 (A+) — Commendable\n• Computer & Robotics: 98 / 100 (A+) — Top in Class!\n\n🌟 You ranked in the top 5% of Class 5! Keep up the brilliant work.`;
+        suggestions = ["What is my timetable today?", "How is my attendance?", "Help me with math"];
+      } else if (lower.includes("notice") || lower.includes("circular") || lower.includes("event") || lower.includes("holiday")) {
+        botReply = `🔔 Official Green Valley School Circulars for Class 5:\n\n1. [URGENT] Class 5 Periodic Assessment Term-2 Schedule officially announced.\n2. [CIRCULAR] Annual Science & STEM Robotics Exhibition 2026 registrations are open.\n3. [SPORTS] Inter-House Athletics Trials this Thursday at 03:30 PM.\n4. [INFO] Winter School Timings (08:30 AM start) take effect from November 1st.`;
+        suggestions = ["When is the science exhibition?", "Show my exam marks", "What is my timetable?"];
+      } else if (lower.includes("science") || lower.includes("photo") || lower.includes("plant") || lower.includes("sun") || lower.includes("sky")) {
+        if (lower.includes("sky") || lower.includes("blue")) {
+          botReply = `🌌 Why is the sky blue? (Rayleigh Scattering):\n\nSunlight looks white, but it's made of all the colors of the rainbow! 🌈\n\nWhen sunlight reaches Earth's atmosphere, it scatters in all directions by gases and particles. Blue light travels in smaller, shorter waves than other colors, so it scatters much more than red or yellow. That's why we see a lovely blue sky! ☀️✨`;
+        } else {
+          botReply = `🌱 How Photosynthesis Works (In Simple Words):\n\nThink of green plants as tiny nature chefs! 👨‍🍳🍃\n\n1. Sunlight: Leaves capture light energy using chlorophyll.\n2. Water: Roots absorb moisture from the soil.\n3. Carbon Dioxide (CO₂): Leaves absorb gas from the air.\n\nThey combine these to produce Glucose (food for energy) and release fresh Oxygen (O₂) for us to breathe!\n\nFormula: 6CO₂ + 6H₂O + Light ➔ C₆H₁₂O₆ + 6O₂ ✨`;
+        }
+        suggestions = ["Tell me another science fact", "What is gravity?", "Help me with math"];
+      } else if (lower.includes("math") || lower.includes("fraction") || lower.includes("multiply") || lower.includes("divide")) {
+        botReply = `🧮 Mathematics Concept Helper:\n\nA fraction represents a piece or part of a whole thing! 🍕\n\n• Numerator (Top Number): The number of parts you currently have.\n• Denominator (Bottom Number): Total parts the whole is divided into.\n\nExample: If a pizza has 4 slices and you eat 1 slice, you ate 1/4 (one-fourth) of the pizza! 3/4 remains.\n\nWould you like me to quiz you on fraction addition?`;
+        suggestions = ["Yes, give me a math quiz!", "Show my exam marks", "What is my timetable?"];
+      } else if (lower.includes("quiz") || lower.includes("yes")) {
+        botReply = `🎯 Quick GreenBot Math Challenge!\n\nWhat is: 1/4 + 2/4 = ?\n\nA) 3/8\nB) 3/4\nC) 2/8\n\nType your answer and let's see if you get it right! 🚀`;
+        suggestions = ["B) 3/4", "A) 3/8", "C) 2/8"];
+      } else if (lower.includes("3/4") || lower.includes("b")) {
+        botReply = `🎉 Bingo! That's 100% CORRECT, Aarav! 🌟\n\nSince the denominators are both 4, we simply add the numerators: 1 + 2 = 3. So 1/4 + 2/4 = 3/4!\n\nYou're a math superstar! ⭐`;
+        suggestions = ["Give me another question", "Show my timetable", "How is my attendance?"];
+      } else {
+        botReply = `🤖 Thanks for asking, Aarav! I've noted your question: "${query}".\n\nAs your Green Valley campus assistant, I can immediately pull up your live timetable, attendance percentages, report cards, or explain science and math topics. What would you like to explore next?`;
+        suggestions = ["What is my timetable today?", "How is my attendance?", "Show my exam marks", "Tell me school notices"];
+      }
+
+      setChatMessages((prev) => [
+        ...prev,
+        {
+          id: `msg-bot-${Date.now()}`,
+          sender: "bot",
+          text: botReply,
+          time: new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }),
+          suggestions,
+        },
+      ]);
+      setIsTyping(false);
+    }, 600);
+  };
+
   return (
     <div className="dashboard-page">
       {/* FLOATING AMBIENT ORBS (FROM ROLESELECTIONSCREEN THEME) */}
@@ -514,24 +625,20 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
                 VAPS Cloud Synced
               </span>
               <button
-                onClick={() => setCurrentScreen("profile")}
-                style={{
-                  background: "linear-gradient(145deg, #fff7ed, #ffedd5)",
-                  color: "#ea580c",
-                  border: "1px solid rgba(251, 146, 60, 0.35)",
-                  borderRadius: "8px",
-                  padding: "0.3rem 0.75rem",
-                  fontSize: "0.74rem",
-                  fontWeight: 800,
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.35rem",
-                  marginTop: "0.35rem",
-                  boxShadow: "0 2px 6px rgba(234, 88, 12, 0.08)",
-                }}
+                onClick={() => setCurrentScreen("aispace")}
+                className="ai-space-hero-btn"
+                title="Launch GreenBot AI Learning Space"
               >
-                <User size={12} /> View Student ID Card →
+                <div className="ai-space-robot-avatar-wrap">
+                  <img src="/ai_robot.png" alt="GreenBot" className="ai-space-robot-img" />
+                  <span className="ai-space-status-dot" />
+                </div>
+                <div className="ai-space-btn-text">
+                  <div className="ai-space-btn-label">
+                    <Sparkles size={11} /> AI SPACE
+                  </div>
+                  <span className="ai-space-btn-title">Ask GreenBot →</span>
+                </div>
               </button>
             </div>
           </section>
@@ -1798,6 +1905,271 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
                       <div style={{ fontSize: "1.4rem", fontWeight: 800, color: "#7e22ce" }}>Grade A+</div>
                     </div>
                   </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ========================================================
+          VIEW 6: DEDICATED FULL SCREEN — GREENBOT AI SPACE
+          ======================================================== */}
+      {currentScreen === "aispace" && (
+        <section className="student-fullscreen-page">
+          <div className="kiosk-orb kiosk-orb-one" />
+          <div className="kiosk-orb kiosk-orb-two" />
+
+          {/* SCREEN HEADER WITH PROMINENT BACK BUTTON */}
+          <div className="student-screen-subnav">
+            <button className="student-back-to-dash-btn" onClick={() => setCurrentScreen("dashboard")}>
+              <ArrowLeft size={16} /> Back to Dashboard
+            </button>
+
+            <div className="student-screen-title-area">
+              <div
+                style={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: "50%",
+                  overflow: "hidden",
+                  border: "2px solid #ea580c",
+                  boxShadow: "0 4px 14px rgba(234, 88, 12, 0.25)",
+                  flexShrink: 0,
+                  background: "#fff",
+                }}
+              >
+                <img src="/ai_robot.png" alt="GreenBot" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              </div>
+              <div>
+                <h2>GreenBot AI Campus Assistant & Learning Space</h2>
+                <p>Interactive AI Companion • {studentName} ({studentClass})</p>
+              </div>
+            </div>
+
+            <div className="student-screen-nav-tools">
+              <button
+                className="student-refresh-btn"
+                onClick={() =>
+                  setChatMessages([
+                    {
+                      id: "welcome-reset",
+                      sender: "bot",
+                      text: "Chat refreshed! Hello Aarav, how can GreenBot assist your learning journey right now?",
+                      time: "Just now",
+                      suggestions: ["What is my timetable today?", "How is my attendance?", "Show my exam marks"],
+                    },
+                  ])
+                }
+                title="Clear conversation"
+              >
+                <RefreshCw size={13} /> Reset Chat
+              </button>
+              <span
+                style={{
+                  background: "#f0fdf4",
+                  color: "#16a34a",
+                  padding: "0.32rem 0.75rem",
+                  borderRadius: 9999,
+                  fontSize: "0.72rem",
+                  fontWeight: 800,
+                  border: "1px solid rgba(22, 163, 74, 0.3)",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.35rem",
+                }}
+              >
+                <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#16a34a" }} />
+                Campus AI Online
+              </span>
+            </div>
+          </div>
+
+          {/* SCREEN MAIN BODY (SPLIT 2 COLUMNS) */}
+          <div className="student-screen-scroll-body" style={{ overflow: "hidden" }}>
+            <div className="ai-space-screen-layout">
+              {/* LEFT SIDEBAR: ROBOT SHOWCASE & QUICK TOPICS */}
+              <aside className="ai-space-persona-card">
+                <div className="ai-robot-hero-box">
+                  <div className="ai-robot-showcase-frame">
+                    <img src="/ai_robot.png" alt="GreenBot" className="ai-robot-showcase-img" />
+                  </div>
+                  <h3>GreenBot</h3>
+                  <p>Smart Kiosk Companion</p>
+                </div>
+
+                <div className="ai-speech-bubble-intro">
+                  &ldquo;Hi Aarav! I have live access to your Class 5-B timetable, attendance register, report cards, and school circulars. Tap any topic below or type your question!&rdquo;
+                </div>
+
+                <div className="ai-quick-topics-list">
+                  <div style={{ fontSize: "0.68rem", fontWeight: 800, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.15rem" }}>
+                    Popular Student Queries
+                  </div>
+                  <button className="ai-topic-chip-btn" onClick={() => handleSendChatMessage("What is my timetable today?")}>
+                    <Calendar size={13} style={{ color: "#0284c7" }} /> Today&apos;s Timetable & Rooms
+                  </button>
+                  <button className="ai-topic-chip-btn" onClick={() => handleSendChatMessage("How is my attendance?")}>
+                    <CheckCircle2 size={13} style={{ color: "#16a34a" }} /> Monthly Attendance Turnout
+                  </button>
+                  <button className="ai-topic-chip-btn" onClick={() => handleSendChatMessage("Show my latest exam scores")}>
+                    <Award size={13} style={{ color: "#7c3aed" }} /> Term-1 Marks & Grades
+                  </button>
+                  <button className="ai-topic-chip-btn" onClick={() => handleSendChatMessage("What are the latest school notices?")}>
+                    <Bell size={13} style={{ color: "#ea580c" }} /> Official Campus Circulars
+                  </button>
+                  <button className="ai-topic-chip-btn" onClick={() => handleSendChatMessage("Explain photosynthesis simply")}>
+                    <Sparkles size={13} style={{ color: "#059669" }} /> Science: Photosynthesis
+                  </button>
+                </div>
+
+                {/* Student Context Card */}
+                <div
+                  style={{
+                    background: "#f8fafc",
+                    border: "1px solid #e2e8f0",
+                    borderRadius: "10px",
+                    padding: "0.55rem 0.75rem",
+                    fontSize: "0.68rem",
+                    color: "#64748b",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "2px",
+                  }}
+                >
+                  <div style={{ fontWeight: 800, color: "#1e293b" }}>{studentName}</div>
+                  <div>Class: {studentClass} • Roll #{studentRoll}</div>
+                  <div>Campus: Green Valley Public School</div>
+                </div>
+              </aside>
+
+              {/* RIGHT MAIN CHAT AREA */}
+              <div className="ai-space-chat-card">
+                {/* Mini Header */}
+                <div className="ai-chat-header">
+                  <div className="ai-chat-header-left">
+                    <Sparkles size={16} style={{ color: "#ea580c" }} />
+                    <span style={{ fontSize: "0.85rem", fontWeight: 800, color: "#1e293b" }}>
+                      AI Conversational Learning Assistant
+                    </span>
+                  </div>
+                  <div style={{ fontSize: "0.72rem", color: "#64748b" }}>
+                    Active Context: <strong style={{ color: "#0d9488" }}>Class 5-B Learner</strong>
+                  </div>
+                </div>
+
+                {/* Messages Stream */}
+                <div className="ai-chat-messages-stream">
+                  {chatMessages.map((msg) => (
+                    <div
+                      key={msg.id}
+                      className={`ai-msg-row ${msg.sender === "bot" ? "ai-msg-row-bot" : "ai-msg-row-user"}`}
+                    >
+                      {msg.sender === "bot" ? (
+                        <img src="/ai_robot.png" alt="GreenBot" className="ai-msg-avatar" style={{ border: "2px solid #0d9488" }} />
+                      ) : (
+                        <img src={session?.img || "/student_avatar.png"} alt={studentName} className="ai-msg-avatar" style={{ border: "2px solid #ea580c" }} />
+                      )}
+
+                      <div className="ai-msg-content-wrap">
+                        <div className="ai-msg-sender-meta">
+                          <span>{msg.sender === "bot" ? "GreenBot" : studentName}</span>
+                          {msg.sender === "bot" && (
+                            <span
+                              style={{
+                                background: "#f0fdfa",
+                                color: "#0d9488",
+                                fontSize: "0.6rem",
+                                padding: "1px 5px",
+                                borderRadius: 4,
+                                fontWeight: 800,
+                              }}
+                            >
+                              AI Companion
+                            </span>
+                          )}
+                          <span>• {msg.time}</span>
+                        </div>
+
+                        <div className={`ai-bubble ${msg.sender === "bot" ? "ai-bubble-bot" : "ai-bubble-user"}`}>
+                          <div style={{ whiteSpace: "pre-wrap" }}>{msg.text}</div>
+
+                          {msg.suggestions && msg.suggestions.length > 0 && (
+                            <div className="ai-msg-suggestions-bar">
+                              {msg.suggestions.map((sug, sIdx) => (
+                                <button
+                                  key={sIdx}
+                                  className="ai-msg-suggestion-chip"
+                                  onClick={() => handleSendChatMessage(sug)}
+                                >
+                                  {sug}
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+
+                  {/* Typing Indicator */}
+                  {isTyping && (
+                    <div className="ai-msg-row ai-msg-row-bot">
+                      <img src="/ai_robot.png" alt="GreenBot" className="ai-msg-avatar" style={{ border: "2px solid #0d9488" }} />
+                      <div className="ai-typing-indicator">
+                        <span className="ai-typing-dot" />
+                        <span className="ai-typing-dot" />
+                        <span className="ai-typing-dot" />
+                      </div>
+                    </div>
+                  )}
+
+                  <div ref={chatMessagesEndRef} />
+                </div>
+
+                {/* Quick Prompts Bar */}
+                <div className="ai-quick-prompts-bar">
+                  <span style={{ fontSize: "0.68rem", fontWeight: 800, color: "#94a3b8", flexShrink: 0 }}>
+                    Quick Prompts:
+                  </span>
+                  <button className="ai-quick-prompt-btn" onClick={() => handleSendChatMessage("What is my timetable today?")}>
+                    📅 Today&apos;s Timetable
+                  </button>
+                  <button className="ai-quick-prompt-btn" onClick={() => handleSendChatMessage("How is my attendance?")}>
+                    📊 My Attendance
+                  </button>
+                  <button className="ai-quick-prompt-btn" onClick={() => handleSendChatMessage("Show my exam marks")}>
+                    📝 Exam Marks
+                  </button>
+                  <button className="ai-quick-prompt-btn" onClick={() => handleSendChatMessage("What are the latest school notices?")}>
+                    🔔 Circulars
+                  </button>
+                  <button className="ai-quick-prompt-btn" onClick={() => handleSendChatMessage("Explain photosynthesis simply")}>
+                    🌱 Photosynthesis
+                  </button>
+                </div>
+
+                {/* Chat Input Bar */}
+                <div className="ai-chat-input-bar">
+                  <input
+                    type="text"
+                    className="ai-chat-text-input"
+                    placeholder="Ask GreenBot about your classes, marks, homework, or science..."
+                    value={chatInputText}
+                    onChange={(e) => setChatInputText(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        handleSendChatMessage();
+                      }
+                    }}
+                  />
+                  <button
+                    className="ai-chat-send-btn"
+                    onClick={() => handleSendChatMessage()}
+                    title="Send message to GreenBot"
+                  >
+                    <Send size={15} />
+                  </button>
                 </div>
               </div>
             </div>

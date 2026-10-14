@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { getUserSession, clearUserSession } from "@/lib/session";
 import { SessionInfo } from "@/types/auth";
 import {
@@ -40,13 +40,15 @@ import {
   Minimize,
   Home,
   Megaphone,
+  Send,
+  Bot,
 } from "lucide-react";
 
 interface DashboardProps {
   onBackToKiosk: () => void;
 }
 
-type ActiveScreen = "dashboard" | "attendance" | "finance" | "admissions" | "profile";
+type ActiveScreen = "dashboard" | "attendance" | "finance" | "admissions" | "profile" | "aispace";
 
 // Official Inspiring Slogans & Leadership Wisdom for Governance
 const ADMIN_SLOGANS = [
@@ -168,6 +170,68 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
   const [sloganIndex, setSloganIndex] = useState(0);
   const [selectedNotice, setSelectedNotice] = useState<any | null>(null);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+
+  // AI Space Interactive Chat State (Campus Executive Copilot)
+  const [chatMessages, setChatMessages] = useState<Array<{ sender: "bot" | "user"; text: string; time: string; tag?: string }>>([
+    {
+      sender: "bot",
+      text: "Greetings, Administrator. I am GreenBot, your Institutional Intelligence Assistant. I am connected to the campus smart grid, CBSE compliance ledger, fee reconciliation, and attendance telemetry. How may I assist your administration today?",
+      time: "Just now",
+      tag: "ADMIN EXECUTIVE DESK",
+    },
+  ]);
+  const [chatInputText, setChatInputText] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
+  const chatMessagesEndRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (currentScreen === "aispace") {
+      chatMessagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [chatMessages, currentScreen]);
+
+  const handleSendChatMessage = (textToSend?: string) => {
+    const query = (textToSend || chatInputText).trim();
+    if (!query) return;
+
+    const userTime = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    const newMsgList = [...chatMessages, { sender: "user" as const, text: query, time: userTime }];
+    setChatMessages(newMsgList);
+    if (!textToSend) setChatInputText("");
+    setIsTyping(true);
+
+    setTimeout(() => {
+      let botResponse = "";
+      const lower = query.toLowerCase();
+
+      if (lower.includes("attendance") || lower.includes("present") || lower.includes("absent")) {
+        botResponse = "📊 Campus Attendance Telemetry for today:\n• Overall Student Attendance: 94.8% (5,918 present out of 6,240 enrolled)\n• Faculty Check-ins: 98.8% (85 of 86 present, 1 on sanctioned duty leave)\n• Biometric gates sync: Active across all 6 campus entrances with real-time VAPS cloud streaming.";
+      } else if (lower.includes("fee") || lower.includes("collection") || lower.includes("finance") || lower.includes("revenue")) {
+        botResponse = "💳 Financial Liquidity & Fee Ledger Summary:\n• Term 2 Collections: ₹4.82 Cr collected (92.4% realization against ₹5.21 Cr target)\n• Outstanding Dues: ₹39.0 Lakh across 312 student profiles\n• Automated SMS & WhatsApp reminders dispatched to pending parents on 12th Oct.";
+      } else if (lower.includes("admission") || lower.includes("seats") || lower.includes("intake") || lower.includes("enrol")) {
+        botResponse = "🎓 AY 2026-27 Admissions Pipeline:\n• Total Applications Received: 428 across Grades LKG to 11\n• Entrance Evaluations Cleared: 310 candidates\n• Final Seats Confirmed: 215 / 250 available vacancies\n• Class 6 & Class 9 waitlists active.";
+      } else if (lower.includes("bus") || lower.includes("transport") || lower.includes("safety") || lower.includes("fleet")) {
+        botResponse = "🚌 Transport & Campus Fleet Status:\n• 38/38 GPS buses operational and geo-fenced\n• All vehicle speed governors verified compliant (<40 km/h campus perimeter)\n• 0 route deviations reported today\n• CCTV fleet feeds streamed to security command.";
+      } else if (lower.includes("cbse") || lower.includes("affiliation") || lower.includes("compliance") || lower.includes("audit")) {
+        botResponse = "🛡️ CBSE Regulatory & Compliance Audit:\n• CBSE Affiliation No. 1930281 renewal formally ratified through 2031\n• NAAC Institutional Accreditation: Grade A++ (Score 3.82/4.0)\n• Fire Safety NOC & Building Stability certificates valid till March 2027.";
+      } else if (lower.includes("solar") || lower.includes("power") || lower.includes("grid") || lower.includes("energy")) {
+        botResponse = "⚡ Campus Solar Smart Grid Telemetry:\n• Current Generation: 48.2 kWh (peak sun)\n• Campus Self-Sufficiency: 96% power independence\n• Battery Reserve: 88% capacity at Substation A.";
+      } else {
+        botResponse = `✨ Understood, Administrator. GreenBot has logged your request: "${query}". All institutional databases, smart meters, and academic controllers are currently synchronized and running at peak performance.`;
+      }
+
+      setChatMessages((prev) => [
+        ...prev,
+        {
+          sender: "bot",
+          text: botResponse,
+          time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+          tag: "ADMIN EXECUTIVE DESK",
+        },
+      ]);
+      setIsTyping(false);
+    }, 700);
+  };
 
   // Real-time Clock
   useEffect(() => {
@@ -342,6 +406,32 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
                 <CheckCircle2 size={13} />
                 <span>Smart Grid Online</span>
               </div>
+
+              {/* AI SPACE INTERACTIVE BUTTON (WITH ROBOT AVATAR) */}
+              <button
+                className="ai-space-hero-btn"
+                onClick={() => setCurrentScreen("aispace")}
+                title="Launch GreenBot AI Space"
+                type="button"
+                style={{
+                  borderColor: "rgba(124, 58, 237, 0.35)",
+                  background: "linear-gradient(135deg, #ffffff 0%, #f5f3ff 100%)",
+                }}
+              >
+                <div className="ai-space-robot-avatar-wrap">
+                  <img
+                    src="/ai_robot.png"
+                    alt="AI Robo"
+                    className="ai-space-robot-img"
+                  />
+                  <span className="ai-space-status-dot" style={{ background: "#7c3aed" }} />
+                </div>
+                <div className="ai-space-btn-text">
+                  <span className="ai-space-btn-label" style={{ color: "#7c3aed" }}>EXECUTIVE AI</span>
+                  <span className="ai-space-btn-title">Ask GreenBot →</span>
+                </div>
+              </button>
+
               <span style={{ fontSize: "0.65rem", color: "#64748b", fontWeight: 600 }}>
                 Academic Year {academicYear} • Term 2
               </span>
@@ -1377,6 +1467,262 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
                   <p style={{ margin: 0, fontSize: "0.78rem", color: "#475569", lineHeight: 1.5 }}>
                     Peak solar generation at 48.2 kWh, delivering 96% power independence across campus.
                   </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ========================================================
+          VIEW 6: DEDICATED FULL SCREEN — AI SPACE & OPERATIONS COPILOT
+          ======================================================== */}
+      {currentScreen === "aispace" && (
+        <section className="student-fullscreen-page">
+          <div className="kiosk-orb kiosk-orb-one" />
+          <div className="kiosk-orb kiosk-orb-two" />
+
+          {/* SCREEN HEADER WITH PROMINENT BACK BUTTON */}
+          <div className="student-screen-subnav">
+            <button className="student-back-to-dash-btn" onClick={() => setCurrentScreen("dashboard")}>
+              <ArrowLeft size={16} /> Back to Dashboard
+            </button>
+
+            <div className="student-screen-title-area">
+              <div className="student-screen-icon-bubble" style={{ background: "#f5f3ff", color: "#7c3aed" }}>
+                <Bot size={20} />
+              </div>
+              <div>
+                <h2>GreenBot AI Executive Assistant</h2>
+                <p>Institutional Operations Copilot • Governance & Smart Campus Telemetry</p>
+              </div>
+            </div>
+
+            <div className="student-screen-nav-tools">
+              <span
+                style={{
+                  background: "#f5f3ff",
+                  color: "#7c3aed",
+                  border: "1px solid rgba(124, 58, 237, 0.3)",
+                  padding: "0.3rem 0.75rem",
+                  borderRadius: 9999,
+                  fontSize: "0.72rem",
+                  fontWeight: 800,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.4rem",
+                }}
+              >
+                <Sparkles size={13} />
+                Institutional Engine Active
+              </span>
+            </div>
+          </div>
+
+          <div className="student-screen-scroll-body">
+            {/* TWO-COLUMN RESPONSIVE LAYOUT */}
+            <div className="ai-space-screen-layout">
+              {/* LEFT SIDEBAR: ROBOT HERO PERSONA & TOPICS */}
+              <aside className="ai-space-persona-card">
+                <div className="ai-robot-hero-box" style={{ background: "linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%)", borderColor: "rgba(124, 58, 237, 0.25)" }}>
+                  <div className="ai-robot-showcase-frame" style={{ borderColor: "#7c3aed", boxShadow: "0 8px 24px rgba(124, 58, 237, 0.2)" }}>
+                    <img
+                      src="/ai_robot.png"
+                      alt="GreenBot Robot"
+                      className="ai-robot-showcase-img"
+                    />
+                  </div>
+                  <div className="ai-robot-badge" style={{ background: "#7c3aed" }}>
+                    <Bot size={13} /> GREENBOT AI • ADMIN DESK
+                  </div>
+                </div>
+
+                <div className="ai-speech-bubble-intro">
+                  &ldquo;Welcome, Administrator. I monitor campus telemetry, fee realization, admissions pipeline, transport safety, and regulatory compliance. Click any executive topic or enter your inquiry.&rdquo;
+                </div>
+
+                <div className="ai-quick-topics-list">
+                  <div style={{ fontSize: "0.68rem", fontWeight: 800, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.15rem" }}>
+                    Executive Operations Topics
+                  </div>
+                  <button className="ai-topic-chip-btn" onClick={() => handleSendChatMessage("What is today's campus attendance summary?")}>
+                    <Users size={13} style={{ color: "#0284c7" }} /> Campus Attendance Overview
+                  </button>
+                  <button className="ai-topic-chip-btn" onClick={() => handleSendChatMessage("What is the status of fee collections?")}>
+                    <IndianRupee size={13} style={{ color: "#16a34a" }} /> Term 2 Fee Collections
+                  </button>
+                  <button className="ai-topic-chip-btn" onClick={() => handleSendChatMessage("Show me the latest admissions pipeline")}>
+                    <GraduationCap size={13} style={{ color: "#7c3aed" }} /> Admissions AY 2026-27
+                  </button>
+                  <button className="ai-topic-chip-btn" onClick={() => handleSendChatMessage("What is the status of our transport fleet?")}>
+                    <Bus size={13} style={{ color: "#ea580c" }} /> Transport Fleet & GPS
+                  </button>
+                  <button className="ai-topic-chip-btn" onClick={() => handleSendChatMessage("Check CBSE affiliation and compliance status")}>
+                    <ShieldCheck size={13} style={{ color: "#059669" }} /> CBSE Affiliation & Compliance
+                  </button>
+                  <button className="ai-topic-chip-btn" onClick={() => handleSendChatMessage("How is the campus solar smart grid performing?")}>
+                    <Zap size={13} style={{ color: "#ca8a04" }} /> Solar Smart Grid Telemetry
+                  </button>
+                </div>
+
+                {/* Administrator Context Card */}
+                <div
+                  style={{
+                    background: "#f8fafc",
+                    border: "1px solid #e2e8f0",
+                    borderRadius: "10px",
+                    padding: "0.55rem 0.75rem",
+                    fontSize: "0.68rem",
+                    color: "#64748b",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "2px",
+                  }}
+                >
+                  <div style={{ fontWeight: 800, color: "#1e293b" }}>{adminName}</div>
+                  <div>Role: Chief Campus Administrator • Directorate</div>
+                  <div>Authorization: Full Root Executive Access</div>
+                </div>
+              </aside>
+
+              {/* RIGHT MAIN CHAT AREA */}
+              <div className="ai-space-chat-card">
+                {/* Mini Header */}
+                <div className="ai-chat-header">
+                  <div className="ai-chat-header-left">
+                    <Sparkles size={16} style={{ color: "#7c3aed" }} />
+                    <span style={{ fontSize: "0.85rem", fontWeight: 800, color: "#1e293b" }}>
+                      Executive Operations Copilot
+                    </span>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                    <div style={{ fontSize: "0.72rem", color: "#64748b" }}>
+                      Active Context: <strong style={{ color: "#7c3aed" }}>Campus Directorate</strong>
+                    </div>
+                    <button
+                      onClick={() => setChatMessages([
+                        {
+                          sender: "bot",
+                          text: "Conversation refreshed. GreenBot executive ledger is ready. How can I assist you?",
+                          time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+                          tag: "ADMIN EXECUTIVE DESK",
+                        }
+                      ])}
+                      style={{
+                        background: "#f1f5f9",
+                        border: "1px solid #e2e8f0",
+                        borderRadius: "6px",
+                        padding: "0.2rem 0.55rem",
+                        fontSize: "0.68rem",
+                        color: "#64748b",
+                        cursor: "pointer",
+                        fontWeight: 600,
+                      }}
+                    >
+                      Clear
+                    </button>
+                  </div>
+                </div>
+
+                {/* Messages Stream */}
+                <div className="ai-chat-messages-stream">
+                  {chatMessages.map((msg, mIdx) => (
+                    <div
+                      key={mIdx}
+                      className={`ai-msg-row ${msg.sender === "bot" ? "ai-msg-row-bot" : "ai-msg-row-user"}`}
+                    >
+                      {msg.sender === "bot" ? (
+                        <img src="/ai_robot.png" alt="GreenBot" className="ai-msg-avatar" style={{ border: "2px solid #7c3aed" }} />
+                      ) : (
+                        <img src={session?.img || "/admin_avatar.png"} alt={adminName} className="ai-msg-avatar" style={{ border: "2px solid #ea580c" }} />
+                      )}
+
+                      <div className="ai-msg-content-wrap">
+                        <div className="ai-msg-sender-meta">
+                          <span>{msg.sender === "bot" ? "GreenBot Executive" : adminName}</span>
+                          {msg.sender === "bot" && (
+                            <span
+                              style={{
+                                background: "#f5f3ff",
+                                color: "#7c3aed",
+                                fontSize: "0.6rem",
+                                padding: "1px 5px",
+                                borderRadius: 4,
+                                fontWeight: 800,
+                              }}
+                            >
+                              AI Director
+                            </span>
+                          )}
+                          <span>• {msg.time}</span>
+                        </div>
+
+                        <div className={`ai-bubble ${msg.sender === "bot" ? "ai-bubble-bot" : "ai-bubble-user"}`}>
+                          <div style={{ whiteSpace: "pre-wrap" }}>{msg.text}</div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+
+                  {/* Typing Indicator */}
+                  {isTyping && (
+                    <div className="ai-msg-row ai-msg-row-bot">
+                      <img src="/ai_robot.png" alt="GreenBot" className="ai-msg-avatar" style={{ border: "2px solid #7c3aed" }} />
+                      <div className="ai-typing-indicator">
+                        <span className="ai-typing-dot" />
+                        <span className="ai-typing-dot" />
+                        <span className="ai-typing-dot" />
+                      </div>
+                    </div>
+                  )}
+
+                  <div ref={chatMessagesEndRef} />
+                </div>
+
+                {/* Quick Prompts Bar */}
+                <div className="ai-quick-prompts-bar">
+                  <span style={{ fontSize: "0.68rem", fontWeight: 800, color: "#94a3b8", flexShrink: 0 }}>
+                    Quick Directives:
+                  </span>
+                  <button className="ai-quick-prompt-btn" onClick={() => handleSendChatMessage("What is today's campus attendance summary?")}>
+                    📊 Attendance
+                  </button>
+                  <button className="ai-quick-prompt-btn" onClick={() => handleSendChatMessage("What is the status of fee collections?")}>
+                    💳 Fee Collections
+                  </button>
+                  <button className="ai-quick-prompt-btn" onClick={() => handleSendChatMessage("Show me the latest admissions pipeline")}>
+                    🎓 Admissions Pipeline
+                  </button>
+                  <button className="ai-quick-prompt-btn" onClick={() => handleSendChatMessage("What is the status of our transport fleet?")}>
+                    🚌 Transport Fleet
+                  </button>
+                  <button className="ai-quick-prompt-btn" onClick={() => handleSendChatMessage("Check CBSE affiliation and compliance status")}>
+                    🛡️ CBSE Compliance
+                  </button>
+                </div>
+
+                {/* Chat Input Bar */}
+                <div className="ai-chat-input-bar">
+                  <input
+                    type="text"
+                    className="ai-chat-text-input"
+                    placeholder="Ask GreenBot about attendance, admissions, finances, solar grid, compliance..."
+                    value={chatInputText}
+                    onChange={(e) => setChatInputText(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        handleSendChatMessage();
+                      }
+                    }}
+                  />
+                  <button
+                    className="ai-chat-send-btn"
+                    onClick={() => handleSendChatMessage()}
+                    title="Send instruction to GreenBot"
+                    style={{ background: "#7c3aed" }}
+                  >
+                    <Send size={15} />
+                  </button>
                 </div>
               </div>
             </div>

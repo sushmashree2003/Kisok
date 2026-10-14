@@ -32,13 +32,14 @@ import {
   Minimize,
   Home,
   Megaphone,
+  Send,
 } from "lucide-react";
 
 interface DashboardProps {
   onBackToKiosk: () => void;
 }
 
-type ActiveScreen = "dashboard" | "timetable" | "meetings" | "evaluation" | "profile";
+type ActiveScreen = "dashboard" | "timetable" | "meetings" | "evaluation" | "profile" | "aispace";
 
 // Official Inspiring Slogans & Wisdom for Educators
 const TEACHER_SLOGANS = [
@@ -293,6 +294,99 @@ export default function StaffDashboard({ onBackToKiosk }: DashboardProps) {
     return matchesDay && matchesClass;
   });
 
+  // AI Space & Chatbot State
+  const [chatMessages, setChatMessages] = useState<
+    Array<{
+      id: string;
+      sender: "bot" | "user";
+      text: string;
+      time: string;
+      suggestions?: string[];
+    }>
+  >([
+    {
+      id: "msg-welcome-staff",
+      sender: "bot",
+      text: "Welcome to Faculty AI Space! 👋 I'm GreenBot, your academic teaching assistant. I can help summarize your class schedule, check student evaluation rosters, draft lesson plan concepts, or prepare meeting agendas. How may I assist you today?",
+      time: "Just now",
+      suggestions: [
+        "What are my classes today?",
+        "Show student grading status",
+        "Upcoming staff meetings?",
+        "Lesson plan for Quadratic Equations",
+        "CBSE Term-2 assessment guidelines",
+      ],
+    },
+  ]);
+  const [chatInputText, setChatInputText] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
+  const chatMessagesEndRef = React.useRef<HTMLDivElement | null>(null);
+
+  const scrollToBottom = () => {
+    chatMessagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    if (currentScreen === "aispace") {
+      scrollToBottom();
+    }
+  }, [chatMessages, currentScreen, isTyping]);
+
+  const handleSendChatMessage = (customQuery?: string) => {
+    const query = (customQuery || chatInputText).trim();
+    if (!query) return;
+
+    const userMessageId = `msg-user-${Date.now()}`;
+    const userTime = new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
+
+    setChatMessages((prev) => [
+      ...prev,
+      {
+        id: userMessageId,
+        sender: "user",
+        text: query,
+        time: userTime,
+      },
+    ]);
+    setChatInputText("");
+    setIsTyping(true);
+
+    setTimeout(() => {
+      const lower = query.toLowerCase();
+      let botReply = "";
+      let suggestions: string[] = [];
+
+      if (lower.includes("class") || lower.includes("period") || lower.includes("timetable") || lower.includes("schedule")) {
+        botReply = `📖 Today's Teaching Schedule for ${staffName}:\n\n• Period 1 (08:00 AM): Class 6A — Fractions & Decimals (Rm 204)\n• Period 2 (09:00 AM): Class 7B — Algebraic Expressions (Rm 206)\n• Period 3 (10:45 AM): Class 8A — Linear Equations (Rm 208)\n• Period 4 (12:15 PM): Class 9B — Coordinate Geometry (Rm 301)\n• Period 5 (02:00 PM): Class 10A — Quadratic Equations (Rm 304)\n\nTotal Teaching Load: 5 Periods • 185 Students.`;
+        suggestions = ["Show student grading status", "Upcoming staff meetings?", "Lesson plan for Quadratic Equations"];
+      } else if (lower.includes("meeting") || lower.includes("sync") || lower.includes("ptm") || lower.includes("committee")) {
+        botReply = `🗓️ Scheduled Academic Meetings for Today:\n\n1. Whole-School Faculty Sync at 11:30 AM in Conference Hall A (Curriculum pacing & Sports Day duties).\n2. Parent-Teacher Meeting (PTM) Prep at 02:00 PM in Staff Room 2.\n3. Tomorrow: Math Olympiad Committee Sync at 10:30 AM (STEM Board Rm).`;
+        suggestions = ["What are my classes today?", "Show student grading status", "CBSE Term-2 assessment guidelines"];
+      } else if (lower.includes("grade") || lower.includes("evaluation") || lower.includes("mark") || lower.includes("score")) {
+        botReply = `📊 Assessment & Gradebook Summary (Class 10 A Math):\n\n• Class Average: 85.2%\n• Top Scorer: Ananya Rao (98 / 100 • A+)\n• Total Papers Evaluated: 42 / 42 (100% Verified)\n• Distinction Rate: 64% of learners scored Grade A+\n• Next Due: Class 9 B Mathematics marks submission by Friday 04:00 PM.`;
+        suggestions = ["What are my classes today?", "Upcoming staff meetings?", "Lesson plan for Quadratic Equations"];
+      } else if (lower.includes("lesson") || lower.includes("quadratic") || lower.includes("plan") || lower.includes("teach")) {
+        botReply = `📐 45-Minute Lesson Plan: Quadratic Equations (Class 10 A):\n\n1. Concept Hook (7 mins): Real-world trajectory of basketball shots and parabolic bridges.\n2. Core Theory (18 mins): Standard form ax² + bx + c = 0, discriminant D = b² - 4ac, and the quadratic formula.\n3. Guided Practice (12 mins): Solve 2x² - 7x + 3 = 0 using factorization and formula method.\n4. Quick Check & Exit Ticket (8 mins): What happens to the roots when D < 0?`;
+        suggestions = ["Give me a homework worksheet", "What are my classes today?", "Show student grading status"];
+      } else {
+        botReply = `🤖 Query noted, Mr. ${staffName}: "${query}".\n\nI can assist with period timings, attendance registers, student gradebooks, pedagogical lesson plans, or school policy circulars. What would you like to prepare next?`;
+        suggestions = ["What are my classes today?", "Show student grading status", "Upcoming staff meetings?"];
+      }
+
+      setChatMessages((prev) => [
+        ...prev,
+        {
+          id: `msg-bot-${Date.now()}`,
+          sender: "bot",
+          text: botReply,
+          time: new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }),
+          suggestions,
+        },
+      ]);
+      setIsTyping(false);
+    }, 600);
+  };
+
   return (
     <div className="dashboard-page">
       {/* FLOATING AMBIENT ORBS (MATCHING ROLE SELECTION SCREEN) */}
@@ -413,9 +507,22 @@ export default function StaffDashboard({ onBackToKiosk }: DashboardProps) {
                 <CheckCircle2 size={13} />
                 <span>Faculty Sync Online</span>
               </div>
-              <span style={{ fontSize: "0.65rem", color: "#64748b", fontWeight: 600 }}>
-                AY {session?.ASMAY_Year || "2025-2026"} • Term 2 Active
-              </span>
+              <button
+                onClick={() => setCurrentScreen("aispace")}
+                className="ai-space-hero-btn"
+                title="Launch Faculty AI Teaching Assistant"
+              >
+                <div className="ai-space-robot-avatar-wrap">
+                  <img src="/ai_robot.png" alt="GreenBot" className="ai-space-robot-img" />
+                  <span className="ai-space-status-dot" />
+                </div>
+                <div className="ai-space-btn-text">
+                  <div className="ai-space-btn-label">
+                    <Sparkles size={11} /> AI SPACE
+                  </div>
+                  <span className="ai-space-btn-title">Ask GreenBot →</span>
+                </div>
+              </button>
             </div>
           </section>
 
@@ -1444,6 +1551,269 @@ export default function StaffDashboard({ onBackToKiosk }: DashboardProps) {
                   <p style={{ margin: 0, fontSize: "0.78rem", color: "#475569", lineHeight: 1.5 }}>
                     Lead Mentor for Inter-School Math Olympiad, Member of Curriculum Moderation Board, Assistant Housemaster (Aravali House).
                   </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ========================================================
+          VIEW 6: DEDICATED FULL SCREEN — FACULTY AI SPACE
+          ======================================================== */}
+      {currentScreen === "aispace" && (
+        <section className="student-fullscreen-page">
+          <div className="kiosk-orb kiosk-orb-one" />
+          <div className="kiosk-orb kiosk-orb-two" />
+
+          {/* SCREEN HEADER WITH PROMINENT BACK BUTTON */}
+          <div className="student-screen-subnav">
+            <button className="student-back-to-dash-btn" onClick={() => setCurrentScreen("dashboard")}>
+              <ArrowLeft size={16} /> Back to Dashboard
+            </button>
+
+            <div className="student-screen-title-area">
+              <div
+                style={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: "50%",
+                  overflow: "hidden",
+                  border: "2px solid #0d9488",
+                  boxShadow: "0 4px 14px rgba(13, 148, 136, 0.25)",
+                  flexShrink: 0,
+                  background: "#fff",
+                }}
+              >
+                <img src="/ai_robot.png" alt="GreenBot" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              </div>
+              <div>
+                <h2>Faculty AI Assistant & Academic Workspace</h2>
+                <p>Interactive Teaching Assistant • {staffName} ({staffDept})</p>
+              </div>
+            </div>
+
+            <div className="student-screen-nav-tools">
+              <button
+                className="student-refresh-btn"
+                onClick={() =>
+                  setChatMessages([
+                    {
+                      id: "welcome-staff-reset",
+                      sender: "bot",
+                      text: "Faculty assistant refreshed! How can GreenBot assist with your lesson plans, student grading, or meetings?",
+                      time: "Just now",
+                      suggestions: ["What are my classes today?", "Show student grading status", "Upcoming staff meetings?"],
+                    },
+                  ])
+                }
+                title="Clear conversation"
+              >
+                <RefreshCw size={13} /> Reset Chat
+              </button>
+              <span
+                style={{
+                  background: "#f0fdfa",
+                  color: "#0d9488",
+                  padding: "0.32rem 0.75rem",
+                  borderRadius: 9999,
+                  fontSize: "0.72rem",
+                  fontWeight: 800,
+                  border: "1px solid rgba(13, 148, 136, 0.3)",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.35rem",
+                }}
+              >
+                <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#0d9488" }} />
+                Faculty AI Active
+              </span>
+            </div>
+          </div>
+
+          {/* SCREEN MAIN BODY (SPLIT 2 COLUMNS) */}
+          <div className="student-screen-scroll-body" style={{ overflow: "hidden" }}>
+            <div className="ai-space-screen-layout">
+              {/* LEFT SIDEBAR: ROBOT SHOWCASE & QUICK TOPICS */}
+              <aside className="ai-space-persona-card">
+                <div className="ai-robot-hero-box">
+                  <div className="ai-robot-showcase-frame">
+                    <img src="/ai_robot.png" alt="GreenBot" className="ai-robot-showcase-img" />
+                  </div>
+                  <h3>GreenBot Faculty AI</h3>
+                  <p>Pedagogical Teaching Partner</p>
+                </div>
+
+                <div className="ai-speech-bubble-intro">
+                  &ldquo;Greetings Mr. {staffName}! I can help summarize your 5 daily teaching periods, compile student assessment rosters, draft lesson plan concepts, or prepare meeting agendas.&rdquo;
+                </div>
+
+                <div className="ai-quick-topics-list">
+                  <div style={{ fontSize: "0.68rem", fontWeight: 800, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.15rem" }}>
+                    Common Faculty Prompts
+                  </div>
+                  <button className="ai-topic-chip-btn" onClick={() => handleSendChatMessage("What are my classes today?")}>
+                    <BookOpen size={13} style={{ color: "#0d9488" }} /> Today&apos;s Class Schedule
+                  </button>
+                  <button className="ai-topic-chip-btn" onClick={() => handleSendChatMessage("Show student grading status")}>
+                    <BarChart3 size={13} style={{ color: "#7c3aed" }} /> Class 10A Grading Status
+                  </button>
+                  <button className="ai-topic-chip-btn" onClick={() => handleSendChatMessage("Upcoming staff meetings?")}>
+                    <CalendarDays size={13} style={{ color: "#ea580c" }} /> Faculty Sync & PTM Schedule
+                  </button>
+                  <button className="ai-topic-chip-btn" onClick={() => handleSendChatMessage("Lesson plan for Quadratic Equations")}>
+                    <Sparkles size={13} style={{ color: "#0284c7" }} /> Lesson Plan: Quadratics
+                  </button>
+                  <button className="ai-topic-chip-btn" onClick={() => handleSendChatMessage("CBSE Term-2 assessment guidelines")}>
+                    <FileCheck size={13} style={{ color: "#16a34a" }} /> CBSE Assessment Rubrics
+                  </button>
+                </div>
+
+                {/* Faculty Context Card */}
+                <div
+                  style={{
+                    background: "#f8fafc",
+                    border: "1px solid #e2e8f0",
+                    borderRadius: "10px",
+                    padding: "0.55rem 0.75rem",
+                    fontSize: "0.68rem",
+                    color: "#64748b",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "2px",
+                  }}
+                >
+                  <div style={{ fontWeight: 800, color: "#1e293b" }}>{staffName} ({empId})</div>
+                  <div>{staffDept} • {staffRoom}</div>
+                  <div>Classes: 6A, 7B, 8A, 9B, 10A</div>
+                </div>
+              </aside>
+
+              {/* RIGHT MAIN CHAT AREA */}
+              <div className="ai-space-chat-card">
+                {/* Mini Header */}
+                <div className="ai-chat-header">
+                  <div className="ai-chat-header-left">
+                    <Sparkles size={16} style={{ color: "#0d9488" }} />
+                    <span style={{ fontSize: "0.85rem", fontWeight: 800, color: "#1e293b" }}>
+                      Academic Assistant & Lesson Planner
+                    </span>
+                  </div>
+                  <div style={{ fontSize: "0.72rem", color: "#64748b" }}>
+                    Active Context: <strong style={{ color: "#0d9488" }}>Senior Faculty</strong>
+                  </div>
+                </div>
+
+                {/* Messages Stream */}
+                <div className="ai-chat-messages-stream">
+                  {chatMessages.map((msg) => (
+                    <div
+                      key={msg.id}
+                      className={`ai-msg-row ${msg.sender === "bot" ? "ai-msg-row-bot" : "ai-msg-row-user"}`}
+                    >
+                      {msg.sender === "bot" ? (
+                        <img src="/ai_robot.png" alt="GreenBot" className="ai-msg-avatar" style={{ border: "2px solid #0d9488" }} />
+                      ) : (
+                        <img src={session?.img || "/staff_avatar.png"} alt={staffName} className="ai-msg-avatar" style={{ border: "2px solid #0d9488" }} />
+                      )}
+
+                      <div className="ai-msg-content-wrap">
+                        <div className="ai-msg-sender-meta">
+                          <span>{msg.sender === "bot" ? "GreenBot" : staffName}</span>
+                          {msg.sender === "bot" && (
+                            <span
+                              style={{
+                                background: "#f0fdfa",
+                                color: "#0d9488",
+                                fontSize: "0.6rem",
+                                padding: "1px 5px",
+                                borderRadius: 4,
+                                fontWeight: 800,
+                              }}
+                            >
+                              Faculty AI
+                            </span>
+                          )}
+                          <span>• {msg.time}</span>
+                        </div>
+
+                        <div className={`ai-bubble ${msg.sender === "bot" ? "ai-bubble-bot" : "ai-bubble-user"}`}>
+                          <div style={{ whiteSpace: "pre-wrap" }}>{msg.text}</div>
+
+                          {msg.suggestions && msg.suggestions.length > 0 && (
+                            <div className="ai-msg-suggestions-bar">
+                              {msg.suggestions.map((sug, sIdx) => (
+                                <button
+                                  key={sIdx}
+                                  className="ai-msg-suggestion-chip"
+                                  onClick={() => handleSendChatMessage(sug)}
+                                >
+                                  {sug}
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+
+                  {/* Typing Indicator */}
+                  {isTyping && (
+                    <div className="ai-msg-row ai-msg-row-bot">
+                      <img src="/ai_robot.png" alt="GreenBot" className="ai-msg-avatar" style={{ border: "2px solid #0d9488" }} />
+                      <div className="ai-typing-indicator">
+                        <span className="ai-typing-dot" />
+                        <span className="ai-typing-dot" />
+                        <span className="ai-typing-dot" />
+                      </div>
+                    </div>
+                  )}
+
+                  <div ref={chatMessagesEndRef} />
+                </div>
+
+                {/* Quick Prompts Bar */}
+                <div className="ai-quick-prompts-bar">
+                  <span style={{ fontSize: "0.68rem", fontWeight: 800, color: "#94a3b8", flexShrink: 0 }}>
+                    Quick Prompts:
+                  </span>
+                  <button className="ai-quick-prompt-btn" onClick={() => handleSendChatMessage("What are my classes today?")}>
+                    📖 Today&apos;s Classes
+                  </button>
+                  <button className="ai-quick-prompt-btn" onClick={() => handleSendChatMessage("Show student grading status")}>
+                    📊 Grading Status
+                  </button>
+                  <button className="ai-quick-prompt-btn" onClick={() => handleSendChatMessage("Upcoming staff meetings?")}>
+                    🗓️ Staff Meetings
+                  </button>
+                  <button className="ai-quick-prompt-btn" onClick={() => handleSendChatMessage("Lesson plan for Quadratic Equations")}>
+                    📐 Lesson Plan
+                  </button>
+                </div>
+
+                {/* Chat Input Bar */}
+                <div className="ai-chat-input-bar">
+                  <input
+                    type="text"
+                    className="ai-chat-text-input"
+                    placeholder="Ask GreenBot about your classes, lesson plans, or grading rosters..."
+                    value={chatInputText}
+                    onChange={(e) => setChatInputText(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        handleSendChatMessage();
+                      }
+                    }}
+                  />
+                  <button
+                    className="ai-chat-send-btn"
+                    style={{ background: "#0d9488" }}
+                    onClick={() => handleSendChatMessage()}
+                    title="Send message to GreenBot"
+                  >
+                    <Send size={15} />
+                  </button>
                 </div>
               </div>
             </div>
