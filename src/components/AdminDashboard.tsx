@@ -4,45 +4,195 @@ import React, { useState, useEffect } from "react";
 import { getUserSession, clearUserSession } from "@/lib/session";
 import { SessionInfo } from "@/types/auth";
 import {
-  Calendar,
-  Bell,
-  Search,
-  BookOpen,
+  ArrowLeft,
   ArrowRight,
-  Home,
+  BookOpen,
+  Calendar,
   CalendarDays,
+  CheckCircle2,
+  ChevronRight,
   Clock,
   Award,
-  Users,
+  Building2,
+  Activity,
   Sparkles,
-  Send,
-  Camera,
-  ChevronRight,
+  User,
+  Users,
+  X,
+  Play,
+  Bell,
+  Quote,
+  RefreshCw,
+  GraduationCap,
+  BarChart3,
+  FileCheck,
+  ClipboardList,
   ShieldCheck,
   Lock,
   Cpu,
-  BarChart3,
   IndianRupee,
   TrendingUp,
   Bus,
   Zap,
   Wifi,
   UserCheck,
-  FileCheck2,
-  Activity,
-  Building2,
-  CheckCircle2,
+  Maximize,
+  Minimize,
+  Home,
+  Megaphone,
 } from "lucide-react";
 
 interface DashboardProps {
   onBackToKiosk: () => void;
 }
 
-export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
-  const [chatInput, setChatInput] = useState("");
-  const [chatResponse, setChatResponse] = useState<string | null>(null);
-  const [session, setSession] = useState<SessionInfo | null>(null);
+type ActiveScreen = "dashboard" | "attendance" | "finance" | "admissions" | "profile";
 
+// Official Inspiring Slogans & Leadership Wisdom for Governance
+const ADMIN_SLOGANS = [
+  {
+    quote: "Leadership is not about being in charge. It is about taking care of those in your charge.",
+    author: "Simon Sinek",
+    badge: "Institutional Vision",
+  },
+  {
+    quote: "Integrity is doing the right thing, even when no one is watching. Excellence follows integrity.",
+    author: "C. S. Lewis",
+    badge: "Campus Governance",
+  },
+  {
+    quote: "To lead tomorrow, we must innovate today with empathy, transparency, and unyielding purpose.",
+    author: "Dr. A. P. J. Abdul Kalam",
+    badge: "Visionary Leadership",
+  },
+  {
+    quote: "A leader is one who knows the way, goes the way, and shows the way.",
+    author: "John C. Maxwell",
+    badge: "Operations Creed",
+  },
+  {
+    quote: "The function of leadership is to produce more leaders, not more followers.",
+    author: "Ralph Nader",
+    badge: "Institutional Stewardship",
+  },
+];
+
+// Official Administrative Directives & Circulars
+const ADMIN_NOTICES = [
+  {
+    id: 1,
+    tag: "GOVERNANCE",
+    tagColor: "#15803d",
+    tagBg: "#dcfce7",
+    title: "CBSE Affiliation Renewal (2026-2031) Formally Ratified",
+    time: "1h ago",
+    date: "14 Oct 2026",
+    authority: "Central Board of Secondary Education",
+    details: "Green Valley Public School affiliation (Reg. 1930281) has been extended for another 5-year cycle with Grade A++ accreditation status. Full compliance documentation has been archived into the institutional audit locker.",
+  },
+  {
+    id: 2,
+    tag: "SAFETY",
+    tagColor: "#2563eb",
+    tagBg: "#dbeafe",
+    title: "Transport Fleet GPS & Speed Governor Compliance Audit Completed",
+    time: "Today",
+    date: "14 Oct 2026",
+    authority: "State Transport Directorate",
+    details: "All 38 campus buses have successfully cleared the bi-annual GPS telemetry and speed governor safety inspection. Real-time telemetry is broadcast to parent dashboard apps with zero route deviations reported.",
+  },
+  {
+    id: 3,
+    tag: "FINANCE",
+    tagColor: "#d97706",
+    tagBg: "#fef3c7",
+    title: "Quarterly Audit & Fee Reconciliation Milestone Achieved",
+    time: "Yesterday",
+    date: "13 Oct 2026",
+    authority: "Finance & Accounts Board",
+    details: "Term-2 tuition fee collection has reached 88.1% of projected target (₹ 62.4 Lakhs reconciled). Automated SMS and email payment reminders have been queued for the remaining 11.9% outstanding dues.",
+  },
+  {
+    id: 4,
+    tag: "CAMPUS",
+    tagColor: "#7c3aed",
+    tagBg: "#f5f3ff",
+    title: "Smart Solar Grid 96% Energy Self-Sufficiency Milestone",
+    time: "2d ago",
+    date: "12 Oct 2026",
+    authority: "Campus Infrastructure Command",
+    details: "The rooftop solar photovoltaic array generated 48.2 kWh today, operating at 96% peak efficiency and powering 100% of campus smart boards, laboratories, and HVAC systems.",
+  },
+];
+
+// Grade-wise Campus Attendance Telemetry
+const CLASS_ATTENDANCE_DATA = [
+  { class: "Class 10 A", total: 42, present: 41, absent: 1, pct: "97.6%", teacher: "Mr. Ramesh Kumar" },
+  { class: "Class 10 B", total: 40, present: 39, absent: 1, pct: "97.5%", teacher: "Mrs. Sunita Deshmukh" },
+  { class: "Class 9 A", total: 44, present: 42, absent: 2, pct: "95.5%", teacher: "Mr. David Wilson" },
+  { class: "Class 9 B", total: 39, present: 38, absent: 1, pct: "97.4%", teacher: "Mrs. Kavitha Menon" },
+  { class: "Class 8 A", total: 45, present: 44, absent: 1, pct: "97.8%", teacher: "Mr. Suresh Hegde" },
+  { class: "Class 8 B", total: 43, present: 41, absent: 2, pct: "95.3%", teacher: "Mrs. Deepa Nair" },
+  { class: "Class 7 A", total: 46, present: 45, absent: 1, pct: "97.8%", teacher: "Mrs. Rachel Thomas" },
+  { class: "Class 7 B", total: 44, present: 42, absent: 2, pct: "95.5%", teacher: "Mr. Ashok Patil" },
+  { class: "Class 6 A", total: 48, present: 47, absent: 1, pct: "97.9%", teacher: "Mrs. Meenakshi Rao" },
+  { class: "Class 6 B", total: 47, present: 45, absent: 2, pct: "95.7%", teacher: "Mr. Vikram Joshi" },
+];
+
+// Fee Reconciliation & Collections by Grade
+const FINANCE_RECONCILIATION = [
+  { grade: "Class 10 (A & B)", strength: 82, target: "₹ 14,76,000", collected: "₹ 13,57,920", dues: "₹ 1,18,080", pct: "92.0%", status: "Nominal" },
+  { grade: "Class 9 (A & B)", strength: 83, target: "₹ 14,94,000", collected: "₹ 13,14,720", dues: "₹ 1,79,280", pct: "88.0%", status: "Nominal" },
+  { grade: "Class 8 (A & B)", strength: 88, target: "₹ 14,08,000", collected: "₹ 12,39,040", dues: "₹ 1,68,960", pct: "88.0%", status: "Nominal" },
+  { grade: "Class 7 (A & B)", strength: 90, target: "₹ 13,50,000", collected: "₹ 11,88,000", dues: "₹ 1,62,000", pct: "88.0%", status: "Nominal" },
+  { grade: "Class 6 (A & B)", strength: 95, target: "₹ 13,30,000", collected: "₹ 11,43,800", dues: "₹ 1,86,200", pct: "86.0%", status: "Follow-up" },
+];
+
+// Admissions Pipeline (AY 2026-27 Desk)
+const ADMISSIONS_PIPELINE = [
+  { appNo: "ADM-2026-104", name: "Aarav S. Deshmukh", grade: "Class 6", parent: "Dr. Sandeep Deshmukh", date: "12 Oct 2026", status: "Seat Confirmed", badgeBg: "#dcfce7", badgeColor: "#15803d" },
+  { appNo: "ADM-2026-105", name: "Kavya R. Nair", grade: "Class 7", parent: "Capt. Rajesh Nair", date: "13 Oct 2026", status: "Interview Passed", badgeBg: "#dbeafe", badgeColor: "#1d4ed8" },
+  { appNo: "ADM-2026-106", name: "Ishan M. Joshi", grade: "Class 9", parent: "Mr. Manoj Joshi", date: "13 Oct 2026", status: "Document Verification", badgeBg: "#fef3c7", badgeColor: "#b45309" },
+  { appNo: "ADM-2026-107", name: "Diya P. Patel", grade: "Class 8", parent: "Mrs. Prerna Patel", date: "14 Oct 2026", status: "Interview Scheduled", badgeBg: "#f3e8ff", badgeColor: "#7e22ce" },
+  { appNo: "ADM-2026-108", name: "Siddharth Verma", grade: "Class 10", parent: "Mr. Amit Verma", date: "14 Oct 2026", status: "Under Review", badgeBg: "#fee2e2", badgeColor: "#b91c1c" },
+  { appNo: "ADM-2026-109", name: "Anika K. Sundaram", grade: "Class 6", parent: "Prof. K. Sundaram", date: "14 Oct 2026", status: "Seat Confirmed", badgeBg: "#dcfce7", badgeColor: "#15803d" },
+];
+
+export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
+  const [session, setSession] = useState<SessionInfo | null>(null);
+  const [currentScreen, setCurrentScreen] = useState<ActiveScreen>("dashboard");
+  const [currentTime, setCurrentTime] = useState<Date>(new Date());
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  // Widget state
+  const [sloganIndex, setSloganIndex] = useState(0);
+  const [selectedNotice, setSelectedNotice] = useState<any | null>(null);
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+
+  // Real-time Clock
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Automatic quote rotation
+  useEffect(() => {
+    const quoteTimer = setInterval(() => {
+      setSloganIndex((prev) => (prev + 1) % ADMIN_SLOGANS.length);
+    }, 8000);
+    return () => clearInterval(quoteTimer);
+  }, []);
+
+  // Fullscreen sync
+  useEffect(() => {
+    const handleFsChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener("fullscreenchange", handleFsChange);
+    return () => document.removeEventListener("fullscreenchange", handleFsChange);
+  }, []);
+
+  // Load session
   useEffect(() => {
     const activeSession = getUserSession();
     if (activeSession) {
@@ -50,636 +200,1428 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
     }
   }, []);
 
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch((err) => {
+        console.error("Fullscreen error:", err);
+      });
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
+  };
+
   const handleLogout = () => {
     clearUserSession();
     onBackToKiosk();
   };
 
-  const handleAsk = (query: string) => {
-    setChatInput(query);
-    if (query.toLowerCase().includes("staff")) {
-      setChatResponse("Total Staff: 86 active members (72 teaching, 14 admin). 4 on leave.");
-    } else if (query.toLowerCase().includes("fee")) {
-      setChatResponse("Total Fees Due: ₹8,42,500. 88% collected to date.");
-    } else if (query.toLowerCase().includes("timetable") || query.toLowerCase().includes("classes")) {
-      setChatResponse("8 scheduled classes across campus today. Substitute teachers deployed.");
-    } else {
-      setChatResponse("Campus security and operations check: All systems nominal.");
-    }
-  };
+  const adminName = session?.username || "Dr. R. K. Verma";
+  const schoolName = session?.initname || "Green Valley Public School";
+  const adminRole = session?.Rolename || "Campus Administrator";
+  const academicYear = session?.ASMAY_Year || "2025-2026";
 
   return (
     <div className="dashboard-page">
-      {/* TOP NAVBAR */}
+      {/* FLOATING AMBIENT ORBS (MATCHING ROLE SELECTION SCREEN) */}
+      <div className="kiosk-orb kiosk-orb-one" />
+      <div className="kiosk-orb kiosk-orb-two" />
+
+      {/* TOP COMMAND NAVBAR (ROLE SELECTION COMMAND THEME) */}
       <header className="dash-navbar">
-        <div className="dash-logo-link" onClick={handleLogout}>
-          <div className="dash-logo-box">
+        <div className="command-brand" onClick={handleLogout} style={{ cursor: "pointer" }}>
+          <div className="command-mark" aria-hidden="true">
             <svg width="34" height="34" viewBox="0 0 48 48" fill="none">
-              <path d="M24 7C28 11 34 13 38 10C38 18 31 23 24 24C17 23 10 18 10 10C14 13 20 11 24 7Z" fill="#10b981" />
-              <path d="M24 24V11" stroke="#059669" strokeWidth="2.5" strokeLinecap="round" />
-              <path d="M5 36C12 31.5 18 32.5 24 37C30 32.5 36 31.5 43 36V18C36 13.5 30 14.5 24 19C18 14.5 12 13.5 5 18V36Z" fill="#0369a1" />
-              <path d="M24 19V37" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round" />
+              <path d="M24 7c4 4 10 6 14 3 0 8-7 13-14 14C17 23 10 18 10 10c4 3 10 1 14-3Z" fill="#7c3aed" />
+              <path d="M24 24V11" stroke="#6d28d9" strokeWidth="2.5" strokeLinecap="round" />
+              <path d="M5 36c7-4.5 13-3.5 19 1 6-4.5 12-5.5 19-1V18c-7-4.5-13-3.5-19 1-6-4.5-12-5.5-19-1v18Z" fill="#5b21b6" />
+              <path d="M24 19v18" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
             </svg>
           </div>
-          <div className="dash-school-text">
-            <h1>{session?.initname || "Green Valley Public School"}</h1>
-            <p>Learn • Grow • Excel</p>
+          <div>
+            <p className="command-kicker">GREEN VALLEY • SMART CAMPUS</p>
+            <h1 style={{ margin: 0, fontFamily: "Outfit, sans-serif", fontSize: "1.15rem", fontWeight: 800, color: "#1e293b" }}>
+              {schoolName}
+            </h1>
           </div>
         </div>
 
-        <div className="dash-search-box">
-          <Search size={14} className="dash-search-icon" />
-          <input
-            type="text"
-            className="dash-search-input"
-            placeholder="Search anything... (events, notices, students, staff, etc.)"
-          />
-        </div>
-
+        {/* Profile Pill & Control Actions */}
         <div className="dash-nav-actions">
-          <button className="dash-icon-btn" aria-label="Notifications">
-            <Bell size={16} />
-            <span className="dash-notification-badge">3</span>
-          </button>
-
-          <div className="dash-profile-pill">
-            <img src={session?.img || "/admin_avatar.png"} alt="Administrator" className="dash-user-avatar" />
+          {/* Admin Profile Pill */}
+          <div
+            className="dash-profile-pill"
+            onClick={() => setCurrentScreen("profile")}
+            title="Click to view Administrator Profile"
+            style={{ cursor: "pointer" }}
+          >
+            <img src={session?.img || "/admin_avatar.png"} alt={adminName} className="dash-user-avatar" />
             <div className="dash-user-info">
-              <span className="dash-user-name">{session?.username || "Dr. R. K. Verma"}</span>
-              <span className="dash-user-role">
-                {session ? `${session.Rolename} • AY ${session.ASMAY_Year || "2025-26"}` : "Campus Administrator"}
-              </span>
+              <span className="dash-user-name">{adminName}</span>
+              <span className="dash-user-role">{adminRole} • Directorate</span>
             </div>
           </div>
 
-          <div className="dash-clock-widget">
-            <Calendar size={13} style={{ color: "#0284c7" }} />
-            <span>Tue, 23 Sep • 10:24 AM</span>
+          {/* Live Campus Telemetry Pill */}
+          <div className="command-live-status">
+            <span style={{ background: "#7c3aed" }} />
+            <span>Campus online</span>
           </div>
 
-          <button className="dash-kiosk-back-btn" onClick={handleLogout}>
-            <Home size={13} /> Kiosk Home
+          {/* Command Time Pill */}
+          <div className="dash-clock-widget">
+            <Calendar size={13} style={{ color: "#7c3aed" }} />
+            <span>
+              {currentTime.toLocaleDateString("en-US", { weekday: "short", day: "2-digit", month: "short" })} •{" "}
+              <b>{currentTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true })}</b>
+            </span>
+          </div>
+
+          {/* Fullscreen Button */}
+          <button className="command-fullscreen" onClick={toggleFullscreen}>
+            {isFullscreen ? <Minimize size={15} /> : <Maximize size={15} />}
+            <span>{isFullscreen ? "Exit" : "Full screen"}</span>
+          </button>
+
+          {/* Back to Kiosk Home */}
+          <button className="dash-kiosk-back-btn" onClick={handleLogout} title="Return to Role Selection Home">
+            <Home size={14} /> Back to Kiosk
           </button>
         </div>
       </header>
 
-      {/* MAIN VIEWPORT CONTENT (STRICT NO-SCROLL) */}
-      <main className="dash-main-content">
-        <div className="dash-kiosk-body-split">
-          {/* LEFT 75% AREA */}
-          <div className="dash-kiosk-body-left">
-            {/* Banner */}
-            <section className="dash-hero-banner banner-admin">
-              <div className="dash-hero-left">
-                <h2 className="dash-hero-title" style={{ fontSize: "1.35rem" }}>Campus Operations Command Center</h2>
-                <p className="dash-hero-desc" style={{ fontSize: "0.72rem" }}>
-                  Institutional oversight, smart telemetry & campus safety. 6,200 students & 125 faculty on premises.
-                </p>
-                <div className="dash-hero-tags">
-                  <span className="dash-hero-tag">🛡️ NAAC Grade A++</span>
-                  <span className="dash-hero-tag">⚡ 98.2% Campus Attendance</span>
-                  <span className="dash-hero-tag">🚌 38/38 Buses En Route</span>
-                  <span className="dash-hero-tag">🔒 Zero Safety Alerts</span>
-                </div>
+      {/* ========================================================
+          VIEW 1: MAIN ADMIN HUB (6 BALANCED CONTAINERS GRID)
+          ======================================================== */}
+      {currentScreen === "dashboard" && (
+        <main className="dash-main-hub">
+          {/* HERO BANNER (ROLE SELECTION COMMAND THEME) */}
+          <section className="student-hub-hero">
+            <div className="student-hero-title-group">
+              <div
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.35rem",
+                  padding: "0.2rem 0.65rem",
+                  borderRadius: "9999px",
+                  background: "#f5f3ff",
+                  border: "1px solid rgba(124, 58, 237, 0.35)",
+                  color: "#7c3aed",
+                  fontSize: "0.68rem",
+                  fontWeight: 800,
+                  letterSpacing: "0.06em",
+                  marginBottom: "0.3rem",
+                }}
+              >
+                <Sparkles size={12} /> INSTITUTIONAL GOVERNANCE • CAMPUS COMMAND
               </div>
-              <div className="dash-hero-right-badge data-badge" style={{ fontSize: "0.78rem" }}>
-                <span style={{ fontSize: "0.62rem", opacity: 0.85 }}>Daily Operations</span>
-                <b style={{ fontSize: "1.1rem", fontWeight: 800 }}>100% Online</b>
-                <span style={{ fontSize: "0.6rem", opacity: 0.85 }}>Smart Grid Active</span>
-              </div>
-            </section>
-
-            {/* Live Ticker */}
-            <div className="dash-ticker-bar" style={{ borderRadius: 8, height: "26px" }}>
-              <span className="ticker-badge-live">
-                <Sparkles size={10} /> LIVE CURRENT AFFAIRS
-              </span>
-              <div className="ticker-content" style={{ fontSize: "0.68rem" }}>
-                <div className="ticker-item">
-                  <span className="ticker-tag">🎓 Education:</span>
-                  <span>CBSE announces new competency-based question pattern for Class 10 board exams</span>
-                </div>
-                <div className="ticker-item">
-                  <span className="ticker-tag">🇮🇳 National:</span>
-                  <span>India's GDP grows by 7.8% in Q2 2025</span>
-                </div>
-                <div className="ticker-item">
-                  <span className="ticker-tag">🔬 Science:</span>
-                  <span>ISRO launches new satellite</span>
-                </div>
+              <h2>
+                Campus Operations <span>Command Hub</span>
+              </h2>
+              <p>Institutional telemetry, operations oversight, safety monitoring, and academic governance.</p>
+              <div className="student-hero-chips">
+                <span className="student-hero-chip" style={{ background: "#f5f3ff", color: "#7c3aed", borderColor: "rgba(124, 58, 237, 0.3)" }}>
+                  <Users size={12} /> 6,240 Total Students
+                </span>
+                <span className="student-hero-chip" style={{ background: "#f5f3ff", color: "#7c3aed", borderColor: "rgba(124, 58, 237, 0.3)" }}>
+                  <UserCheck size={12} /> 86 Active Faculty
+                </span>
+                <span className="student-hero-chip" style={{ background: "#f5f3ff", color: "#7c3aed", borderColor: "rgba(124, 58, 237, 0.3)" }}>
+                  <Bus size={12} /> 38/38 GPS Buses Active
+                </span>
+                <span className="student-hero-chip" style={{ background: "#f5f3ff", color: "#7c3aed", borderColor: "rgba(124, 58, 237, 0.3)" }}>
+                  <ShieldCheck size={12} /> CBSE Affiliation 1930281 • NAAC A++
+                </span>
               </div>
             </div>
 
-            {/* 4 Executive Metric Cards */}
-            <div className="metrics-grid-4">
-              <div className="metric-card">
-                <div className="metric-card-inner">
-                  <div className="metric-icon-wrap" style={{ background: "#e0f2fe", color: "#0284c7" }}>
+            <div className="student-hero-right-meta">
+              <div className="student-vaps-connected-pill" style={{ color: "#7c3aed", borderColor: "rgba(124, 58, 237, 0.35)" }}>
+                <CheckCircle2 size={13} />
+                <span>Smart Grid Online</span>
+              </div>
+              <span style={{ fontSize: "0.65rem", color: "#64748b", fontWeight: 600 }}>
+                Academic Year {academicYear} • Term 2
+              </span>
+            </div>
+          </section>
+
+          {/* 6 COMPACT BALANCED CONTAINERS (3 COLUMNS × 2 ROWS) */}
+          <section className="student-hub-grid">
+            {/* CONTAINER 1: 🛡️ CAMPUS ATTENDANCE TELEMETRY */}
+            <div
+              className="student-hub-card"
+              style={{ "--card-accent": "#0284c7" } as React.CSSProperties}
+              onClick={() => setCurrentScreen("attendance")}
+            >
+              <div className="student-hub-card-header">
+                <div className="student-card-title-group">
+                  <div className="student-card-icon-box" style={{ background: "#e0f2fe", color: "#0284c7" }}>
                     <Users size={18} />
                   </div>
-                  <div className="metric-info">
-                    <span className="metric-label">Total Staff</span>
-                    <span className="metric-value">86</span>
-                    <span className="metric-sub">
-                      <TrendingUp size={10} style={{ display: "inline" }} /> ↑ 5% vs last month
+                  <div className="student-card-headings">
+                    <h3>Attendance Telemetry</h3>
+                    <span>Biometrics & Turnstiles</span>
+                  </div>
+                </div>
+                <span
+                  style={{
+                    background: "#e0f2fe",
+                    color: "#0284c7",
+                    fontSize: "0.65rem",
+                    fontWeight: 800,
+                    padding: "0.15rem 0.5rem",
+                    borderRadius: "9999px",
+                  }}
+                >
+                  6,240 Total
+                </span>
+              </div>
+
+              <div className="student-hub-card-body">
+                <div className="student-metric-hero">
+                  <span className="student-metric-val" style={{ color: "#0284c7" }}>
+                    96.8%
+                  </span>
+                  <span className="student-metric-label">Overall Campus Turnout</span>
+                </div>
+
+                <div className="student-card-pills-list">
+                  <div className="student-card-subitem">
+                    <span style={{ fontWeight: 700, color: "#16a34a" }}>Learners: 6,040 Present</span>
+                    <span style={{ color: "#64748b" }}>200 Absent</span>
+                  </div>
+                  <div className="student-card-subitem">
+                    <span style={{ fontWeight: 700, color: "#0284c7" }}>Faculty: 82 / 86 On Duty</span>
+                    <span style={{ color: "#64748b" }}>4 on Leave</span>
+                  </div>
+                  <div className="student-card-subitem">
+                    <span style={{ fontWeight: 700, color: "#7c3aed" }}>Biometrics: 4,820 Swipes</span>
+                    <span style={{ color: "#64748b" }}>100% Verified</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="student-hub-card-footer">
+                <button
+                  className="student-open-screen-btn"
+                  style={{ background: "#0284c7", color: "#ffffff" }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setCurrentScreen("attendance");
+                  }}
+                >
+                  <Activity size={13} /> Open Attendance Telemetry Command →
+                </button>
+              </div>
+            </div>
+
+            {/* CONTAINER 2: 💳 FEE COLLECTIONS & FINANCIAL RECONCILIATION */}
+            <div
+              className="student-hub-card"
+              style={{ "--card-accent": "#059669" } as React.CSSProperties}
+              onClick={() => setCurrentScreen("finance")}
+            >
+              <div className="student-hub-card-header">
+                <div className="student-card-title-group">
+                  <div className="student-card-icon-box" style={{ background: "#dcfce7", color: "#059669" }}>
+                    <IndianRupee size={18} />
+                  </div>
+                  <div className="student-card-headings">
+                    <h3>Financial & Fee Ledger</h3>
+                    <span>Term Collections & Dues</span>
+                  </div>
+                </div>
+                <span
+                  style={{
+                    background: "#dcfce7",
+                    color: "#059669",
+                    fontSize: "0.65rem",
+                    fontWeight: 800,
+                    padding: "0.15rem 0.5rem",
+                    borderRadius: "9999px",
+                  }}
+                >
+                  88.1% Collected
+                </span>
+              </div>
+
+              <div className="student-hub-card-body">
+                <div className="student-metric-hero">
+                  <span className="student-metric-val" style={{ color: "#059669" }}>
+                    ₹ 62.4 L
+                  </span>
+                  <span className="student-metric-label">Reconciled to Date</span>
+                </div>
+
+                <div className="student-card-pills-list">
+                  <div className="student-card-subitem">
+                    <span style={{ fontWeight: 700, color: "#059669" }}>Collected: ₹ 62,40,000</span>
+                    <span style={{ color: "#64748b" }}>88.1% Target</span>
+                  </div>
+                  <div className="student-card-subitem">
+                    <span style={{ fontWeight: 700, color: "#dc2626" }}>Pending Dues: ₹ 8,42,500</span>
+                    <span style={{ color: "#64748b" }}>11.9% Remaining</span>
+                  </div>
+                  <div className="student-card-subitem">
+                    <span style={{ fontWeight: 700, color: "#0284c7" }}>Online Receipts: 74%</span>
+                    <span style={{ color: "#64748b" }}>UPI / Netbanking</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="student-hub-card-footer">
+                <button
+                  className="student-open-screen-btn"
+                  style={{ background: "#059669", color: "#ffffff" }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setCurrentScreen("finance");
+                  }}
+                >
+                  <TrendingUp size={13} /> Open Accounts & Fee Ledger →
+                </button>
+              </div>
+            </div>
+
+            {/* CONTAINER 3: 🎓 ADMISSIONS PIPELINE & DESK */}
+            <div
+              className="student-hub-card"
+              style={{ "--card-accent": "#7c3aed" } as React.CSSProperties}
+              onClick={() => setCurrentScreen("admissions")}
+            >
+              <div className="student-hub-card-header">
+                <div className="student-card-title-group">
+                  <div className="student-card-icon-box" style={{ background: "#f5f3ff", color: "#7c3aed" }}>
+                    <GraduationCap size={18} />
+                  </div>
+                  <div className="student-card-headings">
+                    <h3>Admissions Pipeline</h3>
+                    <span>AY 2026-27 Applications</span>
+                  </div>
+                </div>
+                <span
+                  style={{
+                    background: "#f5f3ff",
+                    color: "#7c3aed",
+                    fontSize: "0.65rem",
+                    fontWeight: 800,
+                    padding: "0.15rem 0.5rem",
+                    borderRadius: "9999px",
+                  }}
+                >
+                  340 Inquiries
+                </span>
+              </div>
+
+              <div className="student-hub-card-body">
+                <div className="student-metric-hero">
+                  <span className="student-metric-val" style={{ color: "#7c3aed" }}>
+                    340 Forms
+                  </span>
+                  <span className="student-metric-label">Applications Received</span>
+                </div>
+
+                <div className="student-card-pills-list">
+                  <div className="student-card-subitem">
+                    <span style={{ fontWeight: 700, color: "#16a34a" }}>Confirmed: 145 Students</span>
+                    <span style={{ color: "#64748b" }}>Enrolled</span>
+                  </div>
+                  <div className="student-card-subitem">
+                    <span style={{ fontWeight: 700, color: "#0284c7" }}>Interviews: 210 Cleared</span>
+                    <span style={{ color: "#64748b" }}>Shortlisted</span>
+                  </div>
+                  <div className="student-card-subitem">
+                    <span style={{ fontWeight: 700, color: "#ea580c" }}>Available Seats: 35</span>
+                    <span style={{ color: "#64748b" }}>Classes 6 to 9</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="student-hub-card-footer">
+                <button
+                  className="student-open-screen-btn"
+                  style={{ background: "#7c3aed", color: "#ffffff" }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setCurrentScreen("admissions");
+                  }}
+                >
+                  <Users size={13} /> Open Admissions Pipeline & Desk →
+                </button>
+              </div>
+            </div>
+
+            {/* CONTAINER 4: 🎥 CAMPUS INFRASTRUCTURE VIDEO SHOWCASE */}
+            <div
+              className="student-hub-card"
+              style={{ "--card-accent": "#ea580c" } as React.CSSProperties}
+            >
+              <div className="student-hub-card-header">
+                <div className="student-card-title-group">
+                  <div className="student-card-icon-box" style={{ background: "#fff7ed", color: "#ea580c" }}>
+                    <Play size={18} fill="#ea580c" />
+                  </div>
+                  <div className="student-card-headings">
+                    <h3>Infrastructure Aerial Tour</h3>
+                    <span>Smart Campus Architecture</span>
+                  </div>
+                </div>
+                <span
+                  style={{
+                    background: "#fff7ed",
+                    color: "#ea580c",
+                    fontSize: "0.65rem",
+                    fontWeight: 700,
+                    padding: "0.15rem 0.45rem",
+                    borderRadius: "9999px",
+                  }}
+                >
+                  Aerial Showcase
+                </span>
+              </div>
+
+              <div className="student-hub-card-body" style={{ padding: "0.45rem 0.65rem" }}>
+                <div className="student-video-box" onClick={() => setIsVideoModalOpen(true)}>
+                  <img
+                    src="https://images.unsplash.com/photo-1541829070764-84a7d30dd3f3?auto=format&fit=crop&w=700&q=80"
+                    alt="Campus Infrastructure Showcase"
+                    className="student-video-poster"
+                  />
+                  <div className="student-video-overlay">
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <span
+                        style={{
+                          background: "rgba(0,0,0,0.65)",
+                          color: "#ffffff",
+                          fontSize: "0.62rem",
+                          fontWeight: 700,
+                          padding: "2px 6px",
+                          borderRadius: 4,
+                          backdropFilter: "blur(4px)",
+                        }}
+                      >
+                        ⏱ 04:12
+                      </span>
+                      <span
+                        style={{
+                          background: "#ea580c",
+                          color: "#ffffff",
+                          fontSize: "0.6rem",
+                          fontWeight: 800,
+                          padding: "1px 5px",
+                          borderRadius: 4,
+                        }}
+                      >
+                        DRONE TOUR
+                      </span>
+                    </div>
+
+                    <div className="student-video-play-btn" style={{ background: "#7c3aed" }}>
+                      <Play size={18} fill="#ffffff" style={{ marginLeft: "2px" }} />
+                    </div>
+
+                    <div style={{ color: "#ffffff" }}>
+                      <div style={{ fontSize: "0.78rem", fontWeight: 800, textShadow: "0 1px 3px rgba(0,0,0,0.8)" }}>
+                        Campus Smart Grid & Academic Blocks
+                      </div>
+                      <div style={{ fontSize: "0.65rem", color: "#cbd5e1", textShadow: "0 1px 2px rgba(0,0,0,0.8)" }}>
+                        Aerial perspective of academic wings, solar array & sports fields
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="student-hub-card-footer">
+                <button
+                  className="student-open-screen-btn"
+                  style={{ background: "#ea580c", color: "#ffffff" }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsVideoModalOpen(true);
+                  }}
+                >
+                  <Play size={13} fill="#ffffff" /> Play Infrastructure Aerial Tour
+                </button>
+              </div>
+            </div>
+
+            {/* CONTAINER 5: 🔔 OFFICIAL CIRCULARS & DIRECTIVES */}
+            <div
+              className="student-hub-card"
+              style={{ "--card-accent": "#2563eb" } as React.CSSProperties}
+            >
+              <div className="student-hub-card-header">
+                <div className="student-card-title-group">
+                  <div className="student-card-icon-box" style={{ background: "#dbeafe", color: "#2563eb" }}>
+                    <Bell size={18} />
+                  </div>
+                  <div className="student-card-headings">
+                    <h3>Institutional Directives</h3>
+                    <span>Board Decisions & Circulars</span>
+                  </div>
+                </div>
+                <span
+                  style={{
+                    background: "#dbeafe",
+                    color: "#2563eb",
+                    fontSize: "0.65rem",
+                    fontWeight: 700,
+                    padding: "0.15rem 0.45rem",
+                    borderRadius: "9999px",
+                  }}
+                >
+                  {ADMIN_NOTICES.length} Directives
+                </span>
+              </div>
+
+              <div className="student-hub-card-body" style={{ padding: "0.45rem 0.65rem" }}>
+                <div className="student-notices-list">
+                  {ADMIN_NOTICES.map((notice) => (
+                    <div
+                      key={notice.id}
+                      className="student-notice-item"
+                      onClick={() => setSelectedNotice(notice)}
+                      title="Click to read full circular"
+                    >
+                      <span
+                        style={{
+                          fontSize: "0.58rem",
+                          fontWeight: 800,
+                          padding: "1px 5px",
+                          borderRadius: 4,
+                          background: notice.tagBg,
+                          color: notice.tagColor,
+                          flexShrink: 0,
+                        }}
+                      >
+                        {notice.tag}
+                      </span>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div
+                          style={{
+                            fontSize: "0.7rem",
+                            fontWeight: 700,
+                            color: "#0f172a",
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                          }}
+                        >
+                          {notice.title}
+                        </div>
+                        <span style={{ fontSize: "0.6rem", color: "#64748b" }}>{notice.authority}</span>
+                      </div>
+                      <span style={{ fontSize: "0.6rem", color: "#94a3b8", flexShrink: 0 }}>{notice.time}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="student-hub-card-footer">
+                <button
+                  className="student-open-screen-btn"
+                  style={{ background: "#2563eb", color: "#ffffff" }}
+                  onClick={() => setSelectedNotice(ADMIN_NOTICES[0])}
+                >
+                  <Megaphone size={13} /> View All Administrative Directives
+                </button>
+              </div>
+            </div>
+
+            {/* CONTAINER 6: ✨ GOVERNANCE CREED & LEADERSHIP WISDOM */}
+            <div
+              className="student-hub-card"
+              style={{ "--card-accent": "#c026d3" } as React.CSSProperties}
+            >
+              <div className="student-hub-card-header">
+                <div className="student-card-title-group">
+                  <div className="student-card-icon-box" style={{ background: "#fdf4ff", color: "#c026d3" }}>
+                    <Sparkles size={18} />
+                  </div>
+                  <div className="student-card-headings">
+                    <h3>Governance Creed & Vision</h3>
+                    <span>Institutional Leadership Thoughts</span>
+                  </div>
+                </div>
+                <span
+                  style={{
+                    background: "#fdf4ff",
+                    color: "#c026d3",
+                    fontSize: "0.65rem",
+                    fontWeight: 700,
+                    padding: "0.15rem 0.45rem",
+                    borderRadius: "9999px",
+                  }}
+                >
+                  Leadership Motto
+                </span>
+              </div>
+
+              <div className="student-hub-card-body" style={{ padding: "0.45rem 0.65rem" }}>
+                <div className="student-slogan-wrap">
+                  <Quote
+                    size={48}
+                    style={{
+                      position: "absolute",
+                      right: -5,
+                      bottom: -8,
+                      color: "rgba(192, 38, 211, 0.12)",
+                      pointerEvents: "none",
+                    }}
+                  />
+                  <p className="student-slogan-quote">
+                    &ldquo;{ADMIN_SLOGANS[sloganIndex].quote}&rdquo;
+                  </p>
+                  <div className="student-slogan-author">
+                    <span>— {ADMIN_SLOGANS[sloganIndex].author}</span>
+                    <span
+                      style={{
+                        background: "rgba(192, 38, 211, 0.12)",
+                        color: "#a21caf",
+                        padding: "1px 6px",
+                        borderRadius: 4,
+                        fontSize: "0.62rem",
+                      }}
+                    >
+                      {ADMIN_SLOGANS[sloganIndex].badge}
                     </span>
                   </div>
                 </div>
-                <ChevronRight size={14} className="metric-arrow" />
               </div>
 
-              <div className="metric-card">
-                <div className="metric-card-inner">
-                  <div className="metric-icon-wrap" style={{ background: "#f3e8ff", color: "#9333ea" }}>
-                    <CalendarDays size={18} />
-                  </div>
-                  <div className="metric-info">
-                    <span className="metric-label">Today's Classes</span>
-                    <span className="metric-value">8</span>
-                    <span className="metric-sub" style={{ color: "#64748b" }}>Classes Assigned</span>
-                  </div>
-                </div>
-                <ChevronRight size={14} className="metric-arrow" />
-              </div>
-
-              <div className="metric-card">
-                <div className="metric-card-inner">
-                  <div className="metric-icon-wrap" style={{ background: "#ffedd5", color: "#ea580c" }}>
-                    <Clock size={18} />
-                  </div>
-                  <div className="metric-info">
-                    <span className="metric-label">Today's Meetings</span>
-                    <span className="metric-value">2</span>
-                    <span className="metric-sub" style={{ color: "#0284c7" }}>Next: 11:30 AM</span>
-                  </div>
-                </div>
-                <ChevronRight size={14} className="metric-arrow" />
-              </div>
-
-              <div className="metric-card">
-                <div className="metric-card-inner">
-                  <div className="metric-icon-wrap" style={{ background: "#ffe4e6", color: "#e11d48" }}>
-                    <IndianRupee size={18} />
-                  </div>
-                  <div className="metric-info">
-                    <span className="metric-label">Total Fees Due</span>
-                    <span className="metric-value">₹ 8,42,500</span>
-                    <span className="metric-sub danger">12% pending</span>
-                  </div>
-                </div>
-                <ChevronRight size={14} className="metric-arrow" />
-              </div>
-            </div>
-
-            {/* Row 1: Staff Time Table, Upcoming Events, Notices */}
-            <div className="dash-three-col-row">
-              {/* Staff Time Table */}
-              <div className="dash-card">
-                <div className="dash-card-header">
-                  <div className="dash-card-title">
-                    <div className="dash-card-icon" style={{ background: "#dbeafe", color: "#1d4ed8" }}>
-                      <Calendar size={14} />
-                    </div>
-                    <span>Staff Time Table</span>
-                  </div>
-                  <span className="dash-view-all">Schedule →</span>
-                </div>
-                <div className="timetable-list">
-                  <div className="timetable-row">
-                    <span>08:00 - 08:45</span>
-                    <span className="class-tag tag-blue">Class 6 A</span>
-                    <span>Mathematics</span>
-                  </div>
-                  <div className="timetable-row">
-                    <span>09:00 - 09:45</span>
-                    <span className="class-tag tag-pink">Class 7 B</span>
-                    <span>Science</span>
-                  </div>
-                  <div className="timetable-row">
-                    <span>10:45 - 11:30</span>
-                    <span className="class-tag tag-green">Class 8 A</span>
-                    <span>English</span>
-                  </div>
-                  <div className="timetable-row">
-                    <span>12:15 - 01:00</span>
-                    <span className="class-tag tag-purple">Class 9 B</span>
-                    <span>Social Studies</span>
-                  </div>
-                  <div className="timetable-row">
-                    <span>02:00 - 02:45</span>
-                    <span className="class-tag tag-orange">Class 10 A</span>
-                    <span>Kannada</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Upcoming Events */}
-              <div className="dash-card">
-                <div className="dash-card-header">
-                  <div className="dash-card-title">
-                    <div className="dash-card-icon" style={{ background: "#dcfce7", color: "#15803d" }}>
-                      <CalendarDays size={14} />
-                    </div>
-                    <span>Upcoming Events</span>
-                  </div>
-                  <span className="dash-view-all">View All →</span>
-                </div>
-                <div>
-                  <div className="event-item-row">
-                    <div className="event-date-box">
-                      <span className="event-day">24</span>
-                      <span className="event-month">Sep</span>
-                    </div>
-                    <div className="event-text">
-                      <div className="event-name">Staff Meeting</div>
-                      <div className="event-meta">10:30 - 11:30 AM • Conf. Hall</div>
-                    </div>
-                    <ChevronRight size={14} style={{ color: "#94a3b8" }} />
-                  </div>
-                  <div className="event-item-row">
-                    <div className="event-date-box">
-                      <span className="event-day">26</span>
-                      <span className="event-month">Sep</span>
-                    </div>
-                    <div className="event-text">
-                      <div className="event-name">PTM Preparation Meeting</div>
-                      <div className="event-meta">02:00 - 03:00 PM • Staff Room</div>
-                    </div>
-                    <ChevronRight size={14} style={{ color: "#94a3b8" }} />
-                  </div>
-                  <div className="event-item-row">
-                    <div className="event-date-box">
-                      <span className="event-day">28</span>
-                      <span className="event-month">Sep</span>
-                    </div>
-                    <div className="event-text">
-                      <div className="event-name">Sports Day Practice</div>
-                      <div className="event-meta">04:00 - 06:00 PM • Ground</div>
-                    </div>
-                    <ChevronRight size={14} style={{ color: "#94a3b8" }} />
-                  </div>
-                  <div className="event-item-row">
-                    <div className="event-date-box">
-                      <span className="event-day">01</span>
-                      <span className="event-month">Oct</span>
-                    </div>
-                    <div className="event-text">
-                      <div className="event-name">Teachers' Training Program</div>
-                      <div className="event-meta">09:00 AM - 01:00 PM • Hall</div>
-                    </div>
-                    <ChevronRight size={14} style={{ color: "#94a3b8" }} />
-                  </div>
-                </div>
-              </div>
-
-              {/* Notices */}
-              <div className="dash-card">
-                <div className="dash-card-header">
-                  <div className="dash-card-title">
-                    <div className="dash-card-icon" style={{ background: "#ffe4e6", color: "#e11d48" }}>
-                      <Bell size={14} />
-                    </div>
-                    <span>Notices</span>
-                  </div>
-                  <span className="dash-view-all">View All →</span>
-                </div>
-                <div>
-                  <div className="notice-item-row">
-                    <div className="notice-dot" style={{ background: "#ef4444" }} />
-                    <div className="notice-content">
-                      <div className="notice-title">School closed on 26 Sep (Sat)</div>
-                      <div className="notice-date">24 Sep 2025</div>
-                    </div>
-                  </div>
-                  <div className="notice-item-row">
-                    <div className="notice-dot" style={{ background: "#8b5cf6" }} />
-                    <div className="notice-content">
-                      <div className="notice-title">Guidelines for Annual Examination</div>
-                      <div className="notice-date">22 Sep 2025</div>
-                    </div>
-                  </div>
-                  <div className="notice-item-row">
-                    <div className="notice-dot" style={{ background: "#10b981" }} />
-                    <div className="notice-content">
-                      <div className="notice-title">PTM Schedule for Classes 1 – 8</div>
-                      <div className="notice-date">20 Sep 2025</div>
-                    </div>
-                  </div>
-                  <div className="notice-item-row">
-                    <div className="notice-dot" style={{ background: "#f59e0b" }} />
-                    <div className="notice-content">
-                      <div className="notice-title">Staff Meeting Reminder</div>
-                      <div className="notice-date">18 Sep 2025</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Row 2: Performance, Achievements, Upcoming Exams */}
-            <div className="dash-three-col-row">
-              {/* Performance */}
-              <div className="dash-card">
-                <div className="dash-card-header">
-                  <div className="dash-card-title">
-                    <div className="dash-card-icon" style={{ background: "#dcfce7", color: "#15803d" }}>
-                      <BarChart3 size={14} />
-                    </div>
-                    <span>Students' Performance</span>
-                  </div>
-                  <span className="dash-view-all">View All →</span>
-                </div>
-                <div>
-                  <div className="perf-bar-chart">
-                    <div className="perf-bar-col">
-                      <span className="perf-bar-val">85%</span>
-                      <div className="perf-bar-fill" style={{ height: "85%", background: "#38bdf8" }} />
-                      <span className="perf-bar-label">Maths</span>
-                    </div>
-                    <div className="perf-bar-col">
-                      <span className="perf-bar-val">78%</span>
-                      <div className="perf-bar-fill" style={{ height: "78%", background: "#f87171" }} />
-                      <span className="perf-bar-label">Sci</span>
-                    </div>
-                    <div className="perf-bar-col">
-                      <span className="perf-bar-val">82%</span>
-                      <div className="perf-bar-fill" style={{ height: "82%", background: "#06b6d4" }} />
-                      <span className="perf-bar-label">Eng</span>
-                    </div>
-                    <div className="perf-bar-col">
-                      <span className="perf-bar-val">76%</span>
-                      <div className="perf-bar-fill" style={{ height: "76%", background: "#fbbf24" }} />
-                      <span className="perf-bar-label">Soc</span>
-                    </div>
-                    <div className="perf-bar-col">
-                      <span className="perf-bar-val">88%</span>
-                      <div className="perf-bar-fill" style={{ height: "88%", background: "#a855f7" }} />
-                      <span className="perf-bar-label">Kan</span>
-                    </div>
-                  </div>
-                  <div style={{ display: "flex", justifyContent: "space-between", marginTop: "0.3rem", fontSize: "0.68rem" }}>
-                    <span style={{ color: "#0284c7", fontWeight: 700 }}>Top: Class 10 (85%)</span>
-                    <span style={{ color: "#16a34a", fontWeight: 700 }}>Avg: 81.8%</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Achievements */}
-              <div className="dash-card">
-                <div className="dash-card-header">
-                  <div className="dash-card-title">
-                    <div className="dash-card-icon" style={{ background: "#fef3c7", color: "#d97706" }}>
-                      <Award size={14} />
-                    </div>
-                    <span>Achievements</span>
-                  </div>
-                  <span className="dash-view-all">View All →</span>
-                </div>
-                <div>
-                  <div className="achieve-row">
-                    <div className="achieve-icon">🥇</div>
-                    <div>
-                      <div className="achieve-title">1st Rank - Math Quiz (District Level)</div>
-                      <div className="achieve-meta">Aug 2025 • Student Team</div>
-                    </div>
-                  </div>
-                  <div className="achieve-row">
-                    <div className="achieve-icon" style={{ background: "#dcfce7", color: "#16a34a" }}>🏆</div>
-                    <div>
-                      <div className="achieve-title">Best Teacher Award - Inter-School</div>
-                      <div className="achieve-meta">Jul 2025 • State Council</div>
-                    </div>
-                  </div>
-                  <div className="achieve-row">
-                    <div className="achieve-icon" style={{ background: "#ede9fe", color: "#7c3aed" }}>🥉</div>
-                    <div>
-                      <div className="achieve-title">3rd Place - Science Exhibition</div>
-                      <div className="achieve-meta">Aug 2025 • Sustainable Project</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Upcoming Exams */}
-              <div className="dash-card">
-                <div className="dash-card-header">
-                  <div className="dash-card-title">
-                    <div className="dash-card-icon" style={{ background: "#ede9fe", color: "#7c3aed" }}>
-                      <Clock size={14} />
-                    </div>
-                    <span>Upcoming Exams</span>
-                  </div>
-                  <span className="dash-view-all">View All →</span>
-                </div>
-                <div>
-                  <div className="event-item-row">
-                    <div className="event-date-box" style={{ background: "#f0fdf4", color: "#16a34a" }}>
-                      <span className="event-day">26</span>
-                      <span className="event-month">Sep</span>
-                    </div>
-                    <div className="event-text">
-                      <div className="event-name">Mathematics (Class 6)</div>
-                      <div className="event-meta">08:00 - 10:00 AM • Hall A</div>
-                    </div>
-                    <ChevronRight size={14} style={{ color: "#94a3b8" }} />
-                  </div>
-                  <div className="event-item-row">
-                    <div className="event-date-box" style={{ background: "#eff6ff", color: "#2563eb" }}>
-                      <span className="event-day">30</span>
-                      <span className="event-month">Sep</span>
-                    </div>
-                    <div className="event-text">
-                      <div className="event-name">Science (Class 7)</div>
-                      <div className="event-meta">08:00 - 10:00 AM • Hall B</div>
-                    </div>
-                    <ChevronRight size={14} style={{ color: "#94a3b8" }} />
-                  </div>
-                  <div className="event-item-row">
-                    <div className="event-date-box" style={{ background: "#f5f3ff", color: "#7c3aed" }}>
-                      <span className="event-day">03</span>
-                      <span className="event-month">Oct</span>
-                    </div>
-                    <div className="event-text">
-                      <div className="event-name">English (Class 8)</div>
-                      <div className="event-meta">08:00 - 10:00 AM • Hall A</div>
-                    </div>
-                    <ChevronRight size={14} style={{ color: "#94a3b8" }} />
-                  </div>
-                  <div className="event-item-row">
-                    <div className="event-date-box" style={{ background: "#fff7ed", color: "#ea580c" }}>
-                      <span className="event-day">07</span>
-                      <span className="event-month">Oct</span>
-                    </div>
-                    <div className="event-text">
-                      <div className="event-name">Social Studies (Class 9)</div>
-                      <div className="event-meta">08:00 - 10:00 AM • Hall B</div>
-                    </div>
-                    <ChevronRight size={14} style={{ color: "#94a3b8" }} />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* RIGHT 25% AREA */}
-          <div className="dash-kiosk-body-right">
-            {/* AI Assistant */}
-            <div className="ai-assistant-card">
-              <div className="ai-header-group">
-                <div className="ai-header-text">
-                  <h3>
-                    <Sparkles size={15} /> AI Assistant
-                  </h3>
-                  <p>Ask anything about classes or academic operations.</p>
-                </div>
-                <div className="ai-bot-circle" style={{ background: "linear-gradient(135deg, #0284c7 0%, #0369a1 100%)", display: "flex", alignItems: "center", justifyContent: "center", color: "#ffffff" }}>
-                  <Sparkles size={16} />
-                </div>
-              </div>
-
-              <div className="ai-prompt-pills">
-                <button className="ai-pill-btn" onClick={() => handleAsk("What is the staff attendance today?")}>
-                  Staff attendance?
-                </button>
-                <button className="ai-pill-btn" onClick={() => handleAsk("Show pending fee details")}>
-                  Fees due?
-                </button>
-                <button className="ai-pill-btn" onClick={() => handleAsk("Review today's timetable allocations")}>
-                  Timetables?
-                </button>
-                <button className="ai-pill-btn" onClick={() => handleAsk("When is the next meeting?")}>
-                  Next meeting?
-                </button>
-              </div>
-
-              <div className="ai-input-wrap">
-                <input
-                  type="text"
-                  placeholder={chatResponse ? chatResponse : "Type your question..."}
-                  value={chatInput}
-                  onChange={(e) => setChatInput(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleAsk(chatInput)}
-                />
-                <button className="ai-send-btn" onClick={() => handleAsk(chatInput)}>
-                  <Send size={12} />
+              <div className="student-hub-card-footer">
+                <button
+                  className="student-open-screen-btn"
+                  style={{ background: "#a21caf", color: "#ffffff" }}
+                  onClick={() => setSloganIndex((prev) => (prev + 1) % ADMIN_SLOGANS.length)}
+                  title="Click to view next leadership quote"
+                >
+                  <RefreshCw size={13} /> Next Leadership Creed ↻
                 </button>
               </div>
             </div>
+          </section>
 
-            {/* Campus Security & IoT Telemetry */}
-            <div className="dash-card">
-              <div className="dash-card-header">
-                <div className="dash-card-title">
-                  <div className="dash-card-icon" style={{ background: "#e0f2fe", color: "#0284c7" }}>
-                    <ShieldCheck size={14} />
-                  </div>
-                  <span>Campus Telemetry & Security</span>
-                </div>
-                <span className="dash-view-all">Live Feed</span>
+          {/* COMPACT BOTTOM STRIP: ADMINISTRATOR PROFILE LINK */}
+          <section
+            style={{
+              background: "rgba(255, 255, 255, 0.9)",
+              borderRadius: "14px",
+              padding: "0.5rem 1.15rem",
+              border: "1px solid rgba(254, 215, 170, 0.65)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              boxShadow: "0 4px 14px rgba(234, 88, 12, 0.05)",
+              flexShrink: 0,
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: "0.85rem" }}>
+              <div
+                style={{
+                  width: 34,
+                  height: 34,
+                  borderRadius: "50%",
+                  background: "#f5f3ff",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "#7c3aed",
+                  flexShrink: 0,
+                  border: "1px solid rgba(124, 58, 237, 0.3)",
+                }}
+              >
+                <ShieldCheck size={18} />
               </div>
-              <div className="dash-telemetry-list">
-                <div className="dash-telemetry-item">
-                  <div className="dash-telemetry-icon" style={{ background: "#ecfdf5", color: "#059669" }}>
-                    <UserCheck size={13} />
-                  </div>
-                  <div className="dash-telemetry-info">
-                    <span className="dash-telemetry-name">Turnstiles & Biometrics</span>
-                    <span className="dash-telemetry-meta">4,820 Swipes Verified</span>
-                  </div>
-                  <span className="status-badge status-active">100% OK</span>
-                </div>
-                <div className="dash-telemetry-item">
-                  <div className="dash-telemetry-icon" style={{ background: "#eff6ff", color: "#2563eb" }}>
-                    <Bus size={13} />
-                  </div>
-                  <div className="dash-telemetry-info">
-                    <span className="dash-telemetry-name">Bus Fleet Live GPS</span>
-                    <span className="dash-telemetry-meta">38 / 38 Active in transit</span>
-                  </div>
-                  <span className="status-badge status-active">On Route</span>
-                </div>
-                <div className="dash-telemetry-item">
-                  <div className="dash-telemetry-icon" style={{ background: "#fef3c7", color: "#d97706" }}>
-                    <Zap size={13} />
-                  </div>
-                  <div className="dash-telemetry-info">
-                    <span className="dash-telemetry-name">Solar Power & Grid</span>
-                    <span className="dash-telemetry-meta">48.2 kWh • 96% Efficiency</span>
-                  </div>
-                  <span className="status-badge status-open">Solar Peak</span>
+              <div>
+                <span style={{ fontSize: "0.76rem", fontWeight: 800, color: "#1e293b" }}>
+                  Institutional Operations Desk: {adminName} (Chief Administrator)
+                </span>
+                <div style={{ fontSize: "0.68rem", color: "#64748b", display: "flex", gap: "0.6rem", marginTop: "1px" }}>
+                  <span>Accreditation: <strong>NAAC Grade A++</strong></span>
+                  <span>•</span>
+                  <span>CBSE Code: <strong>1930281</strong></span>
+                  <span>•</span>
+                  <span>Campus Network: <strong>1,280 Active IoT Nodes</strong></span>
+                  <span>•</span>
+                  <span>System Health: <strong>100% Operational</strong></span>
                 </div>
               </div>
             </div>
 
-            {/* Visitor & Facility Desk */}
-            <div className="dash-card">
-              <div className="dash-card-header">
-                <div className="dash-card-title">
-                  <div className="dash-card-icon" style={{ background: "#f3e8ff", color: "#7c3aed" }}>
-                    <Building2 size={14} />
-                  </div>
-                  <span>Operations & Visitor Gate</span>
-                </div>
-                <span className="dash-view-all">Details →</span>
-              </div>
-              <div className="dash-telemetry-list">
-                <div className="dash-telemetry-item">
-                  <div className="dash-telemetry-icon" style={{ background: "#f5f3ff", color: "#7c3aed" }}>
-                    <Activity size={13} />
-                  </div>
-                  <div className="dash-telemetry-info">
-                    <span className="dash-telemetry-name">Gate Passes Issued</span>
-                    <span className="dash-telemetry-meta">42 Visitors • 3 Pending exit</span>
-                  </div>
-                  <span className="status-badge status-ready">Active</span>
-                </div>
-                <div className="dash-telemetry-item">
-                  <div className="dash-telemetry-icon" style={{ background: "#ecfdf5", color: "#059669" }}>
-                    <Wifi size={13} />
-                  </div>
-                  <div className="dash-telemetry-info">
-                    <span className="dash-telemetry-name">Campus Wi-Fi 6 Mesh</span>
-                    <span className="dash-telemetry-meta">1,280 Nodes • 99.98% SLA</span>
-                  </div>
-                  <span className="status-badge status-active">Nominal</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Inspiration Banner */}
-            <div
+            <button
+              onClick={() => setCurrentScreen("profile")}
               style={{
-                borderRadius: 10,
-                background: "linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)",
-                border: "1px solid #a7f3d0",
-                padding: "0.45rem",
-                textAlign: "center",
-                flexShrink: 0,
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "0.35rem",
+                padding: "0.35rem 0.85rem",
+                borderRadius: "8px",
+                border: "1px solid rgba(124, 58, 237, 0.35)",
+                background: "#f5f3ff",
+                color: "#7c3aed",
+                fontWeight: 800,
+                fontSize: "0.74rem",
+                cursor: "pointer",
+                transition: "all 0.15s ease",
               }}
             >
-              <h4 style={{ fontFamily: "Outfit, sans-serif", fontSize: "0.85rem", fontWeight: 800, color: "#065f46" }}>
-                Learn • Collaborate • Make a Difference
-              </h4>
+              <User size={13} /> View Complete Administrator Profile Screen →
+            </button>
+          </section>
+        </main>
+      )}
+
+      {/* ========================================================
+          VIEW 2: DEDICATED FULL SCREEN — ATTENDANCE TELEMETRY
+          ======================================================== */}
+      {currentScreen === "attendance" && (
+        <section className="student-fullscreen-page">
+          <div className="kiosk-orb kiosk-orb-one" />
+          <div className="kiosk-orb kiosk-orb-two" />
+
+          <div className="student-screen-subnav">
+            <button className="student-back-to-dash-btn" onClick={() => setCurrentScreen("dashboard")}>
+              <ArrowLeft size={16} /> Back to Dashboard
+            </button>
+
+            <div className="student-screen-title-area">
+              <div className="student-screen-icon-bubble" style={{ background: "#e0f2fe", color: "#0284c7" }}>
+                <Users size={20} />
+              </div>
+              <div>
+                <h2>Campus Attendance Telemetry & Biometrics</h2>
+                <p>Real-Time Campus Turnstiles & Classroom Attendance Command</p>
+              </div>
+            </div>
+
+            <div className="student-screen-nav-tools">
+              <span
+                style={{
+                  background: "#dcfce7",
+                  color: "#15803d",
+                  padding: "0.3rem 0.75rem",
+                  borderRadius: 9999,
+                  fontSize: "0.72rem",
+                  fontWeight: 800,
+                  border: "1px solid rgba(22, 163, 74, 0.3)",
+                }}
+              >
+                ● 96.8% Overall Quorum
+              </span>
+            </div>
+          </div>
+
+          <div className="student-screen-scroll-body">
+            {/* KPI STATS STRIP */}
+            <div className="student-kpi-strip">
+              <div className="student-kpi-card">
+                <div className="student-kpi-info">
+                  <span>Students Present</span>
+                  <h4>6,040 / 6,240</h4>
+                </div>
+                <div className="student-kpi-icon" style={{ background: "#e0f2fe", color: "#0284c7" }}>
+                  <Users size={20} />
+                </div>
+              </div>
+
+              <div className="student-kpi-card">
+                <div className="student-kpi-info">
+                  <span>Staff on Duty</span>
+                  <h4>82 / 86 Faculty</h4>
+                </div>
+                <div className="student-kpi-icon" style={{ background: "#f0fdfa", color: "#0d9488" }}>
+                  <UserCheck size={20} />
+                </div>
+              </div>
+
+              <div className="student-kpi-card">
+                <div className="student-kpi-info">
+                  <span>Turnstile Swipes</span>
+                  <h4>4,820 Verified</h4>
+                </div>
+                <div className="student-kpi-icon" style={{ background: "#f5f3ff", color: "#7c3aed" }}>
+                  <ShieldCheck size={20} />
+                </div>
+              </div>
+
+              <div className="student-kpi-card">
+                <div className="student-kpi-info">
+                  <span>Safety Alerts</span>
+                  <h4>0 Incident</h4>
+                </div>
+                <div className="student-kpi-icon" style={{ background: "#dcfce7", color: "#16a34a" }}>
+                  <CheckCircle2 size={20} />
+                </div>
+              </div>
+            </div>
+
+            {/* CLASS ATTENDANCE TABLE */}
+            <div className="student-screen-card">
+              <div className="student-screen-card-header">
+                <h4>
+                  <Activity size={18} style={{ color: "#0284c7" }} />
+                  Class-by-Class Attendance Roster (Academic Year 2026-27)
+                </h4>
+                <span style={{ fontSize: "0.72rem", color: "#64748b" }}>Live Campus Feed • Synced 1m ago</span>
+              </div>
+
+              <table className="student-screen-table">
+                <thead>
+                  <tr>
+                    <th>Class / Section</th>
+                    <th>Total Strength</th>
+                    <th>Present</th>
+                    <th>Absent</th>
+                    <th>Turnout %</th>
+                    <th>Class Teacher</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {CLASS_ATTENDANCE_DATA.map((item, idx) => (
+                    <tr key={idx}>
+                      <td style={{ fontWeight: 800, color: "#1e293b" }}>{item.class}</td>
+                      <td>{item.total} Students</td>
+                      <td style={{ color: "#16a34a", fontWeight: 700 }}>{item.present}</td>
+                      <td style={{ color: "#dc2626", fontWeight: 700 }}>{item.absent}</td>
+                      <td>
+                        <b style={{ color: "#0284c7" }}>{item.pct}</b>
+                      </td>
+                      <td style={{ color: "#475569" }}>{item.teacher}</td>
+                      <td>
+                        <span style={{ color: "#16a34a", fontWeight: 700, fontSize: "0.72rem" }}>
+                          ● Reconciled
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ========================================================
+          VIEW 3: DEDICATED FULL SCREEN — FINANCIAL & FEE LEDGER
+          ======================================================== */}
+      {currentScreen === "finance" && (
+        <section className="student-fullscreen-page">
+          <div className="kiosk-orb kiosk-orb-one" />
+          <div className="kiosk-orb kiosk-orb-two" />
+
+          <div className="student-screen-subnav">
+            <button className="student-back-to-dash-btn" onClick={() => setCurrentScreen("dashboard")}>
+              <ArrowLeft size={16} /> Back to Dashboard
+            </button>
+
+            <div className="student-screen-title-area">
+              <div className="student-screen-icon-bubble" style={{ background: "#dcfce7", color: "#059669" }}>
+                <IndianRupee size={20} />
+              </div>
+              <div>
+                <h2>Institutional Fee Ledger & Accounts Reconciliation</h2>
+                <p>Term-2 Tuition & Transportation Fee Ledger • Green Valley Public School</p>
+              </div>
+            </div>
+
+            <div className="student-screen-nav-tools">
+              <span
+                style={{
+                  background: "#dcfce7",
+                  color: "#059669",
+                  padding: "0.3rem 0.75rem",
+                  borderRadius: 9999,
+                  fontSize: "0.72rem",
+                  fontWeight: 800,
+                  border: "1px solid rgba(5, 150, 105, 0.3)",
+                }}
+              >
+                ● 88.1% Collected
+              </span>
+            </div>
+          </div>
+
+          <div className="student-screen-scroll-body">
+            {/* KPI STATS STRIP */}
+            <div className="student-kpi-strip">
+              <div className="student-kpi-card">
+                <div className="student-kpi-info">
+                  <span>Total Collected</span>
+                  <h4>₹ 62,40,000</h4>
+                </div>
+                <div className="student-kpi-icon" style={{ background: "#dcfce7", color: "#059669" }}>
+                  <IndianRupee size={20} />
+                </div>
+              </div>
+
+              <div className="student-kpi-card">
+                <div className="student-kpi-info">
+                  <span>Outstanding Dues</span>
+                  <h4>₹ 8,42,500</h4>
+                </div>
+                <div className="student-kpi-icon" style={{ background: "#fee2e2", color: "#dc2626" }}>
+                  <TrendingUp size={20} />
+                </div>
+              </div>
+
+              <div className="student-kpi-card">
+                <div className="student-kpi-info">
+                  <span>Collection Efficiency</span>
+                  <h4>88.1%</h4>
+                </div>
+                <div className="student-kpi-icon" style={{ background: "#e0f2fe", color: "#0284c7" }}>
+                  <BarChart3 size={20} />
+                </div>
+              </div>
+
+              <div className="student-kpi-card">
+                <div className="student-kpi-info">
+                  <span>Payment Mode</span>
+                  <h4>74% Online/UPI</h4>
+                </div>
+                <div className="student-kpi-icon" style={{ background: "#f5f3ff", color: "#7c3aed" }}>
+                  <Zap size={20} />
+                </div>
+              </div>
+            </div>
+
+            {/* RECONCILIATION TABLE */}
+            <div className="student-screen-card">
+              <div className="student-screen-card-header">
+                <h4>
+                  <FileCheck size={18} style={{ color: "#059669" }} />
+                  Grade-Wise Term Fee Collection Breakdown
+                </h4>
+                <span style={{ fontSize: "0.72rem", color: "#64748b" }}>Audited by Accounts Directorate</span>
+              </div>
+
+              <table className="student-screen-table">
+                <thead>
+                  <tr>
+                    <th>Grade / Wing</th>
+                    <th>Strength</th>
+                    <th>Target Amount</th>
+                    <th>Amount Collected</th>
+                    <th>Outstanding Dues</th>
+                    <th>Collection %</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {FINANCE_RECONCILIATION.map((item, idx) => (
+                    <tr key={idx}>
+                      <td style={{ fontWeight: 800, color: "#1e293b" }}>{item.grade}</td>
+                      <td>{item.strength} Students</td>
+                      <td>{item.target}</td>
+                      <td style={{ color: "#059669", fontWeight: 700 }}>{item.collected}</td>
+                      <td style={{ color: "#dc2626", fontWeight: 700 }}>{item.dues}</td>
+                      <td>
+                        <b style={{ color: "#0284c7" }}>{item.pct}</b>
+                      </td>
+                      <td>
+                        <span
+                          style={{
+                            padding: "2px 8px",
+                            borderRadius: 4,
+                            fontSize: "0.72rem",
+                            fontWeight: 800,
+                            background: item.status === "Nominal" ? "#dcfce7" : "#fef3c7",
+                            color: item.status === "Nominal" ? "#15803d" : "#b45309",
+                          }}
+                        >
+                          ● {item.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ========================================================
+          VIEW 4: DEDICATED FULL SCREEN — ADMISSIONS DESK
+          ======================================================== */}
+      {currentScreen === "admissions" && (
+        <section className="student-fullscreen-page">
+          <div className="kiosk-orb kiosk-orb-one" />
+          <div className="kiosk-orb kiosk-orb-two" />
+
+          <div className="student-screen-subnav">
+            <button className="student-back-to-dash-btn" onClick={() => setCurrentScreen("dashboard")}>
+              <ArrowLeft size={16} /> Back to Dashboard
+            </button>
+
+            <div className="student-screen-title-area">
+              <div className="student-screen-icon-bubble" style={{ background: "#f5f3ff", color: "#7c3aed" }}>
+                <GraduationCap size={20} />
+              </div>
+              <div>
+                <h2>Admissions Pipeline & Verification Desk</h2>
+                <p>New Student Enrollment Queue • Academic Session 2026-27</p>
+              </div>
+            </div>
+
+            <div className="student-screen-nav-tools">
+              <span
+                style={{
+                  background: "#f5f3ff",
+                  color: "#7c3aed",
+                  padding: "0.3rem 0.75rem",
+                  borderRadius: 9999,
+                  fontSize: "0.72rem",
+                  fontWeight: 800,
+                  border: "1px solid rgba(124, 58, 237, 0.3)",
+                }}
+              >
+                ● 145 Confirmed Enrolments
+              </span>
+            </div>
+          </div>
+
+          <div className="student-screen-scroll-body">
+            {/* KPI STATS STRIP */}
+            <div className="student-kpi-strip">
+              <div className="student-kpi-card">
+                <div className="student-kpi-info">
+                  <span>Applications</span>
+                  <h4>340 Inquiries</h4>
+                </div>
+                <div className="student-kpi-icon" style={{ background: "#f5f3ff", color: "#7c3aed" }}>
+                  <ClipboardList size={20} />
+                </div>
+              </div>
+
+              <div className="student-kpi-card">
+                <div className="student-kpi-info">
+                  <span>Interviews Held</span>
+                  <h4>210 Cleared</h4>
+                </div>
+                <div className="student-kpi-icon" style={{ background: "#e0f2fe", color: "#0284c7" }}>
+                  <UserCheck size={20} />
+                </div>
+              </div>
+
+              <div className="student-kpi-card">
+                <div className="student-kpi-info">
+                  <span>Confirmed Enrolments</span>
+                  <h4>145 Students</h4>
+                </div>
+                <div className="student-kpi-icon" style={{ background: "#dcfce7", color: "#16a34a" }}>
+                  <CheckCircle2 size={20} />
+                </div>
+              </div>
+
+              <div className="student-kpi-card">
+                <div className="student-kpi-info">
+                  <span>Available Seats</span>
+                  <h4>35 Remaining</h4>
+                </div>
+                <div className="student-kpi-icon" style={{ background: "#fff7ed", color: "#ea580c" }}>
+                  <Building2 size={20} />
+                </div>
+              </div>
+            </div>
+
+            {/* ADMISSIONS PIPELINE TABLE */}
+            <div className="student-screen-card">
+              <div className="student-screen-card-header">
+                <h4>
+                  <Users size={18} style={{ color: "#7c3aed" }} />
+                  Recent Prospective Applicant Dossiers (AY 2026-27)
+                </h4>
+                <span style={{ fontSize: "0.72rem", color: "#64748b" }}>Admissions Office Desk</span>
+              </div>
+
+              <table className="student-screen-table">
+                <thead>
+                  <tr>
+                    <th>Application No</th>
+                    <th>Student Name</th>
+                    <th>Grade Applied</th>
+                    <th>Parent / Guardian</th>
+                    <th>Application Date</th>
+                    <th>Verification Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {ADMISSIONS_PIPELINE.map((item) => (
+                    <tr key={item.appNo}>
+                      <td style={{ fontWeight: 800, color: "#7c3aed" }}>{item.appNo}</td>
+                      <td style={{ fontWeight: 700, color: "#1e293b" }}>{item.name}</td>
+                      <td>{item.grade}</td>
+                      <td style={{ color: "#475569" }}>{item.parent}</td>
+                      <td>{item.date}</td>
+                      <td>
+                        <span
+                          style={{
+                            padding: "2px 8px",
+                            borderRadius: 4,
+                            fontSize: "0.72rem",
+                            fontWeight: 800,
+                            background: item.badgeBg,
+                            color: item.badgeColor,
+                          }}
+                        >
+                          ● {item.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ========================================================
+          VIEW 5: DEDICATED FULL SCREEN — ADMINISTRATOR PROFILE
+          ======================================================== */}
+      {currentScreen === "profile" && (
+        <section className="student-fullscreen-page">
+          <div className="kiosk-orb kiosk-orb-one" />
+          <div className="kiosk-orb kiosk-orb-two" />
+
+          <div className="student-screen-subnav">
+            <button className="student-back-to-dash-btn" onClick={() => setCurrentScreen("dashboard")}>
+              <ArrowLeft size={16} /> Back to Dashboard
+            </button>
+
+            <div className="student-screen-title-area">
+              <div className="student-screen-icon-bubble" style={{ background: "#f5f3ff", color: "#7c3aed" }}>
+                <User size={20} />
+              </div>
+              <div>
+                <h2>Administrator Credentials & Operations Registry</h2>
+                <p>Institutional Oversight Identity • {adminName}</p>
+              </div>
+            </div>
+
+            <div className="student-screen-nav-tools">
+              <button className="student-back-to-dash-btn" onClick={handleLogout} style={{ color: "#dc2626", borderColor: "#fca5a5" }}>
+                Sign Out
+              </button>
+            </div>
+          </div>
+
+          <div className="student-screen-scroll-body">
+            <div
+              className="student-screen-card"
+              style={{ padding: "1.5rem", display: "flex", gap: "2rem", alignItems: "center" }}
+            >
+              <img
+                src={session?.img || "/admin_avatar.png"}
+                alt={adminName}
+                style={{ width: 100, height: 100, borderRadius: "50%", border: "4px solid #7c3aed", objectFit: "cover" }}
+              />
+              <div style={{ flex: 1 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.25rem" }}>
+                  <h2 style={{ fontFamily: "Outfit, sans-serif", fontSize: "1.45rem", fontWeight: 800, color: "#1e293b", margin: 0 }}>
+                    {adminName}
+                  </h2>
+                  <span style={{ background: "#f5f3ff", color: "#7c3aed", padding: "2px 8px", borderRadius: 6, fontSize: "0.72rem", fontWeight: 800 }}>
+                    Chief Campus Administrator
+                  </span>
+                </div>
+                <div style={{ fontSize: "0.85rem", color: "#64748b", marginBottom: "0.75rem" }}>
+                  Directorate of Institutional Governance • Green Valley Public School
+                </div>
+
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "0.75rem" }}>
+                  <div style={{ background: "#f8fafc", padding: "0.5rem 0.75rem", borderRadius: 8, border: "1px solid #e2e8f0" }}>
+                    <span style={{ fontSize: "0.68rem", color: "#64748b" }}>Admin Code</span>
+                    <div style={{ fontSize: "0.82rem", fontWeight: 800, color: "#1e293b" }}>GV-DIR-001</div>
+                  </div>
+                  <div style={{ background: "#f8fafc", padding: "0.5rem 0.75rem", borderRadius: 8, border: "1px solid #e2e8f0" }}>
+                    <span style={{ fontSize: "0.68rem", color: "#64748b" }}>System Access</span>
+                    <div style={{ fontSize: "0.82rem", fontWeight: 800, color: "#1e293b" }}>Root / Command Full Access</div>
+                  </div>
+                  <div style={{ background: "#f8fafc", padding: "0.5rem 0.75rem", borderRadius: 8, border: "1px solid #e2e8f0" }}>
+                    <span style={{ fontSize: "0.68rem", color: "#64748b" }}>Campus Base</span>
+                    <div style={{ fontSize: "0.82rem", fontWeight: 800, color: "#1e293b" }}>Administrative Wing • Central</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="student-screen-card" style={{ padding: "1.25rem" }}>
+              <h3 style={{ fontFamily: "Outfit, sans-serif", fontSize: "1.05rem", fontWeight: 800, color: "#1e293b", margin: "0 0 0.85rem 0" }}>
+                Campus Telemetry & System Status
+              </h3>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1rem" }}>
+                <div style={{ background: "#f0fdf4", padding: "0.85rem", borderRadius: 10, border: "1px solid rgba(22, 163, 74, 0.3)" }}>
+                  <h4 style={{ margin: "0 0 0.35rem 0", fontSize: "0.85rem", color: "#16a34a" }}>GPS Fleet Telemetry</h4>
+                  <p style={{ margin: 0, fontSize: "0.78rem", color: "#475569", lineHeight: 1.5 }}>
+                    38/38 Active Buses en-route with zero speeding or route violation alerts.
+                  </p>
+                </div>
+
+                <div style={{ background: "#eff6ff", padding: "0.85rem", borderRadius: 10, border: "1px solid rgba(37, 99, 235, 0.3)" }}>
+                  <h4 style={{ margin: "0 0 0.35rem 0", fontSize: "0.85rem", color: "#2563eb" }}>Biometric Gate Pass</h4>
+                  <p style={{ margin: 0, fontSize: "0.78rem", color: "#475569", lineHeight: 1.5 }}>
+                    Turnstiles operational with 4,820 student swipes and 42 verified visitor passes.
+                  </p>
+                </div>
+
+                <div style={{ background: "#fdf4ff", padding: "0.85rem", borderRadius: 10, border: "1px solid rgba(192, 38, 211, 0.3)" }}>
+                  <h4 style={{ margin: "0 0 0.35rem 0", fontSize: "0.85rem", color: "#c026d3" }}>Solar Smart Grid</h4>
+                  <p style={{ margin: 0, fontSize: "0.78rem", color: "#475569", lineHeight: 1.5 }}>
+                    Peak solar generation at 48.2 kWh, delivering 96% power independence across campus.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ========================================================
+          VIDEO TOUR MODAL PLAYER
+          ======================================================== */}
+      {isVideoModalOpen && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(15, 23, 42, 0.85)",
+            backdropFilter: "blur(8px)",
+            zIndex: 9999,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "1.5rem",
+          }}
+          onClick={() => setIsVideoModalOpen(false)}
+        >
+          <div
+            style={{
+              background: "#0f172a",
+              borderRadius: "16px",
+              maxWidth: "800px",
+              width: "100%",
+              overflow: "hidden",
+              boxShadow: "0 25px 50px -12px rgba(0,0,0,0.5)",
+              border: "1px solid rgba(254, 215, 170, 0.3)",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                padding: "0.75rem 1.25rem",
+                borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <Play size={16} fill="#7c3aed" color="#7c3aed" />
+                <span style={{ color: "#ffffff", fontWeight: 700, fontSize: "0.85rem" }}>
+                  Green Valley Campus Aerial Architecture & Infrastructure
+                </span>
+              </div>
+              <button
+                onClick={() => setIsVideoModalOpen(false)}
+                style={{
+                  border: "none",
+                  background: "rgba(255, 255, 255, 0.1)",
+                  borderRadius: "50%",
+                  width: 30,
+                  height: 30,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  cursor: "pointer",
+                  color: "#ffffff",
+                }}
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <div style={{ position: "relative", paddingBottom: "56.25%", height: 0, background: "#000000" }}>
+              <iframe
+                src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1"
+                title="Green Valley Infrastructure Tour"
+                style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", border: "none" }}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
+
+            <div
+              style={{
+                padding: "0.75rem 1.25rem",
+                background: "#0f172a",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                color: "#94a3b8",
+                fontSize: "0.75rem",
+              }}
+            >
+              <span>Smart Solar Photovoltaic Grid • Biometric Gates • Transport Bus Bay • Administrative Directorate</span>
+              <button
+                onClick={() => setIsVideoModalOpen(false)}
+                style={{
+                  padding: "0.35rem 0.85rem",
+                  background: "#7c3aed",
+                  color: "#ffffff",
+                  border: "none",
+                  borderRadius: 6,
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  fontSize: "0.75rem",
+                }}
+              >
+                Close Player
+              </button>
             </div>
           </div>
         </div>
-      </main>
+      )}
 
-      {/* COMPACT FOOTER */}
-      <footer className="dash-footer">
-        <div>Green Valley Public School • Staff Portal • Learn • Grow • Excel</div>
-        <div className="dash-footer-badges">
-          <span className="dash-footer-badge-item">
-            <ShieldCheck size={13} style={{ color: "#10b981" }} /> Safe
-          </span>
-          <span className="dash-footer-badge-item">
-            <Lock size={13} style={{ color: "#0284c7" }} /> Secure
-          </span>
-          <span className="dash-footer-badge-item">
-            <Cpu size={13} style={{ color: "#9333ea" }} /> Smart Operations
-          </span>
+      {/* ========================================================
+          OFFICIAL DIRECTIVES & NOTICES MODAL
+          ======================================================== */}
+      {selectedNotice && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(15, 23, 42, 0.65)",
+            backdropFilter: "blur(5px)",
+            zIndex: 9999,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "1rem",
+          }}
+          onClick={() => setSelectedNotice(null)}
+        >
+          <div
+            style={{
+              background: "#ffffff",
+              borderRadius: "16px",
+              maxWidth: "540px",
+              width: "100%",
+              overflow: "hidden",
+              boxShadow: "0 25px 50px -12px rgba(0,0,0,0.25)",
+              border: "1px solid rgba(254, 215, 170, 0.7)",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                padding: "0.9rem 1.25rem",
+                borderBottom: "1px solid #f1f5f9",
+                background: "linear-gradient(180deg, #ffffff 0%, #f5f3ff 100%)",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <span
+                  style={{
+                    padding: "2px 8px",
+                    borderRadius: 6,
+                    fontSize: "0.68rem",
+                    fontWeight: 800,
+                    background: selectedNotice.tagBg,
+                    color: selectedNotice.tagColor,
+                  }}
+                >
+                  {selectedNotice.tag}
+                </span>
+                <span style={{ fontSize: "0.72rem", color: "#64748b" }}>{selectedNotice.time}</span>
+              </div>
+              <button
+                onClick={() => setSelectedNotice(null)}
+                style={{
+                  border: "none",
+                  background: "#e2e8f0",
+                  borderRadius: "50%",
+                  width: 28,
+                  height: 28,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  cursor: "pointer",
+                  color: "#475569",
+                }}
+              >
+                <X size={15} />
+              </button>
+            </div>
+
+            <div style={{ padding: "1.25rem" }}>
+              <h3
+                style={{
+                  margin: "0 0 0.4rem 0",
+                  fontSize: "1.05rem",
+                  fontWeight: 800,
+                  color: "#1e293b",
+                  fontFamily: "Outfit, sans-serif",
+                }}
+              >
+                {selectedNotice.title}
+              </h3>
+              <div style={{ fontSize: "0.72rem", color: "#7c3aed", fontWeight: 700, marginBottom: "0.85rem" }}>
+                Issued by: {selectedNotice.authority} • Date: {selectedNotice.date}
+              </div>
+              <div
+                style={{
+                  background: "#fffcf9",
+                  padding: "0.9rem",
+                  borderRadius: 10,
+                  border: "1px solid rgba(254, 215, 170, 0.5)",
+                  fontSize: "0.8rem",
+                  color: "#334155",
+                  lineHeight: 1.6,
+                }}
+              >
+                {selectedNotice.details}
+              </div>
+            </div>
+
+            <div
+              style={{
+                padding: "0.75rem 1.25rem",
+                borderTop: "1px solid #f1f5f9",
+                background: "#f8fafc",
+                display: "flex",
+                justifyContent: "flex-end",
+              }}
+            >
+              <button
+                onClick={() => setSelectedNotice(null)}
+                style={{
+                  padding: "0.38rem 1.15rem",
+                  borderRadius: 8,
+                  border: "1px solid rgba(124, 58, 237, 0.3)",
+                  background: "#7c3aed",
+                  fontSize: "0.78rem",
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  color: "#ffffff",
+                }}
+              >
+                Close Directive
+              </button>
+            </div>
+          </div>
         </div>
-      </footer>
+      )}
     </div>
   );
 }

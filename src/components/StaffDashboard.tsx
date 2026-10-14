@@ -4,40 +4,257 @@ import React, { useState, useEffect } from "react";
 import { getUserSession, clearUserSession } from "@/lib/session";
 import { SessionInfo } from "@/types/auth";
 import {
-  Calendar,
-  Bell,
-  Search,
-  BookOpen,
+  ArrowLeft,
   ArrowRight,
-  Home,
+  BookOpen,
+  Calendar,
   CalendarDays,
-  Clock,
-  Sparkles,
-  Send,
-  Camera,
-  ChevronRight,
-  ShieldCheck,
-  Lock,
-  Cpu,
-  BarChart3,
   CheckCircle2,
-  ClipboardList,
-  FileCheck,
-  Activity,
-  FlaskConical,
-  Users,
+  ChevronRight,
+  Clock,
+  Award,
   Building2,
+  Activity,
+  Sparkles,
+  User,
+  Users,
+  X,
+  Play,
+  Bell,
+  Quote,
+  RefreshCw,
+  GraduationCap,
+  BarChart3,
+  FileCheck,
+  ClipboardList,
+  FlaskConical,
+  Maximize,
+  Minimize,
+  Home,
+  Megaphone,
 } from "lucide-react";
 
 interface DashboardProps {
   onBackToKiosk: () => void;
 }
 
-export default function StaffDashboard({ onBackToKiosk }: DashboardProps) {
-  const [chatInput, setChatInput] = useState("");
-  const [chatResponse, setChatResponse] = useState<string | null>(null);
-  const [session, setSession] = useState<SessionInfo | null>(null);
+type ActiveScreen = "dashboard" | "timetable" | "meetings" | "evaluation" | "profile";
 
+// Official Inspiring Slogans & Wisdom for Educators
+const TEACHER_SLOGANS = [
+  {
+    quote: "Teaching is the greatest act of optimism — shaping generations one mind at a time.",
+    author: "Colleen Wilcox",
+    badge: "Educator Creed",
+  },
+  {
+    quote: "Education is the most powerful weapon which you can use to change the world.",
+    author: "Nelson Mandela",
+    badge: "Global Wisdom",
+  },
+  {
+    quote: "To teach is to touch a life forever. Excellence is not a destination, it is a continuous journey.",
+    author: "Dr. A. P. J. Abdul Kalam",
+    badge: "Inspiration",
+  },
+  {
+    quote: "The art of teaching is the art of assisting discovery and sparking curiosity.",
+    author: "Mark Van Doren",
+    badge: "Pedagogy",
+  },
+  {
+    quote: "Tell me and I forget. Teach me and I remember. Involve me and I learn.",
+    author: "Benjamin Franklin",
+    badge: "Experiential Learning",
+  },
+];
+
+// Official Staff Circulars & Notices
+const STAFF_NOTICES = [
+  {
+    id: 1,
+    tag: "URGENT",
+    tagColor: "#dc2626",
+    tagBg: "#fee2e2",
+    title: "CBSE Competency-Based Assessment Rubrics (Term-2)",
+    time: "1h ago",
+    date: "14 Oct 2026",
+    authority: "Academic Steering Committee",
+    details: "All department heads and subject faculty must align Class 9 and 10 internal marks evaluation with the newly released CBSE 2026-27 competency benchmarks. Rubrics sheets are available in the staff resource drive.",
+  },
+  {
+    id: 2,
+    tag: "CIRCULAR",
+    tagColor: "#2563eb",
+    tagBg: "#dbeafe",
+    title: "Annual Science & STEM Robotics Exhibition 2026 — Faculty Mentors",
+    time: "Today",
+    date: "14 Oct 2026",
+    authority: "Dean of Academic Affairs",
+    details: "Faculty mentors for the upcoming inter-school science and robotics exhibition are requested to submit project rosters by Friday, 24th Oct. Mentorship hours will count towards academic service credits.",
+  },
+  {
+    id: 3,
+    tag: "NOTICE",
+    tagColor: "#16a34a",
+    tagBg: "#dcfce7",
+    title: "Faculty Sync & Curriculum Review — Conference Hall A",
+    time: "Yesterday",
+    date: "13 Oct 2026",
+    authority: "Office of the Principal",
+    details: "The monthly whole-school faculty meeting is scheduled for today at 11:30 AM in Conference Hall A. Agenda covers mid-term syllabus progress, parent feedback summary, and sports day duties.",
+  },
+  {
+    id: 4,
+    tag: "SCHEDULE",
+    tagColor: "#d97706",
+    tagBg: "#fef3c7",
+    title: "Winter Campus Timings & Duty Roster Notice",
+    time: "2d ago",
+    date: "12 Oct 2026",
+    authority: "Campus Operations Office",
+    details: "Winter school timings (08:30 AM to 03:30 PM) take effect from November 1st. Morning assembly gate duty and corridor moderation schedules have been updated in the staff room notice board.",
+  },
+];
+
+// Teaching Timetable Data
+const TEACHING_SCHEDULE = [
+  { day: "Monday", period: "1", time: "08:00 - 08:45 AM", class: "Class 6 A", subject: "Mathematics", room: "Rm 204", topic: "Fractions & Decimals Practice" },
+  { day: "Monday", period: "2", time: "09:00 - 09:45 AM", class: "Class 7 B", subject: "Mathematics", room: "Rm 206", topic: "Algebraic Expressions & Identities" },
+  { day: "Monday", period: "3", time: "10:45 - 11:30 AM", class: "Class 8 A", subject: "Mathematics", room: "Rm 208", topic: "Linear Equations in One Variable" },
+  { day: "Monday", period: "4", time: "12:15 - 01:00 PM", class: "Class 9 B", subject: "Mathematics", room: "Rm 301", topic: "Coordinate Geometry Theorems" },
+  { day: "Monday", period: "5", time: "02:00 - 02:45 PM", class: "Class 10 A", subject: "Mathematics", room: "Rm 304", topic: "Quadratic Equations Board Prep" },
+
+  { day: "Tuesday", period: "1", time: "08:00 - 08:45 AM", class: "Class 7 B", subject: "Mathematics", room: "Rm 206", topic: "Problem Solving Lab" },
+  { day: "Tuesday", period: "2", time: "09:00 - 09:45 AM", class: "Class 6 A", subject: "Mathematics", room: "Rm 204", topic: "Geometry Workshop" },
+  { day: "Tuesday", period: "3", time: "10:45 - 11:30 AM", class: "Class 10 A", subject: "Mathematics", room: "Rm 304", topic: "Trigonometry Basics & Identities" },
+  { day: "Tuesday", period: "4", time: "12:15 - 01:00 PM", class: "Class 8 A", subject: "Mathematics", room: "Rm 208", topic: "Square Roots & Cube Roots" },
+  { day: "Tuesday", period: "5", time: "02:00 - 02:45 PM", class: "Class 9 B", subject: "Mathematics", room: "Rm 301", topic: "Polynomial Factorization" },
+
+  { day: "Wednesday", period: "1", time: "08:00 - 08:45 AM", class: "Class 8 A", subject: "Mathematics", room: "Rm 208", topic: "Data Handling & Probability" },
+  { day: "Wednesday", period: "2", time: "09:00 - 09:45 AM", class: "Class 10 A", subject: "Mathematics", room: "Rm 304", topic: "Arithmetic Progressions" },
+  { day: "Wednesday", period: "3", time: "10:45 - 11:30 AM", class: "Class 6 A", subject: "Mathematics", room: "Rm 204", topic: "Basic Geometrical Ideas" },
+  { day: "Wednesday", period: "4", time: "12:15 - 01:00 PM", class: "Class 7 B", subject: "Mathematics", room: "Rm 206", topic: "Comparing Quantities" },
+  { day: "Wednesday", period: "5", time: "02:00 - 02:45 PM", class: "Class 9 B", subject: "Mathematics", room: "Rm 301", topic: "Lines and Angles Proofs" },
+
+  { day: "Thursday", period: "1", time: "08:00 - 08:45 AM", class: "Class 9 B", subject: "Mathematics", room: "Rm 301", topic: "Triangles Congruence Criteria" },
+  { day: "Thursday", period: "2", time: "09:00 - 09:45 AM", class: "Class 6 A", subject: "Mathematics", room: "Rm 204", topic: "Number Systems Quiz" },
+  { day: "Thursday", period: "3", time: "10:45 - 11:30 AM", class: "Class 7 B", subject: "Mathematics", room: "Rm 206", topic: "Perimeter and Area Formulas" },
+  { day: "Thursday", period: "4", time: "12:15 - 01:00 PM", class: "Class 10 A", subject: "Mathematics", room: "Rm 304", topic: "Circles Tangent Theorems" },
+  { day: "Thursday", period: "5", time: "02:00 - 02:45 PM", class: "Class 8 A", subject: "Mathematics", room: "Rm 208", topic: "Direct and Inverse Proportions" },
+
+  { day: "Friday", period: "1", time: "08:00 - 08:45 AM", class: "Class 10 A", subject: "Mathematics", room: "Rm 304", topic: "Weekly Mock Board Examination" },
+  { day: "Friday", period: "2", time: "09:00 - 09:45 AM", class: "Class 9 B", subject: "Mathematics", room: "Rm 301", topic: "Quadrilaterals Theorems" },
+  { day: "Friday", period: "3", time: "10:45 - 11:30 AM", class: "Class 8 A", subject: "Mathematics", room: "Rm 208", topic: "Introduction to Graphs" },
+  { day: "Friday", period: "4", time: "12:15 - 01:00 PM", class: "Class 7 B", subject: "Mathematics", room: "Rm 206", topic: "Visualising Solid Shapes" },
+  { day: "Friday", period: "5", time: "02:00 - 02:45 PM", class: "Class 6 A", subject: "Mathematics", room: "Rm 204", topic: "Practical Geometry & Symmetry" },
+];
+
+// Academic Meetings Data
+const MEETINGS_DATA = [
+  {
+    id: 1,
+    time: "11:30 AM - 12:30 PM",
+    title: "Whole-School Faculty Sync",
+    venue: "Conference Hall A",
+    category: "Administrative",
+    agenda: "Review of Term-2 curriculum pacing, winter assessment schedule, and inter-house sports preparations.",
+    attendees: "All Academic Faculty & Principal",
+    status: "Upcoming Today",
+    badgeColor: "#ea580c",
+    badgeBg: "#fff7ed",
+  },
+  {
+    id: 2,
+    time: "02:00 PM - 03:00 PM",
+    title: "Parent-Teacher Meeting (PTM) Prep",
+    venue: "Staff Room 2",
+    category: "Parent Engagement",
+    agenda: "Collation of student progress cards and special feedback dossiers for Class 9 and 10 students.",
+    attendees: "Maths & Science Dept. Teachers",
+    status: "Upcoming Today",
+    badgeColor: "#0d9488",
+    badgeBg: "#f0fdfa",
+  },
+  {
+    id: 3,
+    time: "Tomorrow • 10:30 AM",
+    title: "Math Olympiad Committee Sync",
+    venue: "STEM Board Room",
+    category: "Academic Excellence",
+    agenda: "Shortlisting 18 student finalists from Class 8, 9, and 10 for National Science and Math Olympiad.",
+    attendees: "Olympiad Mentors Committee",
+    status: "Scheduled",
+    badgeColor: "#7c3aed",
+    badgeBg: "#f5f3ff",
+  },
+  {
+    id: 4,
+    time: "Friday • 03:15 PM",
+    title: "Department Curriculum Moderation",
+    venue: "Maths Resource Lab",
+    category: "Quality Assurance",
+    agenda: "Question paper moderation for Class 10 Pre-Board Assessment and rubric standardization.",
+    attendees: "Senior Secondary Mathematics Faculty",
+    status: "Scheduled",
+    badgeColor: "#2563eb",
+    badgeBg: "#eff6ff",
+  },
+];
+
+// Student Performance & Evaluation Marksheet (Class 10A Mathematics)
+const EVALUATION_ROSTER = [
+  { roll: "101", name: "Ananya Rao", class: "Class 10 A", max: 100, obtained: 98, grade: "A+", remarks: "Outstanding conceptual mastery", status: "Verified" },
+  { roll: "102", name: "Rohan V. Sharma", class: "Class 10 A", max: 100, obtained: 94, grade: "A+", remarks: "Excellent algebra & geometry", status: "Verified" },
+  { roll: "103", name: "Priya Nair", class: "Class 10 A", max: 100, obtained: 91, grade: "A+", remarks: "Commendable problem solving", status: "Verified" },
+  { roll: "104", name: "Aditya Hegde", class: "Class 10 A", max: 100, obtained: 88, grade: "A", remarks: "Consistent analytical accuracy", status: "Verified" },
+  { roll: "105", name: "Kavya Menon", class: "Class 10 A", max: 100, obtained: 85, grade: "A", remarks: "Strong theorem proofs", status: "Verified" },
+  { roll: "106", name: "Varun Patil", class: "Class 10 A", max: 100, obtained: 82, grade: "A", remarks: "Very good calculation speed", status: "Verified" },
+  { roll: "107", name: "Sneha Kulkarni", class: "Class 10 A", max: 100, obtained: 79, grade: "B+", remarks: "Good, needs revision in circle proofs", status: "Verified" },
+  { roll: "108", name: "Tanmay Deshmukh", class: "Class 10 A", max: 100, obtained: 76, grade: "B+", remarks: "Satisfactory, focus on quadratic formulas", status: "Verified" },
+  { roll: "109", name: "Meera Iyer", class: "Class 10 A", max: 100, obtained: 93, grade: "A+", remarks: "Superior clarity in trigonometry", status: "Verified" },
+  { roll: "110", name: "Chirag Singhania", class: "Class 10 A", max: 100, obtained: 86, grade: "A", remarks: "Well-structured graph analysis", status: "Verified" },
+];
+
+export default function StaffDashboard({ onBackToKiosk }: DashboardProps) {
+  const [session, setSession] = useState<SessionInfo | null>(null);
+  const [currentScreen, setCurrentScreen] = useState<ActiveScreen>("dashboard");
+  const [currentTime, setCurrentTime] = useState<Date>(new Date());
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  // Filter states
+  const [selectedDay, setSelectedDay] = useState<string>("ALL");
+  const [selectedClassFilter, setSelectedClassFilter] = useState<string>("ALL");
+
+  // Interactive Widgets state
+  const [sloganIndex, setSloganIndex] = useState(0);
+  const [selectedNotice, setSelectedNotice] = useState<any | null>(null);
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+
+  // Clock timer
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Automatic slogan rotation
+  useEffect(() => {
+    const sloganTimer = setInterval(() => {
+      setSloganIndex((prev) => (prev + 1) % TEACHER_SLOGANS.length);
+    }, 8000);
+    return () => clearInterval(sloganTimer);
+  }, []);
+
+  // Sync fullscreen state
+  useEffect(() => {
+    const handleFsChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener("fullscreenchange", handleFsChange);
+    return () => document.removeEventListener("fullscreenchange", handleFsChange);
+  }, []);
+
+  // Load session
   useEffect(() => {
     const activeSession = getUserSession();
     if (activeSession) {
@@ -45,569 +262,1433 @@ export default function StaffDashboard({ onBackToKiosk }: DashboardProps) {
     }
   }, []);
 
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch((err) => {
+        console.error("Fullscreen error:", err);
+      });
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
+  };
+
   const handleLogout = () => {
     clearUserSession();
     onBackToKiosk();
   };
 
-  const handleAsk = (query: string) => {
-    setChatInput(query);
-    if (query.toLowerCase().includes("timetable") || query.toLowerCase().includes("classes")) {
-      setChatResponse("Today: Class 6A (08:00 AM), 7B (09:00 AM), 8A (10:45 AM), 9B (12:15 PM), 10A (02:00 PM).");
-    } else if (query.toLowerCase().includes("performance")) {
-      setChatResponse("Class 10A Math average is 85%. Highest score: 98% (Ananya Rao).");
-    } else if (query.toLowerCase().includes("circular") || query.toLowerCase().includes("notices")) {
-      setChatResponse("Circular: School closed on 26 Sep (Saturday). Staff meeting at 11:30 AM.");
-    } else if (query.toLowerCase().includes("exam")) {
-      setChatResponse("Next Exam: Class 6 Mathematics on 26 Sep at 08:00 AM in Hall A.");
-    } else {
-      setChatResponse("Staff query processed. Conference Hall reserved for 11:30 AM meeting.");
-    }
-  };
+  const staffName = session?.username || "Ramesh Kumar";
+  const schoolName = session?.initname || "Green Valley Public School";
+  const staffRole = session?.Rolename || "Faculty & Staff";
+  const staffDept = "Department of Mathematics";
+  const staffRoom = "Room 204 • Faculty Block B";
+  const empId = session?.Empid || "GV-5021";
+
+  // Filtered schedule
+  const filteredSchedule = TEACHING_SCHEDULE.filter((item) => {
+    const matchesDay = selectedDay === "ALL" || item.day.toUpperCase() === selectedDay.toUpperCase();
+    const matchesClass = selectedClassFilter === "ALL" || item.class.toLowerCase().includes(selectedClassFilter.toLowerCase());
+    return matchesDay && matchesClass;
+  });
 
   return (
     <div className="dashboard-page">
-      {/* TOP NAVBAR */}
+      {/* FLOATING AMBIENT ORBS (MATCHING ROLE SELECTION SCREEN) */}
+      <div className="kiosk-orb kiosk-orb-one" />
+      <div className="kiosk-orb kiosk-orb-two" />
+
+      {/* TOP COMMAND NAVBAR (ROLE SELECTION COMMAND THEME) */}
       <header className="dash-navbar">
-        <div className="dash-logo-link" onClick={handleLogout}>
-          <div className="dash-logo-box">
+        <div className="command-brand" onClick={handleLogout} style={{ cursor: "pointer" }}>
+          <div className="command-mark" aria-hidden="true">
             <svg width="34" height="34" viewBox="0 0 48 48" fill="none">
-              <path d="M24 7C28 11 34 13 38 10C38 18 31 23 24 24C17 23 10 18 10 10C14 13 20 11 24 7Z" fill="#10b981" />
-              <path d="M24 24V11" stroke="#059669" strokeWidth="2.5" strokeLinecap="round" />
-              <path d="M5 36C12 31.5 18 32.5 24 37C30 32.5 36 31.5 43 36V18C36 13.5 30 14.5 24 19C18 14.5 12 13.5 5 18V36Z" fill="#0369a1" />
-              <path d="M24 19V37" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round" />
+              <path d="M24 7c4 4 10 6 14 3 0 8-7 13-14 14C17 23 10 18 10 10c4 3 10 1 14-3Z" fill="#0d9488" />
+              <path d="M24 24V11" stroke="#0f766e" strokeWidth="2.5" strokeLinecap="round" />
+              <path d="M5 36c7-4.5 13-3.5 19 1 6-4.5 12-5.5 19-1V18c-7-4.5-13-3.5-19 1-6-4.5-12-5.5-19-1v18Z" fill="#115e59" />
+              <path d="M24 19v18" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
             </svg>
           </div>
-          <div className="dash-school-text">
-            <h1>{session?.initname || "Green Valley Public School"}</h1>
-            <p>Learn • Grow • Excel</p>
+          <div>
+            <p className="command-kicker">GREEN VALLEY • SMART CAMPUS</p>
+            <h1 style={{ margin: 0, fontFamily: "Outfit, sans-serif", fontSize: "1.15rem", fontWeight: 800, color: "#1e293b" }}>
+              {schoolName}
+            </h1>
           </div>
         </div>
 
-        <div className="dash-search-box">
-          <Search size={14} className="dash-search-icon" />
-          <input
-            type="text"
-            className="dash-search-input"
-            placeholder="Search anything... (events, notices, students, classes, etc.)"
-          />
-        </div>
-
+        {/* Profile Pill & Control Actions */}
         <div className="dash-nav-actions">
-          <button className="dash-icon-btn" aria-label="Notifications">
-            <Bell size={16} />
-            <span className="dash-notification-badge">3</span>
-          </button>
-
-          <div className="dash-profile-pill">
-            <img src={session?.img || "/staff_avatar.png"} alt={session?.username || "Ramesh Kumar"} className="dash-user-avatar" />
+          {/* Staff Profile Pill */}
+          <div
+            className="dash-profile-pill"
+            onClick={() => setCurrentScreen("profile")}
+            title="Click to view Faculty Profile"
+            style={{ cursor: "pointer" }}
+          >
+            <img src={session?.img || "/staff_avatar.png"} alt={staffName} className="dash-user-avatar" />
             <div className="dash-user-info">
-              <span className="dash-user-name">{session?.username || "Ramesh Kumar"}</span>
-              <span className="dash-user-role">
-                {session ? `${session.Rolename} • Emp ID: ${session.Empid || "5021"}` : "Staff • Teacher - Mathematics"}
-              </span>
+              <span className="dash-user-name">{staffName}</span>
+              <span className="dash-user-role">{staffRole} • Emp ID: {empId}</span>
             </div>
           </div>
 
-          <div className="dash-clock-widget">
-            <Calendar size={13} style={{ color: "#0284c7" }} />
-            <span>Tue, 23 Sep • 10:24 AM</span>
+          {/* Live Campus Telemetry Pill */}
+          <div className="command-live-status">
+            <span style={{ background: "#0d9488" }} />
+            <span>Campus online</span>
           </div>
 
-          <button className="dash-kiosk-back-btn" onClick={handleLogout}>
-            <Home size={13} /> Kiosk Home
+          {/* Command Time Pill */}
+          <div className="dash-clock-widget">
+            <Calendar size={13} style={{ color: "#0d9488" }} />
+            <span>
+              {currentTime.toLocaleDateString("en-US", { weekday: "short", day: "2-digit", month: "short" })} •{" "}
+              <b>{currentTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true })}</b>
+            </span>
+          </div>
+
+          {/* Fullscreen Button */}
+          <button className="command-fullscreen" onClick={toggleFullscreen}>
+            {isFullscreen ? <Minimize size={15} /> : <Maximize size={15} />}
+            <span>{isFullscreen ? "Exit" : "Full screen"}</span>
+          </button>
+
+          {/* Back to Kiosk Home */}
+          <button className="dash-kiosk-back-btn" onClick={handleLogout} title="Return to Role Selection Home">
+            <Home size={14} /> Back to Kiosk
           </button>
         </div>
       </header>
 
-      {/* MAIN VIEWPORT CONTENT (STRICT NO-SCROLL) */}
-      <main className="dash-main-content">
-        <div className="dash-kiosk-body-split">
-          {/* LEFT 75% AREA */}
-          <div className="dash-kiosk-body-left">
-            {/* Banner */}
-            <section className="dash-hero-banner banner-staff">
-              <div className="dash-hero-left">
-                <h2 className="dash-hero-title">Welcome Back, {session?.username || "Ramesh Kumar"}</h2>
-                <p className="dash-hero-desc">
-                  Together we shape minds and inspire excellence. Today: 5 teaching periods & 2 academic committee syncs.
-                </p>
-                <div className="dash-hero-tags">
-                  <span className="dash-hero-tag">📖 Dept. of Mathematics</span>
-                  <span className="dash-hero-tag">🏫 Room 204</span>
-                  <span className="dash-hero-tag">✨ Senior Faculty</span>
-                  <span className="dash-hero-tag">⚡ 8 Classes Assigned</span>
-                </div>
+      {/* ========================================================
+          VIEW 1: MAIN STAFF HUB (6 BALANCED CONTAINERS GRID)
+          ======================================================== */}
+      {currentScreen === "dashboard" && (
+        <main className="dash-main-hub">
+          {/* HERO BANNER (ROLE SELECTION COMMAND THEME) */}
+          <section className="student-hub-hero">
+            <div className="student-hero-title-group">
+              <div
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.35rem",
+                  padding: "0.2rem 0.65rem",
+                  borderRadius: "9999px",
+                  background: "#f0fdfa",
+                  border: "1px solid rgba(13, 148, 136, 0.35)",
+                  color: "#0d9488",
+                  fontSize: "0.68rem",
+                  fontWeight: 800,
+                  letterSpacing: "0.06em",
+                  marginBottom: "0.3rem",
+                }}
+              >
+                <Sparkles size={12} /> LEAD WITH PURPOSE • FACULTY COMMAND
               </div>
-              <div className="dash-hero-right-badge data-badge">
-                <span style={{ fontSize: "0.62rem", opacity: 0.85 }}>Faculty Rating</span>
-                <b style={{ fontSize: "1.1rem", fontWeight: 800 }}>★ 4.9 / 5.0</b>
-                <span style={{ fontSize: "0.6rem", opacity: 0.85 }}>100% Syllabus on Track</span>
+              <h2>
+                Welcome Back, <span>{staffName}</span>
+              </h2>
+              <p>Together we shape young minds and inspire academic brilliance across campus.</p>
+              <div className="student-hero-chips">
+                <span className="student-hero-chip" style={{ background: "#f0fdfa", color: "#0d9488", borderColor: "rgba(13, 148, 136, 0.3)" }}>
+                  <BookOpen size={12} /> {staffDept}
+                </span>
+                <span className="student-hero-chip" style={{ background: "#f0fdfa", color: "#0d9488", borderColor: "rgba(13, 148, 136, 0.3)" }}>
+                  <Building2 size={12} /> {staffRoom}
+                </span>
+                <span className="student-hero-chip" style={{ background: "#f0fdfa", color: "#0d9488", borderColor: "rgba(13, 148, 136, 0.3)" }}>
+                  <Clock size={12} /> 5 Teaching Periods Today
+                </span>
+                <span className="student-hero-chip" style={{ background: "#f0fdfa", color: "#0d9488", borderColor: "rgba(13, 148, 136, 0.3)" }}>
+                  <Award size={12} /> Senior Faculty • Rating ★ 4.9/5.0
+                </span>
               </div>
-            </section>
+            </div>
 
-            {/* Row 1: Today's Classes, Today's Meetings, Upcoming Events */}
-            <div className="dash-three-col-row">
-              {/* Today's Classes */}
-              <div className="dash-card">
-                <div className="dash-card-header">
-                  <div className="dash-card-title">
-                    <div className="dash-card-icon" style={{ background: "#f3e8ff", color: "#9333ea" }}>
-                      <BookOpen size={14} />
-                    </div>
-                    <span>Today&apos;s Classes</span>
-                  </div>
-                  <span className="dash-view-all">View All →</span>
-                </div>
-                <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", marginBottom: "0.3rem" }}>
-                  <span style={{ fontSize: "1.3rem", fontWeight: 800, color: "#0f172a", lineHeight: 1 }}>8</span>
-                  <span style={{ fontSize: "0.68rem", color: "#64748b", fontWeight: 600 }}>Classes Assigned Today</span>
-                </div>
-                <div className="timetable-list">
-                  <div className="timetable-row">
-                    <span>08:00 - 08:45</span>
-                    <span className="class-tag tag-blue">Class 6 A</span>
-                    <span>Mathematics</span>
-                  </div>
-                  <div className="timetable-row">
-                    <span>09:00 - 09:45</span>
-                    <span className="class-tag tag-pink">Class 7 B</span>
-                    <span>Science</span>
-                  </div>
-                  <div className="timetable-row">
-                    <span>10:45 - 11:30</span>
-                    <span className="class-tag tag-green">Class 8 A</span>
-                    <span>English</span>
-                  </div>
-                  <div className="timetable-row">
-                    <span>12:15 - 01:00</span>
-                    <span className="class-tag tag-purple">Class 9 B</span>
-                    <span>Social Studies</span>
-                  </div>
-                  <div className="timetable-row">
-                    <span>02:00 - 02:45</span>
-                    <span className="class-tag tag-orange">Class 10 A</span>
-                    <span>Kannada</span>
-                  </div>
-                </div>
+            <div className="student-hero-right-meta">
+              <div className="student-vaps-connected-pill" style={{ color: "#0d9488", borderColor: "rgba(13, 148, 136, 0.35)" }}>
+                <CheckCircle2 size={13} />
+                <span>Faculty Sync Online</span>
               </div>
+              <span style={{ fontSize: "0.65rem", color: "#64748b", fontWeight: 600 }}>
+                AY {session?.ASMAY_Year || "2025-2026"} • Term 2 Active
+              </span>
+            </div>
+          </section>
 
-              {/* Today's Meetings */}
-              <div className="dash-card">
-                <div className="dash-card-header">
-                  <div className="dash-card-title">
-                    <div className="dash-card-icon" style={{ background: "#ffedd5", color: "#ea580c" }}>
-                      <CalendarDays size={14} />
-                    </div>
-                    <span>Today&apos;s Meetings</span>
+          {/* 6 COMPACT BALANCED CONTAINERS (3 COLUMNS × 2 ROWS) */}
+          <section className="student-hub-grid">
+            {/* CONTAINER 1: 📖 TODAY'S TEACHING SCHEDULE & CLASSES */}
+            <div
+              className="student-hub-card"
+              style={{ "--card-accent": "#0d9488" } as React.CSSProperties}
+              onClick={() => setCurrentScreen("timetable")}
+            >
+              <div className="student-hub-card-header">
+                <div className="student-card-title-group">
+                  <div className="student-card-icon-box" style={{ background: "#f0fdfa", color: "#0d9488" }}>
+                    <BookOpen size={18} />
                   </div>
-                  <span className="dash-view-all">View All →</span>
-                </div>
-                <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", marginBottom: "0.3rem" }}>
-                  <span style={{ fontSize: "1.3rem", fontWeight: 800, color: "#0f172a", lineHeight: 1 }}>2</span>
-                  <span style={{ fontSize: "0.68rem", color: "#64748b", fontWeight: 600 }}>Meetings Scheduled</span>
-                </div>
-                <div>
-                  <div className="event-item-row">
-                    <span style={{ fontWeight: 700, fontSize: "0.68rem", color: "#0284c7", width: 90 }}>11:30 AM</span>
-                    <div className="event-text">
-                      <div className="event-name">Staff Meeting</div>
-                      <div className="event-meta">Conference Hall</div>
-                    </div>
-                    <ChevronRight size={14} style={{ color: "#94a3b8" }} />
-                  </div>
-                  <div className="event-item-row">
-                    <span style={{ fontWeight: 700, fontSize: "0.68rem", color: "#0284c7", width: 90 }}>02:00 PM</span>
-                    <div className="event-text">
-                      <div className="event-name">PTM Preparation</div>
-                      <div className="event-meta">Staff Room</div>
-                    </div>
-                    <ChevronRight size={14} style={{ color: "#94a3b8" }} />
+                  <div className="student-card-headings">
+                    <h3>Teaching Schedule</h3>
+                    <span>Today&apos;s Active Classes</span>
                   </div>
                 </div>
+                <span
+                  style={{
+                    background: "#f0fdfa",
+                    color: "#0d9488",
+                    fontSize: "0.65rem",
+                    fontWeight: 800,
+                    padding: "0.15rem 0.5rem",
+                    borderRadius: "9999px",
+                  }}
+                >
+                  5 Periods
+                </span>
               </div>
 
-              {/* Upcoming Events */}
-              <div className="dash-card">
-                <div className="dash-card-header">
-                  <div className="dash-card-title">
-                    <div className="dash-card-icon" style={{ background: "#dcfce7", color: "#15803d" }}>
-                      <Calendar size={14} />
-                    </div>
-                    <span>Upcoming Events</span>
-                  </div>
-                  <span className="dash-view-all">View All →</span>
+              <div className="student-hub-card-body">
+                <div className="student-metric-hero">
+                  <span className="student-metric-val" style={{ color: "#0d9488" }}>
+                    5 Classes
+                  </span>
+                  <span className="student-metric-label">Assigned for Today</span>
                 </div>
-                <div>
-                  <div className="event-item-row">
-                    <div className="event-date-box">
-                      <span className="event-day">24</span>
-                      <span className="event-month">Sep</span>
-                    </div>
-                    <div className="event-text">
-                      <div className="event-name">Staff Meeting</div>
-                      <div className="event-meta">10:30 - 11:30 AM • Conf. Hall</div>
-                    </div>
-                    <ChevronRight size={14} style={{ color: "#94a3b8" }} />
+
+                <div className="student-card-pills-list">
+                  <div className="student-card-subitem">
+                    <span style={{ fontWeight: 700, color: "#0d9488" }}>08:00 AM • Class 6A</span>
+                    <span style={{ color: "#64748b" }}>Fractions • Rm 204</span>
                   </div>
-                  <div className="event-item-row">
-                    <div className="event-date-box">
-                      <span className="event-day">26</span>
-                      <span className="event-month">Sep</span>
-                    </div>
-                    <div className="event-text">
-                      <div className="event-name">PTM Preparation Meeting</div>
-                      <div className="event-meta">02:00 - 03:00 PM • Staff Room</div>
-                    </div>
-                    <ChevronRight size={14} style={{ color: "#94a3b8" }} />
+                  <div className="student-card-subitem">
+                    <span style={{ fontWeight: 700, color: "#0d9488" }}>09:00 AM • Class 7B</span>
+                    <span style={{ color: "#64748b" }}>Algebra • Rm 206</span>
                   </div>
-                  <div className="event-item-row">
-                    <div className="event-date-box">
-                      <span className="event-day">28</span>
-                      <span className="event-month">Sep</span>
-                    </div>
-                    <div className="event-text">
-                      <div className="event-name">Sports Day Practice</div>
-                      <div className="event-meta">04:00 - 06:00 PM • Ground</div>
-                    </div>
-                    <ChevronRight size={14} style={{ color: "#94a3b8" }} />
+                  <div className="student-card-subitem">
+                    <span style={{ fontWeight: 700, color: "#0d9488" }}>10:45 AM • Class 8A</span>
+                    <span style={{ color: "#64748b" }}>Linear Eq. • Rm 208</span>
                   </div>
-                  <div className="event-item-row">
-                    <div className="event-date-box">
-                      <span className="event-day">01</span>
-                      <span className="event-month">Oct</span>
-                    </div>
-                    <div className="event-text">
-                      <div className="event-name">Teachers&apos; Training Program</div>
-                      <div className="event-meta">09:00 AM - 01:00 PM • Hall</div>
-                    </div>
-                    <ChevronRight size={14} style={{ color: "#94a3b8" }} />
+                </div>
+              </div>
+
+              <div className="student-hub-card-footer">
+                <button
+                  className="student-open-screen-btn"
+                  style={{ background: "#0d9488", color: "#ffffff" }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setCurrentScreen("timetable");
+                  }}
+                >
+                  <Clock size={13} /> View Full Teaching Timetable →
+                </button>
+              </div>
+            </div>
+
+            {/* CONTAINER 2: 🗓️ MEETINGS & COMMITTEE SYNCS */}
+            <div
+              className="student-hub-card"
+              style={{ "--card-accent": "#ea580c" } as React.CSSProperties}
+              onClick={() => setCurrentScreen("meetings")}
+            >
+              <div className="student-hub-card-header">
+                <div className="student-card-title-group">
+                  <div className="student-card-icon-box" style={{ background: "#fff7ed", color: "#ea580c" }}>
+                    <CalendarDays size={18} />
                   </div>
+                  <div className="student-card-headings">
+                    <h3>Meetings & Syncs</h3>
+                    <span>Committees & Agendas</span>
+                  </div>
+                </div>
+                <span
+                  style={{
+                    background: "#fff7ed",
+                    color: "#ea580c",
+                    fontSize: "0.65rem",
+                    fontWeight: 800,
+                    padding: "0.15rem 0.5rem",
+                    borderRadius: "9999px",
+                  }}
+                >
+                  2 Today
+                </span>
+              </div>
+
+              <div className="student-hub-card-body">
+                <div className="student-metric-hero">
+                  <span className="student-metric-val" style={{ color: "#ea580c" }}>
+                    2 Syncs
+                  </span>
+                  <span className="student-metric-label">Next at 11:30 AM</span>
+                </div>
+
+                <div className="student-card-pills-list">
+                  <div className="student-card-subitem">
+                    <span style={{ fontWeight: 700, color: "#ea580c" }}>11:30 AM • Faculty Sync</span>
+                    <span style={{ color: "#64748b" }}>Conf. Hall A</span>
+                  </div>
+                  <div className="student-card-subitem">
+                    <span style={{ fontWeight: 700, color: "#ea580c" }}>02:00 PM • PTM Prep</span>
+                    <span style={{ color: "#64748b" }}>Staff Room 2</span>
+                  </div>
+                  <div className="student-card-subitem">
+                    <span style={{ fontWeight: 700, color: "#64748b" }}>Tomorrow • Olympiad</span>
+                    <span style={{ color: "#64748b" }}>STEM Board Rm</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="student-hub-card-footer">
+                <button
+                  className="student-open-screen-btn"
+                  style={{ background: "#ea580c", color: "#ffffff" }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setCurrentScreen("meetings");
+                  }}
+                >
+                  <CalendarDays size={13} /> Open Meetings & Events Calendar →
+                </button>
+              </div>
+            </div>
+
+            {/* CONTAINER 3: 📊 STUDENT MARKS & EVALUATION */}
+            <div
+              className="student-hub-card"
+              style={{ "--card-accent": "#7c3aed" } as React.CSSProperties}
+              onClick={() => setCurrentScreen("evaluation")}
+            >
+              <div className="student-hub-card-header">
+                <div className="student-card-title-group">
+                  <div className="student-card-icon-box" style={{ background: "#f5f3ff", color: "#7c3aed" }}>
+                    <BarChart3 size={18} />
+                  </div>
+                  <div className="student-card-headings">
+                    <h3>Student Evaluation</h3>
+                    <span>Gradebook & Performance</span>
+                  </div>
+                </div>
+                <span
+                  style={{
+                    background: "#f5f3ff",
+                    color: "#7c3aed",
+                    fontSize: "0.65rem",
+                    fontWeight: 800,
+                    padding: "0.15rem 0.5rem",
+                    borderRadius: "9999px",
+                  }}
+                >
+                  Class 10A Math
+                </span>
+              </div>
+
+              <div className="student-hub-card-body">
+                <div className="student-metric-hero">
+                  <span className="student-metric-val" style={{ color: "#7c3aed" }}>
+                    85.2%
+                  </span>
+                  <span className="student-metric-label">Class 10A Average</span>
+                </div>
+
+                <div className="student-card-pills-list">
+                  <div className="student-card-subitem">
+                    <span style={{ fontWeight: 700, color: "#16a34a" }}>Top Score: 98% (Ananya)</span>
+                    <span style={{ color: "#64748b" }}>Grade A+</span>
+                  </div>
+                  <div className="student-card-subitem">
+                    <span style={{ fontWeight: 700, color: "#0284c7" }}>42 Papers Evaluated</span>
+                    <span style={{ color: "#64748b" }}>100% Verified</span>
+                  </div>
+                  <div className="student-card-subitem">
+                    <span style={{ fontWeight: 700, color: "#7c3aed" }}>Next: Class 9B Scoring</span>
+                    <span style={{ color: "#64748b" }}>Due Friday</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="student-hub-card-footer">
+                <button
+                  className="student-open-screen-btn"
+                  style={{ background: "#7c3aed", color: "#ffffff" }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setCurrentScreen("evaluation");
+                  }}
+                >
+                  <BarChart3 size={13} /> Open Evaluation & Gradebook →
+                </button>
+              </div>
+            </div>
+
+            {/* CONTAINER 4: 🎥 FACULTY CAMPUS TOUR & LAB SHOWCASE */}
+            <div
+              className="student-hub-card"
+              style={{ "--card-accent": "#dc2626" } as React.CSSProperties}
+            >
+              <div className="student-hub-card-header">
+                <div className="student-card-title-group">
+                  <div className="student-card-icon-box" style={{ background: "#fee2e2", color: "#dc2626" }}>
+                    <Play size={18} fill="#dc2626" />
+                  </div>
+                  <div className="student-card-headings">
+                    <h3>Campus Facilities Tour</h3>
+                    <span>Smart Labs & Resources</span>
+                  </div>
+                </div>
+                <span
+                  style={{
+                    background: "#fee2e2",
+                    color: "#dc2626",
+                    fontSize: "0.65rem",
+                    fontWeight: 700,
+                    padding: "0.15rem 0.45rem",
+                    borderRadius: "9999px",
+                  }}
+                >
+                  Virtual Showcase
+                </span>
+              </div>
+
+              <div className="student-hub-card-body" style={{ padding: "0.45rem 0.65rem" }}>
+                <div className="student-video-box" onClick={() => setIsVideoModalOpen(true)}>
+                  <img
+                    src="https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=700&q=80"
+                    alt="Campus Facilities Showcase"
+                    className="student-video-poster"
+                  />
+                  <div className="student-video-overlay">
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <span
+                        style={{
+                          background: "rgba(0,0,0,0.65)",
+                          color: "#ffffff",
+                          fontSize: "0.62rem",
+                          fontWeight: 700,
+                          padding: "2px 6px",
+                          borderRadius: 4,
+                          backdropFilter: "blur(4px)",
+                        }}
+                      >
+                        ⏱ 03:45
+                      </span>
+                      <span
+                        style={{
+                          background: "#dc2626",
+                          color: "#ffffff",
+                          fontSize: "0.6rem",
+                          fontWeight: 800,
+                          padding: "1px 5px",
+                          borderRadius: 4,
+                        }}
+                      >
+                        VIDEO
+                      </span>
+                    </div>
+
+                    <div className="student-video-play-btn" style={{ background: "#0d9488" }}>
+                      <Play size={18} fill="#ffffff" style={{ marginLeft: "2px" }} />
+                    </div>
+
+                    <div style={{ color: "#ffffff" }}>
+                      <div style={{ fontSize: "0.78rem", fontWeight: 800, textShadow: "0 1px 3px rgba(0,0,0,0.8)" }}>
+                        Campus STEM Labs & Smart Studios
+                      </div>
+                      <div style={{ fontSize: "0.65rem", color: "#cbd5e1", textShadow: "0 1px 2px rgba(0,0,0,0.8)" }}>
+                        Take a walkthrough of physics lab, robotics hub & library
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="student-hub-card-footer">
+                <button
+                  className="student-open-screen-btn"
+                  style={{ background: "#dc2626", color: "#ffffff" }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsVideoModalOpen(true);
+                  }}
+                >
+                  <Play size={13} fill="#ffffff" /> Play Campus Facilities Video
+                </button>
+              </div>
+            </div>
+
+            {/* CONTAINER 5: 🔔 OFFICIAL CIRCULARS & NOTICES */}
+            <div
+              className="student-hub-card"
+              style={{ "--card-accent": "#2563eb" } as React.CSSProperties}
+            >
+              <div className="student-hub-card-header">
+                <div className="student-card-title-group">
+                  <div className="student-card-icon-box" style={{ background: "#dbeafe", color: "#2563eb" }}>
+                    <Bell size={18} />
+                  </div>
+                  <div className="student-card-headings">
+                    <h3>Staff Circulars</h3>
+                    <span>Official Notices & Directives</span>
+                  </div>
+                </div>
+                <span
+                  style={{
+                    background: "#dbeafe",
+                    color: "#2563eb",
+                    fontSize: "0.65rem",
+                    fontWeight: 700,
+                    padding: "0.15rem 0.45rem",
+                    borderRadius: "9999px",
+                  }}
+                >
+                  {STAFF_NOTICES.length} Circulars
+                </span>
+              </div>
+
+              <div className="student-hub-card-body" style={{ padding: "0.45rem 0.65rem" }}>
+                <div className="student-notices-list">
+                  {STAFF_NOTICES.map((notice) => (
+                    <div
+                      key={notice.id}
+                      className="student-notice-item"
+                      onClick={() => setSelectedNotice(notice)}
+                      title="Click to read full circular"
+                    >
+                      <span
+                        style={{
+                          fontSize: "0.58rem",
+                          fontWeight: 800,
+                          padding: "1px 5px",
+                          borderRadius: 4,
+                          background: notice.tagBg,
+                          color: notice.tagColor,
+                          flexShrink: 0,
+                        }}
+                      >
+                        {notice.tag}
+                      </span>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div
+                          style={{
+                            fontSize: "0.7rem",
+                            fontWeight: 700,
+                            color: "#0f172a",
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                          }}
+                        >
+                          {notice.title}
+                        </div>
+                        <span style={{ fontSize: "0.6rem", color: "#64748b" }}>{notice.authority}</span>
+                      </div>
+                      <span style={{ fontSize: "0.6rem", color: "#94a3b8", flexShrink: 0 }}>{notice.time}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="student-hub-card-footer">
+                <button
+                  className="student-open-screen-btn"
+                  style={{ background: "#2563eb", color: "#ffffff" }}
+                  onClick={() => setSelectedNotice(STAFF_NOTICES[0])}
+                >
+                  <Megaphone size={13} /> View All Faculty Notices
+                </button>
+              </div>
+            </div>
+
+            {/* CONTAINER 6: ✨ EDUCATOR WISDOM & TEACHING CREED */}
+            <div
+              className="student-hub-card"
+              style={{ "--card-accent": "#c026d3" } as React.CSSProperties}
+            >
+              <div className="student-hub-card-header">
+                <div className="student-card-title-group">
+                  <div className="student-card-icon-box" style={{ background: "#fdf4ff", color: "#c026d3" }}>
+                    <Sparkles size={18} />
+                  </div>
+                  <div className="student-card-headings">
+                    <h3>Teaching Creed & Wisdom</h3>
+                    <span>Inspirational Thoughts for Educators</span>
+                  </div>
+                </div>
+                <span
+                  style={{
+                    background: "#fdf4ff",
+                    color: "#c026d3",
+                    fontSize: "0.65rem",
+                    fontWeight: 700,
+                    padding: "0.15rem 0.45rem",
+                    borderRadius: "9999px",
+                  }}
+                >
+                  Educator Motto
+                </span>
+              </div>
+
+              <div className="student-hub-card-body" style={{ padding: "0.45rem 0.65rem" }}>
+                <div className="student-slogan-wrap">
+                  <Quote
+                    size={48}
+                    style={{
+                      position: "absolute",
+                      right: -5,
+                      bottom: -8,
+                      color: "rgba(192, 38, 211, 0.12)",
+                      pointerEvents: "none",
+                    }}
+                  />
+                  <p className="student-slogan-quote">
+                    &ldquo;{TEACHER_SLOGANS[sloganIndex].quote}&rdquo;
+                  </p>
+                  <div className="student-slogan-author">
+                    <span>— {TEACHER_SLOGANS[sloganIndex].author}</span>
+                    <span
+                      style={{
+                        background: "rgba(192, 38, 211, 0.12)",
+                        color: "#a21caf",
+                        padding: "1px 6px",
+                        borderRadius: 4,
+                        fontSize: "0.62rem",
+                      }}
+                    >
+                      {TEACHER_SLOGANS[sloganIndex].badge}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="student-hub-card-footer">
+                <button
+                  className="student-open-screen-btn"
+                  style={{ background: "#a21caf", color: "#ffffff" }}
+                  onClick={() => setSloganIndex((prev) => (prev + 1) % TEACHER_SLOGANS.length)}
+                  title="Click to view next inspirational quote"
+                >
+                  <RefreshCw size={13} /> Next Teaching Thought ↻
+                </button>
+              </div>
+            </div>
+          </section>
+
+          {/* COMPACT BOTTOM STRIP: FACULTY PROFILE LINK */}
+          <section
+            style={{
+              background: "rgba(255, 255, 255, 0.9)",
+              borderRadius: "14px",
+              padding: "0.5rem 1.15rem",
+              border: "1px solid rgba(254, 215, 170, 0.65)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              boxShadow: "0 4px 14px rgba(234, 88, 12, 0.05)",
+              flexShrink: 0,
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: "0.85rem" }}>
+              <div
+                style={{
+                  width: 34,
+                  height: 34,
+                  borderRadius: "50%",
+                  background: "#f0fdfa",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "#0d9488",
+                  flexShrink: 0,
+                  border: "1px solid rgba(13, 148, 136, 0.3)",
+                }}
+              >
+                <GraduationCap size={18} />
+              </div>
+              <div>
+                <span style={{ fontSize: "0.76rem", fontWeight: 800, color: "#1e293b" }}>
+                  Official Faculty Record: {staffName} ({empId})
+                </span>
+                <div style={{ fontSize: "0.68rem", color: "#64748b", display: "flex", gap: "0.6rem", marginTop: "1px" }}>
+                  <span>Department: <strong>Mathematics</strong></span>
+                  <span>•</span>
+                  <span>Base: <strong>Room 204</strong></span>
+                  <span>•</span>
+                  <span>Classes: <strong>6A, 7B, 8A, 9B, 10A</strong></span>
+                  <span>•</span>
+                  <span>Status: <strong>Active On Premise</strong></span>
                 </div>
               </div>
             </div>
 
-            {/* Row 2: Notices, Students' Performance, Upcoming Exams */}
-            <div className="dash-three-col-row">
-              {/* Notices */}
-              <div className="dash-card">
-                <div className="dash-card-header">
-                  <div className="dash-card-title">
-                    <div className="dash-card-icon" style={{ background: "#dbeafe", color: "#1d4ed8" }}>
-                      <Bell size={14} />
-                    </div>
-                    <span>Notices</span>
-                  </div>
-                  <span className="dash-view-all">View All →</span>
+            <button
+              onClick={() => setCurrentScreen("profile")}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "0.35rem",
+                padding: "0.35rem 0.85rem",
+                borderRadius: "8px",
+                border: "1px solid rgba(13, 148, 136, 0.35)",
+                background: "#f0fdfa",
+                color: "#0d9488",
+                fontWeight: 800,
+                fontSize: "0.74rem",
+                cursor: "pointer",
+                transition: "all 0.15s ease",
+              }}
+            >
+              <User size={13} /> View Complete Faculty Profile Screen →
+            </button>
+          </section>
+        </main>
+      )}
+
+      {/* ========================================================
+          VIEW 2: DEDICATED FULL SCREEN — TEACHING TIMETABLE
+          ======================================================== */}
+      {currentScreen === "timetable" && (
+        <section className="student-fullscreen-page">
+          <div className="kiosk-orb kiosk-orb-one" />
+          <div className="kiosk-orb kiosk-orb-two" />
+
+          <div className="student-screen-subnav">
+            <button className="student-back-to-dash-btn" onClick={() => setCurrentScreen("dashboard")}>
+              <ArrowLeft size={16} /> Back to Dashboard
+            </button>
+
+            <div className="student-screen-title-area">
+              <div className="student-screen-icon-bubble" style={{ background: "#f0fdfa", color: "#0d9488" }}>
+                <Clock size={20} />
+              </div>
+              <div>
+                <h2>Teaching Schedule & Class Roster</h2>
+                <p>Weekly Master Schedule • {staffName} ({staffDept})</p>
+              </div>
+            </div>
+
+            <div className="student-screen-nav-tools">
+              <button
+                className="student-refresh-btn"
+                onClick={() => setSelectedDay("ALL")}
+                style={{ borderColor: "#0d9488", color: "#0d9488" }}
+              >
+                Reset Day Filter
+              </button>
+            </div>
+          </div>
+
+          <div className="student-screen-scroll-body">
+            {/* KPI STATS STRIP */}
+            <div className="student-kpi-strip">
+              <div className="student-kpi-card">
+                <div className="student-kpi-info">
+                  <span>Today&apos;s Periods</span>
+                  <h4>5 Periods</h4>
                 </div>
-                <div>
-                  <div className="notice-item-row">
-                    <div className="notice-dot" style={{ background: "#ef4444" }} />
-                    <div className="notice-content">
-                      <div className="notice-title">School closed on 26 Sep (Sat)</div>
-                      <div className="notice-date">24 Sep 2025</div>
-                    </div>
-                  </div>
-                  <div className="notice-item-row">
-                    <div className="notice-dot" style={{ background: "#8b5cf6" }} />
-                    <div className="notice-content">
-                      <div className="notice-title">Guidelines for Annual Exam</div>
-                      <div className="notice-date">22 Sep 2025</div>
-                    </div>
-                  </div>
-                  <div className="notice-item-row">
-                    <div className="notice-dot" style={{ background: "#10b981" }} />
-                    <div className="notice-content">
-                      <div className="notice-title">PTM Schedule for Classes 1 – 8</div>
-                      <div className="notice-date">20 Sep 2025</div>
-                    </div>
-                  </div>
-                  <div className="notice-item-row">
-                    <div className="notice-dot" style={{ background: "#f59e0b" }} />
-                    <div className="notice-content">
-                      <div className="notice-title">Staff Meeting Reminder</div>
-                      <div className="notice-date">18 Sep 2025</div>
-                    </div>
-                  </div>
+                <div className="student-kpi-icon" style={{ background: "#f0fdfa", color: "#0d9488" }}>
+                  <Clock size={20} />
                 </div>
               </div>
 
-              {/* Students' Performance Chart */}
-              <div className="dash-card">
-                <div className="dash-card-header">
-                  <div className="dash-card-title">
-                    <div className="dash-card-icon" style={{ background: "#dcfce7", color: "#15803d" }}>
-                      <BarChart3 size={14} />
-                    </div>
-                    <span>Students&apos; Performance</span>
-                  </div>
-                  <span className="dash-view-all">View All →</span>
+              <div className="student-kpi-card">
+                <div className="student-kpi-info">
+                  <span>Students Taught</span>
+                  <h4>185 Learners</h4>
                 </div>
-                <div>
-                  <div className="perf-bar-chart">
-                    <div className="perf-bar-col">
-                      <span className="perf-bar-val">85%</span>
-                      <div className="perf-bar-fill" style={{ height: "85%", background: "#38bdf8" }} />
-                      <span className="perf-bar-label">Maths</span>
-                    </div>
-                    <div className="perf-bar-col">
-                      <span className="perf-bar-val">78%</span>
-                      <div className="perf-bar-fill" style={{ height: "78%", background: "#f87171" }} />
-                      <span className="perf-bar-label">Sci</span>
-                    </div>
-                    <div className="perf-bar-col">
-                      <span className="perf-bar-val">82%</span>
-                      <div className="perf-bar-fill" style={{ height: "82%", background: "#06b6d4" }} />
-                      <span className="perf-bar-label">Eng</span>
-                    </div>
-                    <div className="perf-bar-col">
-                      <span className="perf-bar-val">76%</span>
-                      <div className="perf-bar-fill" style={{ height: "76%", background: "#fbbf24" }} />
-                      <span className="perf-bar-label">Soc</span>
-                    </div>
-                    <div className="perf-bar-col">
-                      <span className="perf-bar-val">88%</span>
-                      <div className="perf-bar-fill" style={{ height: "88%", background: "#a855f7" }} />
-                      <span className="perf-bar-label">Kan</span>
-                    </div>
-                  </div>
-                  <div style={{ display: "flex", justifyContent: "space-between", marginTop: "0.4rem", fontSize: "0.68rem" }}>
-                    <span style={{ color: "#0284c7", fontWeight: 700 }}>Top: Class 10 (85%)</span>
-                    <span style={{ color: "#16a34a", fontWeight: 700 }}>Avg: 81.8%</span>
-                  </div>
+                <div className="student-kpi-icon" style={{ background: "#eff6ff", color: "#2563eb" }}>
+                  <Users size={20} />
                 </div>
               </div>
 
-              {/* Upcoming Exams */}
-              <div className="dash-card">
-                <div className="dash-card-header">
-                  <div className="dash-card-title">
-                    <div className="dash-card-icon" style={{ background: "#ede9fe", color: "#7c3aed" }}>
-                      <Clock size={14} />
-                    </div>
-                    <span>Upcoming Exams</span>
-                  </div>
-                  <span className="dash-view-all">View All →</span>
+              <div className="student-kpi-card">
+                <div className="student-kpi-info">
+                  <span>Weekly Load</span>
+                  <h4>25 Periods</h4>
                 </div>
-                <div>
-                  <div className="event-item-row">
-                    <div className="event-date-box" style={{ background: "#f0fdf4", color: "#16a34a" }}>
-                      <span className="event-day">26</span>
-                      <span className="event-month">Sep</span>
+                <div className="student-kpi-icon" style={{ background: "#f5f3ff", color: "#7c3aed" }}>
+                  <BookOpen size={20} />
+                </div>
+              </div>
+
+              <div className="student-kpi-card">
+                <div className="student-kpi-info">
+                  <span>Faculty Base</span>
+                  <h4>Room 204</h4>
+                </div>
+                <div className="student-kpi-icon" style={{ background: "#fff7ed", color: "#ea580c" }}>
+                  <Building2 size={20} />
+                </div>
+              </div>
+            </div>
+
+            {/* DAY SELECTOR TABS */}
+            <div className="student-day-tabs-bar">
+              {["ALL", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].map((day) => (
+                <button
+                  key={day}
+                  className={`student-day-tab-btn ${selectedDay === day ? "active" : ""}`}
+                  style={selectedDay === day ? { background: "#0d9488", color: "#ffffff" } : {}}
+                  onClick={() => setSelectedDay(day)}
+                >
+                  <Calendar size={13} /> {day}
+                </button>
+              ))}
+            </div>
+
+            {/* PERIOD TILES GRID */}
+            <div className="student-periods-grid">
+              {filteredSchedule.map((item, idx) => (
+                <div key={idx} className="student-period-tile" style={{ borderLeft: "4px solid #0d9488" }}>
+                  <div>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.35rem" }}>
+                      <span
+                        style={{
+                          fontSize: "0.68rem",
+                          fontWeight: 800,
+                          padding: "2px 7px",
+                          borderRadius: 6,
+                          background: "#f0fdfa",
+                          color: "#0d9488",
+                        }}
+                      >
+                        Period {item.period} • {item.day}
+                      </span>
+                      <span style={{ fontSize: "0.7rem", fontWeight: 700, color: "#ea580c" }}>{item.room}</span>
                     </div>
-                    <div className="event-text">
-                      <div className="event-name">Mathematics (Class 6)</div>
-                      <div className="event-meta">08:00 - 10:00 AM • Hall A</div>
+
+                    <h4 style={{ fontFamily: "Outfit, sans-serif", fontSize: "1.05rem", fontWeight: 800, color: "#1e293b", margin: "0 0 0.15rem 0" }}>
+                      {item.class}
+                    </h4>
+                    <div style={{ fontSize: "0.74rem", fontWeight: 700, color: "#0d9488" }}>
+                      {item.subject}
                     </div>
-                    <ChevronRight size={14} style={{ color: "#94a3b8" }} />
+                    <div style={{ fontSize: "0.7rem", color: "#64748b", marginTop: "0.2rem" }}>
+                      Lesson: {item.topic}
+                    </div>
                   </div>
-                  <div className="event-item-row">
-                    <div className="event-date-box" style={{ background: "#eff6ff", color: "#2563eb" }}>
-                      <span className="event-day">30</span>
-                      <span className="event-month">Sep</span>
-                    </div>
-                    <div className="event-text">
-                      <div className="event-name">Science (Class 7)</div>
-                      <div className="event-meta">08:00 - 10:00 AM • Hall B</div>
-                    </div>
-                    <ChevronRight size={14} style={{ color: "#94a3b8" }} />
-                  </div>
-                  <div className="event-item-row">
-                    <div className="event-date-box" style={{ background: "#f5f3ff", color: "#7c3aed" }}>
-                      <span className="event-day">03</span>
-                      <span className="event-month">Oct</span>
-                    </div>
-                    <div className="event-text">
-                      <div className="event-name">English (Class 8)</div>
-                      <div className="event-meta">08:00 - 10:00 AM • Hall A</div>
-                    </div>
-                    <ChevronRight size={14} style={{ color: "#94a3b8" }} />
-                  </div>
-                  <div className="event-item-row">
-                    <div className="event-date-box" style={{ background: "#fff7ed", color: "#ea580c" }}>
-                      <span className="event-day">07</span>
-                      <span className="event-month">Oct</span>
-                    </div>
-                    <div className="event-text">
-                      <div className="event-name">Social Studies (Class 9)</div>
-                      <div className="event-meta">08:00 - 10:00 AM • Hall B</div>
-                    </div>
-                    <ChevronRight size={14} style={{ color: "#94a3b8" }} />
+
+                  <div style={{ fontSize: "0.7rem", color: "#475569", fontWeight: 600, borderTop: "1px solid #f1f5f9", paddingTop: "0.4rem", display: "flex", justifyContent: "space-between" }}>
+                    <span>⏱ {item.time}</span>
+                    <span style={{ color: "#16a34a", fontWeight: 700 }}>● Scheduled</span>
                   </div>
                 </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ========================================================
+          VIEW 3: DEDICATED FULL SCREEN — MEETINGS & EVENTS
+          ======================================================== */}
+      {currentScreen === "meetings" && (
+        <section className="student-fullscreen-page">
+          <div className="kiosk-orb kiosk-orb-one" />
+          <div className="kiosk-orb kiosk-orb-two" />
+
+          <div className="student-screen-subnav">
+            <button className="student-back-to-dash-btn" onClick={() => setCurrentScreen("dashboard")}>
+              <ArrowLeft size={16} /> Back to Dashboard
+            </button>
+
+            <div className="student-screen-title-area">
+              <div className="student-screen-icon-bubble" style={{ background: "#fff7ed", color: "#ea580c" }}>
+                <CalendarDays size={20} />
+              </div>
+              <div>
+                <h2>Academic Meetings & Committee Syncs</h2>
+                <p>Institutional Calendar & Sync Schedules • {staffName}</p>
+              </div>
+            </div>
+
+            <div className="student-screen-nav-tools">
+              <div style={{ fontSize: "0.75rem", fontWeight: 700, color: "#ea580c" }}>
+                Conference Room A Booked
               </div>
             </div>
           </div>
 
-          {/* RIGHT 25% AREA */}
-          <div className="dash-kiosk-body-right">
-            {/* AI Assistant */}
-            <div className="ai-assistant-card" style={{ height: "180px" }}>
-              <div className="ai-header-group">
-                <div className="ai-header-text">
-                  <h3>
-                    <Sparkles size={15} /> AI Assistant
-                  </h3>
-                  <p>Ask anything about classes or academic duties.</p>
+          <div className="student-screen-scroll-body">
+            {/* KPI STRIP */}
+            <div className="student-kpi-strip">
+              <div className="student-kpi-card">
+                <div className="student-kpi-info">
+                  <span>Meetings Today</span>
+                  <h4>2 Sessions</h4>
                 </div>
-                <div className="ai-bot-circle" style={{ width: 28, height: 28, background: "#0d9488", color: "#ffffff", display: "grid", placeItems: "center", borderRadius: "50%" }}>
-                  <Sparkles size={14} />
+                <div className="student-kpi-icon" style={{ background: "#fff7ed", color: "#ea580c" }}>
+                  <CalendarDays size={20} />
                 </div>
               </div>
 
-              <div className="ai-prompt-pills">
-                <button className="ai-pill-btn" onClick={() => handleAsk("What is my today's timetable?")}>
-                  My timetable?
-                </button>
-                <button className="ai-pill-btn" onClick={() => handleAsk("Show student performance")}>
-                  Performance?
-                </button>
-                <button className="ai-pill-btn" onClick={() => handleAsk("Any circulars for staff?")}>
-                  Staff circulars?
-                </button>
-                <button className="ai-pill-btn" onClick={() => handleAsk("When is the next exam?")}>
-                  Next exam?
-                </button>
+              <div className="student-kpi-card">
+                <div className="student-kpi-info">
+                  <span>Upcoming This Week</span>
+                  <h4>4 Syncs</h4>
+                </div>
+                <div className="student-kpi-icon" style={{ background: "#f0fdfa", color: "#0d9488" }}>
+                  <Clock size={20} />
+                </div>
               </div>
 
-              <div className="ai-input-wrap">
-                <input
-                  type="text"
-                  placeholder={chatResponse ? chatResponse : "Type your question..."}
-                  value={chatInput}
-                  onChange={(e) => setChatInput(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleAsk(chatInput)}
-                />
-                <button className="ai-send-btn" onClick={() => handleAsk(chatInput)}>
-                  <Send size={12} />
-                </button>
+              <div className="student-kpi-card">
+                <div className="student-kpi-info">
+                  <span>Attendance Quorum</span>
+                  <h4>100% Present</h4>
+                </div>
+                <div className="student-kpi-icon" style={{ background: "#eff6ff", color: "#2563eb" }}>
+                  <CheckCircle2 size={20} />
+                </div>
               </div>
-            </div>
 
-            {/* Academic Moderation & Task Pipeline (Replaces Photo Gallery) */}
-            <div className="dash-card">
-              <div className="dash-card-header">
-                <div className="dash-card-title">
-                  <div className="dash-card-icon" style={{ background: "#ccfbf1", color: "#0f766e" }}>
-                    <ClipboardList size={14} />
-                  </div>
-                  <span>Academic Task Pipeline</span>
+              <div className="student-kpi-card">
+                <div className="student-kpi-info">
+                  <span>Next Location</span>
+                  <h4>Conf. Hall A</h4>
                 </div>
-                <span className="dash-view-all">Manage →</span>
-              </div>
-              <div className="dash-telemetry-list">
-                <div className="dash-telemetry-item">
-                  <div className="dash-telemetry-left">
-                    <div className="dash-telemetry-icon" style={{ background: "#fee2e2", color: "#b91c1c" }}>
-                      <FileCheck size={12} />
-                    </div>
-                    <div>
-                      <div className="dash-telemetry-title">FA-II Marks Entry</div>
-                      <div className="dash-telemetry-sub">Classes 7B & 8A • Due 04 PM</div>
-                    </div>
-                  </div>
-                  <span className="dash-telemetry-status" style={{ background: "#fef2f2", color: "#dc2626" }}>● Urgent</span>
-                </div>
-
-                <div className="dash-telemetry-item">
-                  <div className="dash-telemetry-left">
-                    <div className="dash-telemetry-icon" style={{ background: "#dcfce7", color: "#15803d" }}>
-                      <CheckCircle2 size={12} />
-                    </div>
-                    <div>
-                      <div className="dash-telemetry-title">Mid-Term Paper Moderation</div>
-                      <div className="dash-telemetry-sub">4/4 Sets Signed Off</div>
-                    </div>
-                  </div>
-                  <span className="dash-telemetry-status status-active">● Verified</span>
-                </div>
-
-                <div className="dash-telemetry-item">
-                  <div className="dash-telemetry-left">
-                    <div className="dash-telemetry-icon" style={{ background: "#e0f2fe", color: "#0369a1" }}>
-                      <Activity size={12} />
-                    </div>
-                    <div>
-                      <div className="dash-telemetry-title">Math Olympiad Roster</div>
-                      <div className="dash-telemetry-sub">18 Candidates Shortlisted</div>
-                    </div>
-                  </div>
-                  <span className="dash-telemetry-status status-open">● Ready</span>
+                <div className="student-kpi-icon" style={{ background: "#f5f3ff", color: "#7c3aed" }}>
+                  <Building2 size={20} />
                 </div>
               </div>
             </div>
 
-            {/* Campus Facilities & Room Bookings (Replaces Virtual Tour) */}
-            <div className="dash-card">
-              <div className="dash-card-header">
-                <div className="dash-card-title">
-                  <div className="dash-card-icon" style={{ background: "#ede9fe", color: "#7c3aed" }}>
-                    <Building2 size={14} />
+            {/* MEETINGS LIST CARDS */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+              {MEETINGS_DATA.map((meeting) => (
+                <div
+                  key={meeting.id}
+                  className="student-screen-card"
+                  style={{ padding: "1.1rem 1.35rem" }}
+                >
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.5rem" }}>
+                    <div>
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", marginBottom: "0.25rem" }}>
+                        <span
+                          style={{
+                            padding: "3px 8px",
+                            borderRadius: 6,
+                            fontSize: "0.68rem",
+                            fontWeight: 800,
+                            background: meeting.badgeBg,
+                            color: meeting.badgeColor,
+                          }}
+                        >
+                          {meeting.status}
+                        </span>
+                        <span style={{ fontSize: "0.72rem", color: "#64748b", fontWeight: 600 }}>
+                          Category: {meeting.category}
+                        </span>
+                      </div>
+                      <h3 style={{ fontFamily: "Outfit, sans-serif", fontSize: "1.15rem", fontWeight: 800, color: "#1e293b", margin: 0 }}>
+                        {meeting.title}
+                      </h3>
+                    </div>
+
+                    <div style={{ textAlign: "right" }}>
+                      <div style={{ fontSize: "0.85rem", fontWeight: 800, color: "#ea580c" }}>{meeting.time}</div>
+                      <div style={{ fontSize: "0.72rem", color: "#64748b" }}>Venue: {meeting.venue}</div>
+                    </div>
                   </div>
-                  <span>Facilities & Bookings</span>
+
+                  <p style={{ fontSize: "0.8rem", color: "#334155", lineHeight: 1.5, margin: "0 0 0.6rem 0" }}>
+                    <strong>Agenda:</strong> {meeting.agenda}
+                  </p>
+
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid #f1f5f9", paddingTop: "0.5rem", fontSize: "0.72rem", color: "#64748b" }}>
+                    <span>Attendees: <strong>{meeting.attendees}</strong></span>
+                    <span style={{ color: "#16a34a", fontWeight: 700 }}>● Room Verified</span>
+                  </div>
                 </div>
-                <span className="dash-view-all">Schedule</span>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ========================================================
+          VIEW 4: DEDICATED FULL SCREEN — MARKS EVALUATION & GRADEBOOK
+          ======================================================== */}
+      {currentScreen === "evaluation" && (
+        <section className="student-fullscreen-page">
+          <div className="kiosk-orb kiosk-orb-one" />
+          <div className="kiosk-orb kiosk-orb-two" />
+
+          <div className="student-screen-subnav">
+            <button className="student-back-to-dash-btn" onClick={() => setCurrentScreen("dashboard")}>
+              <ArrowLeft size={16} /> Back to Dashboard
+            </button>
+
+            <div className="student-screen-title-area">
+              <div className="student-screen-icon-bubble" style={{ background: "#f5f3ff", color: "#7c3aed" }}>
+                <BarChart3 size={20} />
               </div>
-              <div className="dash-telemetry-list">
-                <div className="dash-telemetry-item">
-                  <div className="dash-telemetry-left">
-                    <div className="dash-telemetry-icon" style={{ background: "#e0f2fe", color: "#0284c7" }}>
-                      <FlaskConical size={12} />
-                    </div>
-                    <div>
-                      <div className="dash-telemetry-title">Science Lab 2</div>
-                      <div className="dash-telemetry-sub">Booked 10:45 AM (Class 8A)</div>
-                    </div>
-                  </div>
-                  <span className="dash-telemetry-status status-active">● Reserved</span>
+              <div>
+                <h2>Student Assessment Gradebook</h2>
+                <p>Class 10 A • Mathematics Marks & Evaluation Ledger</p>
+              </div>
+            </div>
+
+            <div className="student-screen-nav-tools">
+              <span
+                style={{
+                  background: "#f0fdf4",
+                  color: "#16a34a",
+                  border: "1px solid rgba(22, 163, 74, 0.3)",
+                  padding: "0.3rem 0.75rem",
+                  borderRadius: 9999,
+                  fontSize: "0.72rem",
+                  fontWeight: 800,
+                }}
+              >
+                ● 100% Papers Evaluated
+              </span>
+            </div>
+          </div>
+
+          <div className="student-screen-scroll-body">
+            {/* KPI STATS STRIP */}
+            <div className="student-kpi-strip">
+              <div className="student-kpi-card">
+                <div className="student-kpi-info">
+                  <span>Class Average</span>
+                  <h4>85.2%</h4>
+                </div>
+                <div className="student-kpi-icon" style={{ background: "#f5f3ff", color: "#7c3aed" }}>
+                  <BarChart3 size={20} />
+                </div>
+              </div>
+
+              <div className="student-kpi-card">
+                <div className="student-kpi-info">
+                  <span>Top Scorer</span>
+                  <h4>98 / 100</h4>
+                </div>
+                <div className="student-kpi-icon" style={{ background: "#f0fdf4", color: "#16a34a" }}>
+                  <Award size={20} />
+                </div>
+              </div>
+
+              <div className="student-kpi-card">
+                <div className="student-kpi-info">
+                  <span>A+ Distinction</span>
+                  <h4>64% Learners</h4>
+                </div>
+                <div className="student-kpi-icon" style={{ background: "#eff6ff", color: "#2563eb" }}>
+                  <CheckCircle2 size={20} />
+                </div>
+              </div>
+
+              <div className="student-kpi-card">
+                <div className="student-kpi-info">
+                  <span>Total Enrolled</span>
+                  <h4>42 Students</h4>
+                </div>
+                <div className="student-kpi-icon" style={{ background: "#fff7ed", color: "#ea580c" }}>
+                  <Users size={20} />
+                </div>
+              </div>
+            </div>
+
+            {/* MARKSHEET TABLE CARD */}
+            <div className="student-screen-card">
+              <div className="student-screen-card-header">
+                <h4>
+                  <FileCheck size={18} style={{ color: "#7c3aed" }} />
+                  Class 10 A — Mathematics Periodic Assessment Marksheet
+                </h4>
+                <span style={{ fontSize: "0.72rem", color: "#64748b" }}>Academic Session 2026-27</span>
+              </div>
+
+              <table className="student-screen-table">
+                <thead>
+                  <tr>
+                    <th>Roll No</th>
+                    <th>Student Name</th>
+                    <th>Class</th>
+                    <th>Max Marks</th>
+                    <th>Marks Obtained</th>
+                    <th>Grade</th>
+                    <th>Teacher Remarks</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {EVALUATION_ROSTER.map((student) => (
+                    <tr key={student.roll}>
+                      <td style={{ fontWeight: 800, color: "#64748b" }}>#{student.roll}</td>
+                      <td style={{ fontWeight: 700, color: "#1e293b" }}>{student.name}</td>
+                      <td>{student.class}</td>
+                      <td>{student.max}</td>
+                      <td>
+                        <b style={{ color: student.obtained >= 90 ? "#16a34a" : "#0284c7", fontSize: "0.9rem" }}>
+                          {student.obtained}
+                        </b>
+                      </td>
+                      <td>
+                        <span
+                          style={{
+                            padding: "2px 8px",
+                            borderRadius: 4,
+                            fontSize: "0.72rem",
+                            fontWeight: 800,
+                            background: student.obtained >= 90 ? "#dcfce7" : "#e0f2fe",
+                            color: student.obtained >= 90 ? "#15803d" : "#0369a1",
+                          }}
+                        >
+                          {student.grade}
+                        </span>
+                      </td>
+                      <td style={{ color: "#475569" }}>{student.remarks}</td>
+                      <td>
+                        <span style={{ color: "#16a34a", fontWeight: 700, fontSize: "0.72rem" }}>
+                          ● {student.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ========================================================
+          VIEW 5: DEDICATED FULL SCREEN — FACULTY PROFILE
+          ======================================================== */}
+      {currentScreen === "profile" && (
+        <section className="student-fullscreen-page">
+          <div className="kiosk-orb kiosk-orb-one" />
+          <div className="kiosk-orb kiosk-orb-two" />
+
+          <div className="student-screen-subnav">
+            <button className="student-back-to-dash-btn" onClick={() => setCurrentScreen("dashboard")}>
+              <ArrowLeft size={16} /> Back to Dashboard
+            </button>
+
+            <div className="student-screen-title-area">
+              <div className="student-screen-icon-bubble" style={{ background: "#f0fdfa", color: "#0d9488" }}>
+                <User size={20} />
+              </div>
+              <div>
+                <h2>Faculty Service Record & Profile</h2>
+                <p>Institutional Credential Registry • {staffName}</p>
+              </div>
+            </div>
+
+            <div className="student-screen-nav-tools">
+              <button className="student-back-to-dash-btn" onClick={handleLogout} style={{ color: "#dc2626", borderColor: "#fca5a5" }}>
+                Sign Out
+              </button>
+            </div>
+          </div>
+
+          <div className="student-screen-scroll-body">
+            <div
+              className="student-screen-card"
+              style={{ padding: "1.5rem", display: "flex", gap: "2rem", alignItems: "center" }}
+            >
+              <img
+                src={session?.img || "/staff_avatar.png"}
+                alt={staffName}
+                style={{ width: 100, height: 100, borderRadius: "50%", border: "4px solid #0d9488", objectFit: "cover" }}
+              />
+              <div style={{ flex: 1 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.25rem" }}>
+                  <h2 style={{ fontFamily: "Outfit, sans-serif", fontSize: "1.45rem", fontWeight: 800, color: "#1e293b", margin: 0 }}>
+                    {staffName}
+                  </h2>
+                  <span style={{ background: "#f0fdfa", color: "#0d9488", padding: "2px 8px", borderRadius: 6, fontSize: "0.72rem", fontWeight: 800 }}>
+                    Senior Faculty Member
+                  </span>
+                </div>
+                <div style={{ fontSize: "0.85rem", color: "#64748b", marginBottom: "0.75rem" }}>
+                  {staffDept} • Green Valley Public School
                 </div>
 
-                <div className="dash-telemetry-item">
-                  <div className="dash-telemetry-left">
-                    <div className="dash-telemetry-icon" style={{ background: "#ffedd5", color: "#ea580c" }}>
-                      <Users size={12} />
-                    </div>
-                    <div>
-                      <div className="dash-telemetry-title">Conference Hall A</div>
-                      <div className="dash-telemetry-sub">Staff Sync at 11:30 AM</div>
-                    </div>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "0.75rem" }}>
+                  <div style={{ background: "#f8fafc", padding: "0.5rem 0.75rem", borderRadius: 8, border: "1px solid #e2e8f0" }}>
+                    <span style={{ fontSize: "0.68rem", color: "#64748b" }}>Employee ID</span>
+                    <div style={{ fontSize: "0.82rem", fontWeight: 800, color: "#1e293b" }}>{empId}</div>
                   </div>
-                  <span className="dash-telemetry-status status-ready">● 11:30 AM</span>
+                  <div style={{ background: "#f8fafc", padding: "0.5rem 0.75rem", borderRadius: 8, border: "1px solid #e2e8f0" }}>
+                    <span style={{ fontSize: "0.68rem", color: "#64748b" }}>Qualification</span>
+                    <div style={{ fontSize: "0.82rem", fontWeight: 800, color: "#1e293b" }}>M.Sc., B.Ed. (Mathematics)</div>
+                  </div>
+                  <div style={{ background: "#f8fafc", padding: "0.5rem 0.75rem", borderRadius: 8, border: "1px solid #e2e8f0" }}>
+                    <span style={{ fontSize: "0.68rem", color: "#64748b" }}>Campus Base</span>
+                    <div style={{ fontSize: "0.82rem", fontWeight: 800, color: "#1e293b" }}>Room 204 • Faculty Block</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="student-screen-card" style={{ padding: "1.25rem" }}>
+              <h3 style={{ fontFamily: "Outfit, sans-serif", fontSize: "1.05rem", fontWeight: 800, color: "#1e293b", margin: "0 0 0.85rem 0" }}>
+                Teaching Assignments & Responsibilities
+              </h3>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "1rem" }}>
+                <div style={{ background: "#fffcf9", padding: "0.85rem", borderRadius: 10, border: "1px solid rgba(254, 215, 170, 0.6)" }}>
+                  <h4 style={{ margin: "0 0 0.35rem 0", fontSize: "0.85rem", color: "#ea580c" }}>Active Classes Handled</h4>
+                  <p style={{ margin: 0, fontSize: "0.78rem", color: "#475569", lineHeight: 1.5 }}>
+                    Class 6 A, Class 7 B, Class 8 A, Class 9 B, Class 10 A (Secondary & Senior Secondary Mathematics).
+                  </p>
                 </div>
 
-                <div className="dash-telemetry-item">
-                  <div className="dash-telemetry-left">
-                    <div className="dash-telemetry-icon" style={{ background: "#dcfce7", color: "#15803d" }}>
-                      <Cpu size={12} />
-                    </div>
-                    <div>
-                      <div className="dash-telemetry-title">Smart Board Room 204</div>
-                      <div className="dash-telemetry-sub">Hardware & Projector OK</div>
-                    </div>
-                  </div>
-                  <span className="dash-telemetry-status status-active">● Active</span>
+                <div style={{ background: "#f0fdfa", padding: "0.85rem", borderRadius: 10, border: "1px solid rgba(13, 148, 136, 0.3)" }}>
+                  <h4 style={{ margin: "0 0 0.35rem 0", fontSize: "0.85rem", color: "#0d9488" }}>Special Portfolios</h4>
+                  <p style={{ margin: 0, fontSize: "0.78rem", color: "#475569", lineHeight: 1.5 }}>
+                    Lead Mentor for Inter-School Math Olympiad, Member of Curriculum Moderation Board, Assistant Housemaster (Aravali House).
+                  </p>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </main>
+        </section>
+      )}
 
-      {/* COMPACT FOOTER */}
-      <footer className="dash-footer">
-        <div>Green Valley Public School • Staff Portal • Learn • Grow • Excel</div>
-        <div className="dash-footer-badges">
-          <span className="dash-footer-badge-item">
-            <ShieldCheck size={13} style={{ color: "#10b981" }} /> Safe
-          </span>
-          <span className="dash-footer-badge-item">
-            <Lock size={13} style={{ color: "#0284c7" }} /> Secure
-          </span>
-          <span className="dash-footer-badge-item">
-            <Cpu size={13} style={{ color: "#9333ea" }} /> Smart Faculty
-          </span>
+      {/* ========================================================
+          VIDEO TOUR MODAL PLAYER
+          ======================================================== */}
+      {isVideoModalOpen && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(15, 23, 42, 0.85)",
+            backdropFilter: "blur(8px)",
+            zIndex: 9999,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "1.5rem",
+          }}
+          onClick={() => setIsVideoModalOpen(false)}
+        >
+          <div
+            style={{
+              background: "#0f172a",
+              borderRadius: "16px",
+              maxWidth: "800px",
+              width: "100%",
+              overflow: "hidden",
+              boxShadow: "0 25px 50px -12px rgba(0,0,0,0.5)",
+              border: "1px solid rgba(254, 215, 170, 0.3)",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                padding: "0.75rem 1.25rem",
+                borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <Play size={16} fill="#0d9488" color="#0d9488" />
+                <span style={{ color: "#ffffff", fontWeight: 700, fontSize: "0.85rem" }}>
+                  Green Valley Campus & Facilities Showcase Tour
+                </span>
+              </div>
+              <button
+                onClick={() => setIsVideoModalOpen(false)}
+                style={{
+                  border: "none",
+                  background: "rgba(255, 255, 255, 0.1)",
+                  borderRadius: "50%",
+                  width: 30,
+                  height: 30,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  cursor: "pointer",
+                  color: "#ffffff",
+                }}
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <div style={{ position: "relative", paddingBottom: "56.25%", height: 0, background: "#000000" }}>
+              <iframe
+                src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1"
+                title="Green Valley Campus Facilities Tour"
+                style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", border: "none" }}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
+
+            <div
+              style={{
+                padding: "0.75rem 1.25rem",
+                background: "#0f172a",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                color: "#94a3b8",
+                fontSize: "0.75rem",
+              }}
+            >
+              <span>Physics & Chemistry Labs • STEM Studio • Central Library • Seminar Auditoriums</span>
+              <button
+                onClick={() => setIsVideoModalOpen(false)}
+                style={{
+                  padding: "0.35rem 0.85rem",
+                  background: "#0d9488",
+                  color: "#ffffff",
+                  border: "none",
+                  borderRadius: 6,
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  fontSize: "0.75rem",
+                }}
+              >
+                Close Player
+              </button>
+            </div>
+          </div>
         </div>
-      </footer>
+      )}
+
+      {/* ========================================================
+          OFFICIAL NOTICE DETAILS MODAL
+          ======================================================== */}
+      {selectedNotice && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(15, 23, 42, 0.65)",
+            backdropFilter: "blur(5px)",
+            zIndex: 9999,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "1rem",
+          }}
+          onClick={() => setSelectedNotice(null)}
+        >
+          <div
+            style={{
+              background: "#ffffff",
+              borderRadius: "16px",
+              maxWidth: "540px",
+              width: "100%",
+              overflow: "hidden",
+              boxShadow: "0 25px 50px -12px rgba(0,0,0,0.25)",
+              border: "1px solid rgba(254, 215, 170, 0.7)",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                padding: "0.9rem 1.25rem",
+                borderBottom: "1px solid #f1f5f9",
+                background: "linear-gradient(180deg, #ffffff 0%, #f0fdfa 100%)",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <span
+                  style={{
+                    padding: "2px 8px",
+                    borderRadius: 6,
+                    fontSize: "0.68rem",
+                    fontWeight: 800,
+                    background: selectedNotice.tagBg,
+                    color: selectedNotice.tagColor,
+                  }}
+                >
+                  {selectedNotice.tag}
+                </span>
+                <span style={{ fontSize: "0.72rem", color: "#64748b" }}>{selectedNotice.time}</span>
+              </div>
+              <button
+                onClick={() => setSelectedNotice(null)}
+                style={{
+                  border: "none",
+                  background: "#e2e8f0",
+                  borderRadius: "50%",
+                  width: 28,
+                  height: 28,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  cursor: "pointer",
+                  color: "#475569",
+                }}
+              >
+                <X size={15} />
+              </button>
+            </div>
+
+            <div style={{ padding: "1.25rem" }}>
+              <h3
+                style={{
+                  margin: "0 0 0.4rem 0",
+                  fontSize: "1.05rem",
+                  fontWeight: 800,
+                  color: "#1e293b",
+                  fontFamily: "Outfit, sans-serif",
+                }}
+              >
+                {selectedNotice.title}
+              </h3>
+              <div style={{ fontSize: "0.72rem", color: "#0d9488", fontWeight: 700, marginBottom: "0.85rem" }}>
+                Issued by: {selectedNotice.authority} • Date: {selectedNotice.date}
+              </div>
+              <div
+                style={{
+                  background: "#fffcf9",
+                  padding: "0.9rem",
+                  borderRadius: 10,
+                  border: "1px solid rgba(254, 215, 170, 0.5)",
+                  fontSize: "0.8rem",
+                  color: "#334155",
+                  lineHeight: 1.6,
+                }}
+              >
+                {selectedNotice.details}
+              </div>
+            </div>
+
+            <div
+              style={{
+                padding: "0.75rem 1.25rem",
+                borderTop: "1px solid #f1f5f9",
+                background: "#f8fafc",
+                display: "flex",
+                justifyContent: "flex-end",
+              }}
+            >
+              <button
+                onClick={() => setSelectedNotice(null)}
+                style={{
+                  padding: "0.38rem 1.15rem",
+                  borderRadius: 8,
+                  border: "1px solid rgba(13, 148, 136, 0.3)",
+                  background: "#0d9488",
+                  fontSize: "0.78rem",
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  color: "#ffffff",
+                }}
+              >
+                Close Circular
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
