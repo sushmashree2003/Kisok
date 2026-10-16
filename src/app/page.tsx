@@ -736,10 +736,10 @@ export default function Home() {
                   </p>
 
                   <div className="hp-login-roles-preview">
-                    <span className="hp-role-pill">🎓 Student & Parent</span>
-                    <span className="hp-role-pill">👨‍🏫 Faculty & Staff</span>
-                    <span className="hp-role-pill">🤝 GVian Alumni</span>
-                    <span className="hp-role-pill">🏛️ Guest & Visitor</span>
+                    <span className="hp-role-pill">🎓 Student / Parent</span>
+                    <span className="hp-role-pill">👨‍🏫 Staff</span>
+                    <span className="hp-role-pill">🏛️ Visitor</span>
+                    <span className="hp-role-pill">🤝 Alumni / Ex-Staff</span>
                   </div>
 
                   {/* Live Portal Features List */}

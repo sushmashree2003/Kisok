@@ -33,7 +33,7 @@ import { SessionInfo } from "@/types/auth";
 import { saveUserSession, getRememberedUser } from "@/lib/session";
 import { CLIENT_API_ENDPOINTS } from "@/config/api";
 
-export type RoleType = "student" | "staff" | "admin" | "alumni" | "guest";
+export type RoleType = "student" | "staff" | "visitor" | "alumni";
 
 export interface LoginScreenProps {
   role: RoleType;
@@ -185,96 +185,16 @@ export default function LoginScreen({
         },
       ],
     },
-    admin: {
-      title: "School Administrator Login",
-      subtitle: "Central management suite for campus administrators and directors.",
-      defaultUser: "admin.director@gvps.edu",
-      userPlaceholder: "Admin Key / Management ID",
-      roleBadge: "Campus Administration",
-      accentColor: "#7c3aed",
-      accentGradient: "linear-gradient(135deg, #7c3aed 0%, #6d28d9 50%, #0284c7 100%)",
-      haloColor: "rgba(124, 58, 237, 0.22)",
-      heroTag: "CAMPUS MANAGEMENT & DIRECTORS SUITE",
-      heroHeadline1: "Institutional Leadership",
-      heroHeadlineHighlight: "Smart Campus Governance & Telemetry",
-      heroSubtext:
-        "Oversee campus admissions, staff rosters, safety monitoring, transport GPS tracking, financial audits, and school institutional policies.",
-      sloganTitle: "INSTITUTIONAL GOVERNANCE",
-      sloganQuote: "“Leading with Honor, Building with Purpose, Governing with Integrity.”",
-      sloganMotto: "Visionary Leadership • Transparency • Student-First Campus",
-      features: [
-        {
-          icon: <ShieldCheck size={20} className="text-purple-600" />,
-          title: "Campus Governance",
-          desc: "Enrollment pipelines, compliance & security",
-        },
-        {
-          icon: <Activity size={20} className="text-sky-600" />,
-          title: "Operations Telemetry",
-          desc: "Live campus attendance, finances & fees",
-        },
-        {
-          icon: <Building2 size={20} className="text-emerald-600" />,
-          title: "Fleet & Transport",
-          desc: "GPS bus tracking, route alerts & safety",
-        },
-        {
-          icon: <Award size={20} className="text-amber-600" />,
-          title: "Access Controls",
-          desc: "System policies, audit logs & administrative roles",
-        },
-      ],
-    },
-    alumni: {
-      title: "GVian Alumni Portal Login",
-      subtitle: "Stay connected with fellow GVians, mentors, and global chapters.",
-      defaultUser: "rohan.sharma.2015",
-      userPlaceholder: "Alumni ID / Registered Email",
-      roleBadge: "GVian Alumni Network",
-      accentColor: "#ea580c",
-      accentGradient: "linear-gradient(135deg, #ea580c 0%, #c2410c 50%, #059669 100%)",
-      haloColor: "rgba(234, 88, 12, 0.22)",
-      heroTag: "GLOBAL GVIAN ALUMNI NETWORK",
-      heroHeadline1: "Once a GVian, Always a GVian",
-      heroHeadlineHighlight: "Reconnect, Mentor & Shape the Future",
-      heroSubtext:
-        "Connect with batchmates worldwide, mentor ambitious students, register for annual reunions, and celebrate alma mater achievements.",
-      sloganTitle: "GVIAN ALUMNI LEGACY & CREED",
-      sloganQuote: "“Once a GVian, Always a GVian — Carrying forward a legacy of honor, excellence, and shared memories.”",
-      sloganMotto: "Honor the Past • Shape the Present • Inspire the Future",
-      features: [
-        {
-          icon: <Users size={20} className="text-orange-600" />,
-          title: "Global Chapters",
-          desc: "Connect across 40+ countries & city clubs worldwide",
-        },
-        {
-          icon: <Star size={20} className="text-amber-600" />,
-          title: "Mentorship Network",
-          desc: "Guide current GVians into top global universities & careers",
-        },
-        {
-          icon: <Calendar size={20} className="text-sky-600" />,
-          title: "Reunions & Meets",
-          desc: "Annual homecoming galas, chapter webinars & sports leagues",
-        },
-        {
-          icon: <Award size={20} className="text-emerald-600" />,
-          title: "Hall of Fame & Endowment",
-          desc: "Alumni achievements, distinguished awards & scholarship funds",
-        },
-      ],
-    },
-    guest: {
-      title: "Guest & Visitor Portal",
+    visitor: {
+      title: "Campus Visitor Portal",
       subtitle: "Discover Green Valley excellence, campus tours, and admissions.",
-      defaultUser: "guest.visitor@gvps.edu",
+      defaultUser: "visitor@gvps.edu",
       userPlaceholder: "Visitor Pass ID / Mobile Number",
-      roleBadge: "Campus Guest & Visitor",
+      roleBadge: "Campus Visitor",
       accentColor: "#0d9488",
       accentGradient: "linear-gradient(135deg, #0d9488 0%, #0f766e 50%, #0284c7 100%)",
       haloColor: "rgba(13, 148, 136, 0.22)",
-      heroTag: "CAMPUS VISITOR & GUEST PORTAL",
+      heroTag: "CAMPUS VISITOR PORTAL",
       heroHeadline1: "Welcome to Our Campus",
       heroHeadlineHighlight: "Where Values Meet Global Vision",
       heroSubtext:
@@ -305,9 +225,49 @@ export default function LoginScreen({
         },
       ],
     },
+    alumni: {
+      title: "Alumni & Ex-Staff Portal Login",
+      subtitle: "Stay connected with fellow GVians, former colleagues, and mentors.",
+      defaultUser: "rohan.sharma.2015",
+      userPlaceholder: "Alumni ID / Registered Email",
+      roleBadge: "Alumni & Ex-Staff Network",
+      accentColor: "#ea580c",
+      accentGradient: "linear-gradient(135deg, #ea580c 0%, #c2410c 50%, #059669 100%)",
+      haloColor: "rgba(234, 88, 12, 0.22)",
+      heroTag: "GLOBAL GVIAN ALUMNI & EX-STAFF NETWORK",
+      heroHeadline1: "Once a GVian, Always a GVian",
+      heroHeadlineHighlight: "Reconnect, Mentor & Shape the Future",
+      heroSubtext:
+        "Connect with batchmates and former staff worldwide, mentor ambitious students, register for annual reunions, and celebrate alma mater achievements.",
+      sloganTitle: "GVIAN ALUMNI & EX-STAFF CREED",
+      sloganQuote: "“Once a GVian, Always a GVian — Carrying forward a legacy of honor, excellence, and shared memories.”",
+      sloganMotto: "Honor the Past • Shape the Present • Inspire the Future",
+      features: [
+        {
+          icon: <Users size={20} className="text-orange-600" />,
+          title: "Global Chapters",
+          desc: "Connect across 40+ countries & city clubs worldwide",
+        },
+        {
+          icon: <Star size={20} className="text-amber-600" />,
+          title: "Mentorship Network",
+          desc: "Guide current GVians into top global universities & careers",
+        },
+        {
+          icon: <Calendar size={20} className="text-sky-600" />,
+          title: "Reunions & Meets",
+          desc: "Annual homecoming galas, chapter webinars & sports leagues",
+        },
+        {
+          icon: <Award size={20} className="text-emerald-600" />,
+          title: "Hall of Fame & Endowment",
+          desc: "Alumni achievements, distinguished awards & scholarship funds",
+        },
+      ],
+    },
   };
 
-  const config = roleConfig[role] || roleConfig.alumni;
+  const config = roleConfig[role] || roleConfig.student;
   const [username, setUsername] = useState(config.defaultUser);
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -323,6 +283,12 @@ export default function LoginScreen({
   );
   const [showServerConfig, setShowServerConfig] = useState(false);
 
+  // Guest / Visitor specific fields
+  const [visitorName, setVisitorName] = useState("");
+  const [visitorPhone, setVisitorPhone] = useState("");
+  const [visitorNameError, setVisitorNameError] = useState("");
+  const [visitorPhoneError, setVisitorPhoneError] = useState("");
+
   // Sync default user when role changes externally or check remembered user
   useEffect(() => {
     const remembered = getRememberedUser();
@@ -333,6 +299,10 @@ export default function LoginScreen({
     }
     setPassword("");
     setErrorMessage(null);
+    setVisitorName("");
+    setVisitorPhone("");
+    setVisitorNameError("");
+    setVisitorPhoneError("");
   }, [role]);
 
   const handleSubmit = async (e?: React.FormEvent, forceDemo: boolean = false) => {
@@ -390,6 +360,43 @@ export default function LoginScreen({
         "Network connection failed. Unable to reach the school login server."
       );
     }
+  };
+
+  // Guest / visitor login handler — no backend call, just save to localStorage
+  const handleGuestSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    let valid = true;
+    setVisitorNameError("");
+    setVisitorPhoneError("");
+
+    const trimName = visitorName.trim();
+    const trimPhone = visitorPhone.trim();
+
+    if (!trimName || trimName.length < 2) {
+      setVisitorNameError("Please enter your full name (at least 2 characters).");
+      valid = false;
+    }
+    const phoneRegex = /^[6-9]\d{9}$/;
+    if (!trimPhone || !phoneRegex.test(trimPhone)) {
+      setVisitorPhoneError("Enter a valid 10-digit Indian mobile number (starts with 6-9).");
+      valid = false;
+    }
+    if (!valid) return;
+
+    setIsSubmitting(true);
+    const visitorSession = {
+      visitorName: trimName,
+      visitorPhone: trimPhone,
+      visitTime: new Date().toISOString(),
+    };
+    try {
+      localStorage.setItem("gvps_visitor_session", JSON.stringify(visitorSession));
+    } catch {}
+    setAuthSuccess(true);
+    setTimeout(() => {
+      setIsSubmitting(false);
+      onLoginSuccess(undefined);
+    }, 400);
   };
 
   const formatDate = (date: Date) => {
@@ -992,12 +999,12 @@ export default function LoginScreen({
                 }}
               >
                 <BookOpen size={16} />
-                <span>Faculty & Staff</span>
+                <span>Staff</span>
               </button>
 
-              {/* Guest Login Chip (Replaces Management) */}
+              {/* Visitor Login Chip */}
               <button
-                className={`login-role-chip ${role === "guest" ? "active" : ""}`}
+                className={`login-role-chip ${role === "visitor" ? "active" : ""}`}
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -1007,18 +1014,18 @@ export default function LoginScreen({
                   borderRadius: "9999px",
                   fontSize: "0.88rem",
                   fontWeight: 700,
-                  border: role === "guest" ? "1.5px solid #0c3558" : "1.5px solid rgba(12, 53, 88, 0.18)",
-                  background: role === "guest" ? "#0c3558" : "rgba(255, 255, 255, 0.95)",
-                  color: role === "guest" ? "#ffffff" : "#0c3558",
+                  border: role === "visitor" ? "1.5px solid #0c3558" : "1.5px solid rgba(12, 53, 88, 0.18)",
+                  background: role === "visitor" ? "#0c3558" : "rgba(255, 255, 255, 0.95)",
+                  color: role === "visitor" ? "#ffffff" : "#0c3558",
                   cursor: "pointer",
                 }}
                 onClick={() => {
-                  onSwitchRole("guest");
-                  setUsername(roleConfig.guest.defaultUser);
+                  onSwitchRole("visitor");
+                  setUsername(roleConfig.visitor.defaultUser);
                 }}
               >
                 <Users size={16} />
-                <span>Guest Login</span>
+                <span>Visitor</span>
               </button>
 
               <button
@@ -1043,7 +1050,7 @@ export default function LoginScreen({
                 }}
               >
                 <Star size={16} />
-                <span>Alumni</span>
+                <span>Alumni / Ex-Staff</span>
               </button>
             </div>
           </div>
@@ -1089,8 +1096,7 @@ export default function LoginScreen({
           >
             {role === "student" && <GraduationCap size={30} style={{ color: config.accentColor }} />}
             {role === "staff" && <BookOpen size={30} style={{ color: config.accentColor }} />}
-            {role === "admin" && <ShieldCheck size={30} style={{ color: config.accentColor }} />}
-            {role === "guest" && <Users size={30} style={{ color: config.accentColor }} />}
+            {role === "visitor" && <Users size={30} style={{ color: config.accentColor }} />}
             {role === "alumni" && <Star size={30} style={{ color: config.accentColor }} />}
           </div>
 
@@ -1337,6 +1343,210 @@ export default function LoginScreen({
             </div>
           )}
 
+          {/* Visitor Login Form — name + phone instead of credentials */}
+          {role === "visitor" ? (
+            <form
+              onSubmit={handleGuestSubmit}
+              className="login-form visitor-login-form"
+              noValidate
+              style={{
+                width: "100%",
+                display: "flex",
+                flexDirection: "column",
+                gap: "clamp(0.6rem, 1vh, 0.9rem)",
+              }}
+            >
+              {/* Demo disclaimer */}
+              <div
+                style={{
+                  width: "100%",
+                  background: "rgba(13, 148, 136, 0.08)",
+                  border: "1.5px solid rgba(13, 148, 136, 0.3)",
+                  borderRadius: "12px",
+                  padding: "10px 14px",
+                  display: "flex",
+                  alignItems: "flex-start",
+                  gap: "8px",
+                  boxSizing: "border-box",
+                }}
+              >
+                <ShieldCheck size={16} style={{ color: "#0d9488", flexShrink: 0, marginTop: "2px" }} />
+                <span style={{ fontSize: "0.78rem", fontWeight: 600, color: "#0f766e", lineHeight: 1.4 }}>
+                  <strong>Static Kiosk Demo</strong> — No real data is submitted. This is an interactive demonstration for Green Valley Public School.
+                </span>
+              </div>
+
+              {/* Visitor Name */}
+              <div style={{ display: "flex", flexDirection: "column", gap: "4px", width: "100%" }}>
+                <label
+                  htmlFor="visitor-name"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    fontSize: "0.82rem",
+                    fontWeight: 700,
+                    color: "#334155",
+                  }}
+                >
+                  <User size={15} style={{ color: config.accentColor }} />
+                  <span>Full Name <span style={{ color: "#ef4444" }}>*</span></span>
+                </label>
+                <input
+                  id="visitor-name"
+                  type="text"
+                  autoComplete="name"
+                  placeholder="e.g. Priya Sharma"
+                  value={visitorName}
+                  onChange={(e) => { setVisitorName(e.target.value); setVisitorNameError(""); }}
+                  style={{
+                    width: "100%",
+                    height: "44px",
+                    background: "#ffffff",
+                    border: `1.5px solid ${visitorNameError ? "#ef4444" : "#cbd5e1"}`,
+                    borderRadius: "10px",
+                    padding: "0 14px",
+                    fontSize: "0.95rem",
+                    fontWeight: 600,
+                    color: "#0f172a",
+                    outline: "none",
+                    boxSizing: "border-box",
+                  }}
+                />
+                {visitorNameError && (
+                  <span style={{ fontSize: "0.74rem", color: "#ef4444", fontWeight: 600 }}>{visitorNameError}</span>
+                )}
+              </div>
+
+              {/* Visitor Phone */}
+              <div style={{ display: "flex", flexDirection: "column", gap: "4px", width: "100%" }}>
+                <label
+                  htmlFor="visitor-phone"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    fontSize: "0.82rem",
+                    fontWeight: 700,
+                    color: "#334155",
+                  }}
+                >
+                  <ShieldCheck size={15} style={{ color: config.accentColor }} />
+                  <span>Mobile Number <span style={{ color: "#ef4444" }}>*</span></span>
+                </label>
+                <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+                  <span
+                    style={{
+                      position: "absolute",
+                      left: "12px",
+                      fontSize: "0.9rem",
+                      fontWeight: 700,
+                      color: "#475569",
+                    }}
+                  >
+                    +91
+                  </span>
+                  <input
+                    id="visitor-phone"
+                    type="tel"
+                    inputMode="numeric"
+                    maxLength={10}
+                    autoComplete="tel"
+                    placeholder="98XXXXXXXX"
+                    value={visitorPhone}
+                    onChange={(e) => { setVisitorPhone(e.target.value.replace(/\D/g, "")); setVisitorPhoneError(""); }}
+                    style={{
+                      width: "100%",
+                      height: "44px",
+                      background: "#ffffff",
+                      border: `1.5px solid ${visitorPhoneError ? "#ef4444" : "#cbd5e1"}`,
+                      borderRadius: "10px",
+                      padding: "0 14px 0 42px",
+                      fontSize: "0.95rem",
+                      fontWeight: 600,
+                      color: "#0f172a",
+                      outline: "none",
+                      boxSizing: "border-box",
+                    }}
+                  />
+                </div>
+                {visitorPhoneError && (
+                  <span style={{ fontSize: "0.74rem", color: "#ef4444", fontWeight: 600 }}>{visitorPhoneError}</span>
+                )}
+              </div>
+
+              {/* Enter button */}
+              <button
+                type="submit"
+                className="login-submit-btn"
+                disabled={isSubmitting}
+                style={{
+                  height: "48px",
+                  minHeight: "48px",
+                  width: "100%",
+                  borderRadius: "9999px",
+                  color: "#ffffff",
+                  border: "none",
+                  fontFamily: "'Outfit', sans-serif",
+                  fontSize: "1.05rem",
+                  fontWeight: 800,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "9px",
+                  cursor: "pointer",
+                  transition: "all 0.2s ease",
+                  backgroundImage: config.accentGradient,
+                  boxShadow: `0 8px 24px ${config.haloColor}`,
+                  marginTop: "4px",
+                }}
+              >
+                {isSubmitting ? (
+                  <>
+                    <div
+                      style={{
+                        width: "18px",
+                        height: "18px",
+                        border: "2.5px solid rgba(255,255,255,0.35)",
+                        borderTopColor: "#ffffff",
+                        borderRadius: "50%",
+                        animation: "spin 0.7s linear infinite",
+                      }}
+                    />
+                    <span>Entering Visitor Portal...</span>
+                  </>
+                ) : authSuccess ? (
+                  <>
+                    <Check size={20} />
+                    <span>Welcome! Opening Dashboard...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Enter Visitor Portal</span>
+                    <ArrowRight size={20} strokeWidth={2.6} />
+                  </>
+                )}
+              </button>
+
+              {/* Security note */}
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "6px",
+                  fontSize: "0.74rem",
+                  fontWeight: 700,
+                  color: "#059669",
+                  textAlign: "center",
+                  marginTop: "4px",
+                }}
+              >
+                <ShieldCheck size={15} style={{ color: "#059669" }} />
+                <span>Static Demo — No data is stored or transmitted externally</span>
+              </div>
+            </form>
+          ) : (
           <form
             onSubmit={handleSubmit}
             className="login-form"
@@ -1363,12 +1573,10 @@ export default function LoginScreen({
                 <User size={15} style={{ color: config.accentColor }} />
                 <span>
                   {role === "alumni"
-                    ? "Alumni ID / Registered Email"
-                    : role === "guest"
-                      ? "Visitor Pass ID / Mobile Number"
-                      : role === "staff"
-                        ? "Staff Email / Faculty ID"
-                        : "Admission Number / Student ID"}
+                    ? "Alumni / Ex-Staff ID / Email"
+                    : role === "staff"
+                      ? "Staff Email / Faculty ID"
+                      : "Admission Number / Student ID"}
                 </span>
               </label>
               <div className="login-input-group" style={{ position: "relative", width: "100%", display: "flex", alignItems: "center" }}>
@@ -1410,11 +1618,7 @@ export default function LoginScreen({
                 }}
               >
                 <Lock size={15} style={{ color: config.accentColor }} />
-                <span>
-                  {role === "guest"
-                    ? "Access PIN / Visitor OTP"
-                    : "Access Password / Security PIN"}
-                </span>
+                <span>Access Password / Security PIN</span>
               </label>
               <div className="login-input-group" style={{ position: "relative", width: "100%", display: "flex", alignItems: "center" }}>
                 <input
@@ -1554,14 +1758,10 @@ export default function LoginScreen({
                   <span>
                     Sign In to{" "}
                     {role === "student"
-                      ? "Student"
+                      ? "Student / Parent"
                       : role === "staff"
                         ? "Staff"
-                        : role === "guest"
-                          ? "Guest"
-                          : role === "admin"
-                            ? "Admin"
-                            : "Alumni"}{" "}
+                        : "Alumni / Ex-Staff"}{" "}
                     Portal
                   </span>
                   <ArrowRight size={20} strokeWidth={2.6} />
@@ -1588,6 +1788,7 @@ export default function LoginScreen({
               <span>256-Bit SSL Encrypted Session • Authorized GVPS Network</span>
             </div>
           </form>
+          )}
         </div>
       </main>
 

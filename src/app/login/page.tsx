@@ -7,17 +7,23 @@ import LoginScreen, { RoleType } from "@/components/LoginScreen";
 function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const roleParam = searchParams.get("role") as RoleType;
-  const validRoles: RoleType[] = ["student", "staff", "admin", "alumni", "guest"];
-  const initialRole: RoleType = validRoles.includes(roleParam) ? roleParam : "alumni";
+  const rawRole = (searchParams.get("role") || "").toLowerCase();
 
-  const [role, setRole] = React.useState<RoleType>(initialRole);
+  const normalizeRole = (r: string): RoleType => {
+    if (r === "visitor" || r === "guest") return "visitor";
+    if (r === "staff") return "staff";
+    if (r === "alumni" || r === "ex-staff" || r === "former-staff") return "alumni";
+    if (r === "student" || r === "parent") return "student";
+    return "student";
+  };
+
+  const [role, setRole] = React.useState<RoleType>(() => normalizeRole(rawRole));
 
   React.useEffect(() => {
-    if (roleParam && validRoles.includes(roleParam)) {
-      setRole(roleParam);
+    if (rawRole) {
+      setRole(normalizeRole(rawRole));
     }
-  }, [roleParam]);
+  }, [rawRole]);
 
   const handleRoleChange = (newRole: RoleType) => {
     setRole(newRole);
@@ -28,14 +34,12 @@ function LoginContent() {
     const roleForLogin = (session?.roleforlogin || "").toLowerCase();
     if (roleForLogin.includes("staff")) {
       router.push("/staff");
-    } else if (roleForLogin.includes("student")) {
+    } else if (roleForLogin.includes("student") || roleForLogin.includes("parent")) {
       router.push("/student");
-    } else if (roleForLogin.includes("admin")) {
-      router.push("/admin");
-    } else if (roleForLogin.includes("alumni")) {
+    } else if (roleForLogin.includes("alumni") || roleForLogin.includes("ex-staff")) {
       router.push("/alumni");
-    } else if (role === "guest") {
-      router.push("/student");
+    } else if (role === "visitor") {
+      router.push("/visitor");
     } else {
       router.push(`/${role}`);
     }

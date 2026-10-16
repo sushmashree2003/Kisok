@@ -57,7 +57,7 @@ const roles: RoleDefinition[] = [
   {
     role: "staff",
     eyebrow: "LEAD WITH PURPOSE",
-    title: "Faculty & Staff",
+    title: "Staff",
     description: "Manage classrooms, marks, lesson plans and the moments that shape every learner.",
     image: "/staff_avatar.png",
     accent: "#0d9488",
@@ -66,9 +66,9 @@ const roles: RoleDefinition[] = [
     actions: ["Mark attendance", "Enter grades", "Lesson plans"],
   },
   {
-    role: "guest",
+    role: "visitor",
     eyebrow: "WELCOME IN",
-    title: "Visitor / Admin",
+    title: "Visitor",
     description: "Arrive, explore and connect with the campus through a fast, secure visitor experience.",
     image: "/admin_avatar.png",
     accent: "#7c3aed",
@@ -79,7 +79,7 @@ const roles: RoleDefinition[] = [
   {
     role: "alumni",
     eyebrow: "STAY CONNECTED",
-    title: "GVian Alumni",
+    title: "Alumni / Ex-Staff",
     description: "Keep the spirit of Green Valley alive through chapters, mentoring and shared milestones.",
     image: "/alumni_avatar.png",
     accent: "#d97706",
@@ -173,7 +173,7 @@ export default function RoleSelectionScreen({
                 <div className="role-stage-header">
                   <div className="role-stage-badge">
                     {item.icon}
-                    <span>{item.role === "student" ? "Student" : item.role === "staff" ? "Faculty" : item.role === "guest" ? "Visitor" : "Alumni"}</span>
+                    <span>{item.role === "student" ? "Student / Parent" : item.role === "staff" ? "Staff" : item.role === "visitor" ? "Visitor" : "Alumni / Ex-Staff"}</span>
                   </div>
                   <div className="role-arrow" aria-hidden="true"><ArrowRight size={16} /></div>
                 </div>
