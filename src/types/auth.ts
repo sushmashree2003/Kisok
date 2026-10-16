@@ -81,6 +81,12 @@ export interface SessionInfo {
   roleforlogin: string;
   loginTime: string;
   rawResponse?: LoginResponseDTO;
+  name?: string;
+  studentname?: string;
+  asmcL_ClassName?: string;
+  asms_sectionname?: string;
+  role?: string;
+  photo?: string;
 }
 
 export interface LoginApiResponse {

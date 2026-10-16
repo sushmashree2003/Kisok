@@ -1,153 +1,228 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { getUserSession, clearUserSession } from "@/lib/session";
 import { SessionInfo } from "@/types/auth";
 import { CLIENT_API_ENDPOINTS } from "@/config/api";
 import {
-  Calendar,
-  Clock,
-  Home,
-  CheckCircle2,
-  CalendarDays,
-  FileText,
-  Award,
-  Sun,
-  ShieldCheck,
-  Lock,
-  Cpu,
-  Calculator,
-  FlaskConical,
-  BookOpen,
-  Globe,
-  ArrowRight,
-  ArrowLeft,
-  RefreshCw,
-  User,
   GraduationCap,
-  Sparkles,
-  TrendingUp,
-  Percent,
-  Layers,
-  AlertCircle,
-  Check,
-  Play,
-  Bell,
-  Quote,
+  FileText,
+  UserCheck,
+  CalendarDays,
+  AlertTriangle,
+  Clock,
+  BarChart2,
+  Home,
+  ArrowLeft,
+  ArrowRight,
+  RefreshCw,
+  Eye,
+  CheckCircle2,
+  MapPin,
   X,
-  Volume2,
-  ChevronRight,
-  Film,
-  Megaphone,
-  Activity,
+  BookOpen,
+  Receipt,
+  Inbox,
+  AlertCircle,
+  Calendar,
   Maximize,
   Minimize,
+  ShieldCheck,
+  Activity,
+  Sparkles,
+  ChevronRight,
+  Award,
+  TrendingUp,
+  User,
+  Users,
+  Play,
+  Film,
+  Building2,
   Send,
+  Quote,
+  Megaphone,
+  Check,
+  Percent,
 } from "lucide-react";
 
 interface DashboardProps {
   onBackToKiosk: () => void;
 }
 
-type ActiveScreen = "dashboard" | "attendance" | "timetable" | "exam" | "profile" | "aispace";
+export type StudentScreen =
+  | "dashboard"
+  | "student-details"
+  | "exam"
+  | "fees"
+  | "attendance"
+  | "events"
+  | "notice"
+  | "homework"
+  | "timetable"
+  | "exam-overall"
+  | "aispace";
 
-// Inspiring Slogans & School Creed
-const SLOGANS = [
+// Inspiring Slogans & Mottoes for Students
+const STUDENT_MOTTOES = [
   {
     quote: "Education is the most powerful weapon which you can use to change the world.",
     author: "Nelson Mandela",
-    badge: "Motto: Learn • Grow • Excel",
-  },
-  {
-    quote: "Excellence is not an act, but a daily habit. Keep learning every single day!",
-    author: "Green Valley Academic Creed",
-    badge: "Discipline • Integrity • Wisdom",
+    badge: "Global Wisdom",
   },
   {
     quote: "Dream, dream, dream. Dreams transform into thoughts, and thoughts result in action.",
     author: "Dr. A.P.J. Abdul Kalam",
-    badge: "Inspiration for Young Achievers",
+    badge: "Inspiration",
+  },
+  {
+    quote: "Excellence is not an act, but a daily habit. Keep learning every single day!",
+    author: "Green Valley Academic Creed",
+    badge: "Excellence",
   },
   {
     quote: "Work hard in silence, let your academic achievements make the noise.",
     author: "Student Wisdom Hub",
-    badge: "Perseverance Leads to Success",
+    badge: "Perseverance",
   },
   {
     quote: "The future belongs to those who prepare for it with curiosity today.",
     author: "Malcolm X",
-    badge: "Knowledge is Unlimited Power",
-  },
-];
-
-// Official School Notifications & Circulars
-const NOTICES = [
-  {
-    id: 1,
-    tag: "URGENT",
-    tagColor: "#dc2626",
-    tagBg: "#fee2e2",
-    title: "Class 5 Periodic Assessment Term-2 Schedule",
-    time: "1h ago",
-    date: "14 Oct 2026",
-    authority: "Office of the Examination Controller",
-    details: "The detailed schedule for Class 5 Periodic Assessment Term-2 has been officially published. All students are advised to check their respective subjects and syllabus coverage in the Exam Results tab.",
-  },
-  {
-    id: 2,
-    tag: "CIRCULAR",
-    tagColor: "#2563eb",
-    tagBg: "#dbeafe",
-    title: "Annual Science & STEM Robotics Exhibition 2026",
-    time: "Today",
-    date: "14 Oct 2026",
-    authority: "Science & Innovation Committee",
-    details: "Entries are officially open for the Annual Science & Robotics STEM Exhibition. Students from Class 5 onwards may register their group projects with their Science teacher before October 28.",
-  },
-  {
-    id: 3,
-    tag: "NOTICE",
-    tagColor: "#16a34a",
-    tagBg: "#dcfce7",
-    title: "Inter-House Sports Meet & Athletics Trial",
-    time: "Yesterday",
-    date: "13 Oct 2026",
-    authority: "Department of Physical Education",
-    details: "Selections for 100m, relay, and cricket squad for the Inter-House Sports Championship will take place this Thursday at the sports complex track at 03:30 PM.",
-  },
-  {
-    id: 4,
-    tag: "INFO",
-    tagColor: "#d97706",
-    tagBg: "#fef3c7",
-    title: "Winter Uniform & Campus Timings Circular",
-    time: "2d ago",
-    date: "12 Oct 2026",
-    authority: "Principal's Desk",
-    details: "Winter school timings will be effective from November 1st. Students may purchase the regulation winter blazers and sweaters from the school uniform counter during kiosk hours.",
+    badge: "Curiosity",
   },
 ];
 
 export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
   const [session, setSession] = useState<SessionInfo | null>(null);
-  const [currentScreen, setCurrentScreen] = useState<ActiveScreen>("dashboard");
+  const [currentScreen, setCurrentScreen] = useState<StudentScreen>("dashboard");
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
-
-  // Data states for the 3 working functionalities
-  const [attendanceLoading, setAttendanceLoading] = useState(false);
-  const [attendanceData, setAttendanceData] = useState<any[]>([]);
-
-  const [timetableLoading, setTimetableLoading] = useState(false);
-  const [timetableData, setTimetableData] = useState<{ days: any[]; periods: any[] }>({ days: [], periods: [] });
-  const [selectedTimetableDay, setSelectedTimetableDay] = useState<string>("ALL");
-
-  const [examLoading, setExamLoading] = useState(false);
-  const [examData, setExamData] = useState<{ exams: any[]; reports: any[] }>({ exams: [], reports: [] });
-
-  // Media, Notices & Slogans state
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [sloganIndex, setSloganIndex] = useState(0);
-  const [selectedNotice, setSelectedNotice] = useState<any | null>(null);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+
+  // Purely dynamic state - NO static mock data
+  const [studentDetails, setStudentDetails] = useState<{
+    name: string;
+    admNo: string;
+    regNo: string;
+    rollNo: string;
+    className: string;
+    sectionName: string;
+    academicYear: string;
+    dob: string;
+    gender: string;
+    bloodGroup: string;
+    email: string;
+    mobile: string;
+    fatherName: string;
+    motherName: string;
+    address: string;
+    photo: string;
+  }>({
+    name: "",
+    admNo: "",
+    regNo: "",
+    rollNo: "",
+    className: "",
+    sectionName: "",
+    academicYear: "",
+    dob: "",
+    gender: "",
+    bloodGroup: "",
+    email: "",
+    mobile: "",
+    fatherName: "",
+    motherName: "",
+    address: "",
+    photo: "",
+  });
+
+  const [attendanceData, setAttendanceData] = useState<
+    { month: string; classHeld: number; totalPresent: number; totalAbsent: number; percentage: number }[]
+  >([]);
+
+  const [feeData, setFeeData] = useState<
+    {
+      year: string;
+      receivable: number;
+      collection: number;
+      concession: number;
+      adjusted: number;
+      balance: number;
+      status: string;
+    }[]
+  >([]);
+
+  const [eventsData, setEventsData] = useState<
+    { id: number; title: string; desc: string; startDate: string; endDate: string; venue?: string; month?: number }[]
+  >([]);
+  const [selectedEventMonth, setSelectedEventMonth] = useState<number>(0);
+
+  const [noticesData, setNoticesData] = useState<
+    { id: number; title: string; startDate: string; endDate: string; details: string; authority?: string }[]
+  >([]);
+  const [selectedNoticeModal, setSelectedNoticeModal] = useState<any | null>(null);
+
+  const [homeworkData, setHomeworkData] = useState<
+    { id: number; subject: string; topic: string; assignedDate: string; dueDate: string; desc: string; status: string }[]
+  >([]);
+
+  const [timetableData, setTimetableData] = useState<{
+    gridweeks: { ttmD_DayName?: string; ttmD_DayCode?: string; order_Id?: number }[];
+    periodslst: { TTMP_PeriodName?: string; time?: string }[];
+    studentTT: { ttmD_DayName?: string; TTMP_PeriodName?: string; ISMS_SubjectName?: string; EmpName?: string; room?: string }[];
+    matrix: Array<{
+      slNo: number;
+      dayName: string;
+      dayCode: string;
+      periods: Record<string, { subject: string; teacher: string; room: string; periodNumber: number }>;
+    }>;
+  }>({
+    gridweeks: [],
+    periodslst: [],
+    studentTT: [],
+    matrix: [],
+  });
+  const [selectedTTDay, setSelectedTTDay] = useState<string>("");
+  const [ttViewMode, setTtViewMode] = useState<"matrix" | "cards">("matrix");
+
+  const [examMode, setExamMode] = useState<"EWAS" | "SWAE">("EWAS");
+  const [examsList, setExamsList] = useState<{ id: string; name: string }[]>([]);
+  const [subjectsList, setSubjectsList] = useState<{ id: string; name: string }[]>([]);
+  const [selectedExamId, setSelectedExamId] = useState<string>("");
+  const [selectedSubjectId, setSelectedSubjectId] = useState<string>("");
+  const [examMarksData, setExamMarksData] = useState<
+    { subject: string; exam: string; maxMarks: number; passMarks: number; obtainedMarks: number; grade: string }[]
+  >([]);
+
+  const [overallMode, setOverallMode] = useState<"SubOVERALL" | "ExmOVERALL">("SubOVERALL");
+  const [overallSubjects, setOverallSubjects] = useState<{ id: string; name: string }[]>([]);
+  const [overallExams, setOverallExams] = useState<{ id: string; name: string }[]>([]);
+  const [selectedOverallSubjectId, setSelectedOverallSubjectId] = useState<string>("");
+  const [selectedOverallExamId, setSelectedOverallExamId] = useState<string>("");
+  const [examOverallReports, setExamOverallReports] = useState<any[]>([]);
+
+  // AI Chat Space State
+  const [chatMessages, setChatMessages] = useState<
+    { id: string; sender: "bot" | "user"; text: string; time: string; suggestions?: string[] }[]
+  >([
+    {
+      id: "msg-welcome",
+      sender: "bot",
+      text: "👋 Hello! I am GreenBot, your Green Valley Student & Parent Kiosk Assistant. Ask me anything about your attendance, exam results, timetable, homework diary, or fees!",
+      time: "Just now",
+      suggestions: [
+        "What is my attendance rate?",
+        "Show my exam results",
+        "What is my timetable today?",
+        "Do I have pending fee balance?",
+      ],
+    },
+  ]);
+  const [chatInputText, setChatInputText] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
+  const chatMessagesEndRef = useRef<HTMLDivElement>(null);
 
   // Clock timer
   useEffect(() => {
@@ -155,325 +230,548 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
     return () => clearInterval(timer);
   }, []);
 
-  // Automatic slogan rotation every 8 seconds
+  // Fullscreen sync
   useEffect(() => {
-    const sloganTimer = setInterval(() => {
-      setSloganIndex((prev) => (prev + 1) % SLOGANS.length);
-    }, 8000);
-    return () => clearInterval(sloganTimer);
+    const handleFsChange = () => setIsFullscreen(!!document.fullscreenElement);
+    document.addEventListener("fullscreenchange", handleFsChange);
+    return () => document.removeEventListener("fullscreenchange", handleFsChange);
   }, []);
 
-  // Load session & pre-fetch core working data on mount
   useEffect(() => {
-    const activeSession = getUserSession();
-    if (activeSession) {
-      setSession(activeSession);
+    chatMessagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [chatMessages, isTyping]);
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch((err) => console.error("Fullscreen error:", err));
+    } else {
+      if (document.exitFullscreen) document.exitFullscreen();
     }
-  }, []);
-
-  useEffect(() => {
-    fetchAttendance();
-    fetchTimetable();
-    fetchExam();
-  }, [session]);
+  };
 
   const handleLogout = () => {
     clearUserSession();
     onBackToKiosk();
   };
 
-  // 1. Fetch Attendance (Live VAPS endpoint /api/student/attendance)
-  const fetchAttendance = async () => {
-    setAttendanceLoading(true);
+  // Safe array converter to guarantee .map() never fails on non-array backend responses
+  const toSafeArray = <T = any,>(val: any): T[] => {
+    if (Array.isArray(val)) return val;
+    if (val && Array.isArray(val.$values)) return val.$values;
+    if (val && typeof val === "object") {
+      const vals = Object.values(val).filter((x) => typeof x === "object" && x !== null);
+      if (vals.length > 0) return vals as T[];
+    }
+    return [];
+  };
+
+  // 1. Fetch Student Details
+  const fetchStudentDetails = useCallback(async (currSession?: SessionInfo | null) => {
+    const s = currSession || session;
+    if (!s) return;
     try {
+      setLoading(true);
+      setErrorMessage(null);
+      const res = await fetch(CLIENT_API_ENDPOINTS.DETAILS, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          asmay_id: s.ASMAY_Id || 0,
+          amst_id: s.AMST_ID || 0,
+          MI_Id: s.miid || 31,
+          roleid: s.RoleId || 3,
+        }),
+      });
+      if (res.ok) {
+        const result = await res.json();
+        const detailsList = toSafeArray(result.data?.studentDetails);
+        if (result.success && detailsList.length > 0) {
+          const detail = detailsList[0];
+          setStudentDetails({
+            name: detail.AMST_FirstName || s.name || s.studentname || s.username || "",
+            admNo: detail.AMST_AdmNo || (s.AMST_ID ? String(s.AMST_ID) : ""),
+            regNo: detail.AMST_RegistrationNo || "",
+            rollNo: String(detail.amaY_RollNo || detail.AMST_RollNo || ""),
+            className: detail.asmcL_ClassName || s.asmcL_ClassName || "",
+            sectionName: detail.asmC_SectionName || s.asms_sectionname || "",
+            academicYear: detail.ASMAY_Year || s.ASMAY_Year || "",
+            dob: detail.AMST_DOB ? new Date(detail.AMST_DOB).toLocaleDateString("en-GB") : "",
+            gender: detail.AMST_Sex || "",
+            bloodGroup: detail.AMST_BloodGroup || "",
+            email: detail.AMST_emailId || "",
+            mobile: String(detail.AMST_MobileNo || ""),
+            fatherName: detail.AMST_FatherName || "",
+            motherName: detail.AMST_MotherName || "",
+            address: [detail.AMST_PerStreet, detail.AMST_PerArea, detail.AMST_PerCity, detail.AMST_PerPincode]
+              .filter(Boolean)
+              .join(", "),
+            photo: detail.AMST_Photoname && detail.AMST_Photoname.length < 240 ? detail.AMST_Photoname : s.img || "",
+          });
+        }
+        const attList = toSafeArray(result.data?.attendanceData);
+        if (attList.length > 0) {
+          setAttendanceData(
+            attList.map((a: any) => ({
+              month: a.MONTH_NAME || "Month",
+              classHeld: Number(a.CLASS_HELD || 0),
+              totalPresent: Number(a.TOTAL_PRESENT || 0),
+              totalAbsent: Math.max(0, Number(a.CLASS_HELD || 0) - Number(a.TOTAL_PRESENT || 0)),
+              percentage:
+                Number(a.CLASS_HELD) > 0
+                  ? Math.round((Number(a.TOTAL_PRESENT) / Number(a.CLASS_HELD)) * 1000) / 10
+                  : 0,
+            }))
+          );
+        }
+      }
+    } catch (err: any) {
+      if (err.name === "AbortError") return;
+      console.error("Details API error:", err);
+      setErrorMessage(err.message || "Failed to load student details from server");
+    } finally {
+      setLoading(false);
+    }
+  }, [session]);
+
+  // 2. Fetch Fees
+  const fetchFees = useCallback(async (currSession?: SessionInfo | null) => {
+    const s = currSession || session;
+    if (!s) return;
+    try {
+      setLoading(true);
+      setErrorMessage(null);
+      const res = await fetch(CLIENT_API_ENDPOINTS.FEES, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          asmay_id: s.ASMAY_Id || 0,
+          amst_id: s.AMST_ID || 0,
+          MI_Id: s.miid || 31,
+          type: "overall",
+        }),
+      });
+      if (res.ok) {
+        const result = await res.json();
+        const list = toSafeArray(result.data?.feeAnalysisList);
+        setFeeData(
+          list.map((f: any) => ({
+            year: f.ASMAY_Year || "N/A",
+            receivable: Number(f.RECEIVABLE || 0),
+            collection: Number(f.COLLECTION || 0),
+            concession: Number(f.CONCESSION || 0),
+            adjusted: Number(f.ADJUSTED || 0),
+            balance: Number(f.BALANCE || 0),
+            status: Number(f.BALANCE || 0) <= 0 ? "Fully Paid" : "Balance Due",
+          }))
+        );
+      }
+    } catch (err: any) {
+      if (err.name === "AbortError") return;
+      console.error("Fees API error:", err);
+      setErrorMessage(err.message || "Failed to load fee records from server");
+    } finally {
+      setLoading(false);
+    }
+  }, [session]);
+
+  // 3. Fetch Attendance
+  const fetchAttendance = useCallback(async (currSession?: SessionInfo | null) => {
+    const s = currSession || session;
+    if (!s) return;
+    try {
+      setLoading(true);
+      setErrorMessage(null);
       const res = await fetch(CLIENT_API_ENDPOINTS.ATTENDANCE, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          asmay_id: session?.ASMAY_Id || 195,
-          amst_id: session?.AMST_ID || 1204,
-          empid: session?.Empid || 0,
-          MI_Id: session?.miid || 31,
-          roleid: session?.RoleId || 3,
+          asmay_id: s.ASMAY_Id || 0,
+          amst_id: s.AMST_ID || 0,
+          MI_Id: s.miid || 31,
+          roleid: s.RoleId || 3,
         }),
       });
-      const json = await res.json();
-      if (json.success && json.data?.attendanceList?.length > 0) {
-        setAttendanceData(json.data.attendanceList);
-      } else {
-        // Fallback realistic academic months if student record has empty ledger
-        setAttendanceData([
-          { MONTH_NAME: "June", CLASS_HELD: 24, TOTAL_PRESENT: 24 },
-          { MONTH_NAME: "July", CLASS_HELD: 26, TOTAL_PRESENT: 25 },
-          { MONTH_NAME: "August", CLASS_HELD: 23, TOTAL_PRESENT: 22 },
-          { MONTH_NAME: "September", CLASS_HELD: 22, TOTAL_PRESENT: 21 },
-          { MONTH_NAME: "October", CLASS_HELD: 20, TOTAL_PRESENT: 19 },
-        ]);
+      if (res.ok) {
+        const result = await res.json();
+        const list = toSafeArray(result.data?.attendanceList);
+        setAttendanceData(
+          list.map((a: any) => ({
+            month: a.MONTH_NAME || "Month",
+            classHeld: Number(a.CLASS_HELD || 0),
+            totalPresent: Number(a.TOTAL_PRESENT || 0),
+            totalAbsent: Math.max(0, Number(a.CLASS_HELD || 0) - Number(a.TOTAL_PRESENT || 0)),
+            percentage:
+              Number(a.CLASS_HELD) > 0
+                ? Math.round((Number(a.TOTAL_PRESENT) / Number(a.CLASS_HELD)) * 1000) / 10
+                : 0,
+          }))
+        );
       }
-    } catch (err) {
-      console.error("Attendance fetch error:", err);
-      setAttendanceData([
-        { MONTH_NAME: "June", CLASS_HELD: 24, TOTAL_PRESENT: 24 },
-        { MONTH_NAME: "July", CLASS_HELD: 26, TOTAL_PRESENT: 25 },
-        { MONTH_NAME: "August", CLASS_HELD: 23, TOTAL_PRESENT: 22 },
-        { MONTH_NAME: "September", CLASS_HELD: 22, TOTAL_PRESENT: 21 },
-        { MONTH_NAME: "October", CLASS_HELD: 20, TOTAL_PRESENT: 19 },
-      ]);
+    } catch (err: any) {
+      if (err.name === "AbortError") return;
+      console.error("Attendance API error:", err);
+      setErrorMessage(err.message || "Failed to load attendance from server");
     } finally {
-      setAttendanceLoading(false);
+      setLoading(false);
     }
-  };
+  }, [session]);
 
-  // 2. Fetch Timetable (Live VAPS endpoint /api/student/timetable)
-  const fetchTimetable = async () => {
-    setTimetableLoading(true);
+  // 4. Fetch Events (COE)
+  const fetchEvents = useCallback(async (monthNum: number = 0, currSession?: SessionInfo | null) => {
+    const s = currSession || session;
+    if (!s) return;
     try {
+      setLoading(true);
+      setErrorMessage(null);
+      const res = await fetch(CLIENT_API_ENDPOINTS.EVENTS, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          asmay_id: s.ASMAY_Id || 0,
+          amst_id: s.AMST_ID || 0,
+          MI_Id: s.miid || 31,
+          month: monthNum,
+        }),
+      });
+      if (res.ok) {
+        const result = await res.json();
+        const list = toSafeArray(result.data?.coereportlist);
+        setEventsData(
+          list.map((e: any, idx: number) => ({
+            id: idx + 1,
+            title: e.COEME_EventName || "Event",
+            desc: e.COEME_EventDesc || "",
+            startDate: e.COEE_EStartDate ? new Date(e.COEE_EStartDate).toLocaleDateString("en-GB") : "",
+            endDate: e.COEE_EEndDate ? new Date(e.COEE_EEndDate).toLocaleDateString("en-GB") : "",
+            venue: e.venue || "",
+            month: e.month,
+          }))
+        );
+      }
+    } catch (err: any) {
+      if (err.name === "AbortError") return;
+      console.error("Events API error:", err);
+      setErrorMessage(err.message || "Failed to load events from server");
+    } finally {
+      setLoading(false);
+    }
+  }, [session]);
+
+  // 5. Fetch Notices
+  const fetchNotices = useCallback(async (currSession?: SessionInfo | null) => {
+    const s = currSession || session;
+    if (!s) return;
+    try {
+      setLoading(true);
+      setErrorMessage(null);
+      const res = await fetch(CLIENT_API_ENDPOINTS.NOTICES, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          asmay_id: s.ASMAY_Id || 0,
+          amst_id: s.AMST_ID || 0,
+          MI_Id: s.miid || 31,
+          flag: "O",
+        }),
+      });
+      if (res.ok) {
+        const result = await res.json();
+        const list = toSafeArray(result.data?.noticelist);
+        setNoticesData(
+          list.map((n: any, idx: number) => ({
+            id: idx + 1,
+            title: n.INTB_Title || "Notice",
+            startDate: n.INTB_StartDate ? new Date(n.INTB_StartDate).toLocaleDateString("en-GB") : "",
+            endDate: n.INTB_EndDate ? new Date(n.INTB_EndDate).toLocaleDateString("en-GB") : "",
+            details: n.INTB_Description || n.INTB_Title || "",
+            authority: n.authority || "School Administration",
+          }))
+        );
+      }
+    } catch (err: any) {
+      if (err.name === "AbortError") return;
+      console.error("Notices API error:", err);
+      setErrorMessage(err.message || "Failed to load notices from server");
+    } finally {
+      setLoading(false);
+    }
+  }, [session]);
+
+  // 6. Fetch Homework
+  const fetchHomework = useCallback(async (currSession?: SessionInfo | null) => {
+    const s = currSession || session;
+    if (!s) return;
+    try {
+      setLoading(true);
+      setErrorMessage(null);
+      const res = await fetch(CLIENT_API_ENDPOINTS.HOMEWORK, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          asmay_id: s.ASMAY_Id || 0,
+          amst_id: s.AMST_ID || 0,
+          MI_Id: s.miid || 31,
+          roleid: s.RoleId || 3,
+        }),
+      });
+      if (res.ok) {
+        const result = await res.json();
+        const list = toSafeArray(result.data?.homeworklist);
+        setHomeworkData(
+          list.map((h: any, idx: number) => ({
+            id: idx + 1,
+            subject: h.ISMS_SubjectName || "General",
+            topic: h.IHW_Topic || "Assignment",
+            assignedDate: h.IHW_Date ? new Date(h.IHW_Date).toLocaleDateString("en-GB") : "",
+            dueDate: h.IHW_DueDate ? new Date(h.IHW_DueDate).toLocaleDateString("en-GB") : "",
+            desc: h.IHW_Assignment || h.IHW_Topic || "",
+            status: h.status || "Assigned",
+          }))
+        );
+      }
+    } catch (err: any) {
+      if (err.name === "AbortError") return;
+      console.error("Homework API error:", err);
+      setErrorMessage(err.message || "Failed to load homework from server");
+    } finally {
+      setLoading(false);
+    }
+  }, [session]);
+
+  // 7. Fetch Timetable
+  const fetchTimetable = useCallback(async (currSession?: SessionInfo | null) => {
+    const s = currSession || session;
+    if (!s) return;
+    try {
+      setLoading(true);
+      setErrorMessage(null);
       const res = await fetch(CLIENT_API_ENDPOINTS.TIMETABLE, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          asmay_id: session?.ASMAY_Id || 195,
-          amst_id: session?.AMST_ID || 1204,
-          MI_Id: session?.miid || 31,
+          asmay_id: s.ASMAY_Id || 0,
+          amst_id: s.AMST_ID || 0,
+          MI_Id: s.miid || 31,
         }),
       });
-      const json = await res.json();
-      if (json.success && json.data?.gridweeks?.length > 0) {
-        setTimetableData({ days: json.data.gridweeks, periods: json.data.studentTT || [] });
-      } else {
-        // Fallback structured timetable periods
-        setTimetableData({
-          days: [
-            { ttmD_DayName: "Monday" },
-            { ttmD_DayName: "Tuesday" },
-            { ttmD_DayName: "Wednesday" },
-            { ttmD_DayName: "Thursday" },
-            { ttmD_DayName: "Friday" },
-          ],
-          periods: [
-            { ttmD_DayName: "Monday", TTMP_PeriodName: "1", ISMS_SubjectName: "Mathematics", time: "08:30 - 09:15 AM", room: "Rm 102" },
-            { ttmD_DayName: "Monday", TTMP_PeriodName: "2", ISMS_SubjectName: "English Literature", time: "09:15 - 10:00 AM", room: "Rm 102" },
-            { ttmD_DayName: "Monday", TTMP_PeriodName: "3", ISMS_SubjectName: "General Science", time: "10:15 - 11:00 AM", room: "Sci Lab 1" },
-            { ttmD_DayName: "Monday", TTMP_PeriodName: "4", ISMS_SubjectName: "Social Studies", time: "11:00 - 11:45 AM", room: "Rm 102" },
-            { ttmD_DayName: "Monday", TTMP_PeriodName: "5", ISMS_SubjectName: "Computer & Robotics", time: "12:30 - 01:15 PM", room: "STEM Lab" },
-
-            { ttmD_DayName: "Tuesday", TTMP_PeriodName: "1", ISMS_SubjectName: "Science Practical Lab", time: "08:30 - 09:15 AM", room: "Sci Lab 1" },
-            { ttmD_DayName: "Tuesday", TTMP_PeriodName: "2", ISMS_SubjectName: "Mathematics", time: "09:15 - 10:00 AM", room: "Rm 102" },
-            { ttmD_DayName: "Tuesday", TTMP_PeriodName: "3", ISMS_SubjectName: "Hindi / 2nd Lang", time: "10:15 - 11:00 AM", room: "Rm 102" },
-            { ttmD_DayName: "Tuesday", TTMP_PeriodName: "4", ISMS_SubjectName: "Physical Education", time: "11:00 - 11:45 AM", room: "Sports Ground" },
-            { ttmD_DayName: "Tuesday", TTMP_PeriodName: "5", ISMS_SubjectName: "Art & Craft", time: "12:30 - 01:15 PM", room: "Art Studio" },
-
-            { ttmD_DayName: "Wednesday", TTMP_PeriodName: "1", ISMS_SubjectName: "English Grammar", time: "08:30 - 09:15 AM", room: "Rm 102" },
-            { ttmD_DayName: "Wednesday", TTMP_PeriodName: "2", ISMS_SubjectName: "Mathematics", time: "09:15 - 10:00 AM", room: "Rm 102" },
-            { ttmD_DayName: "Wednesday", TTMP_PeriodName: "3", ISMS_SubjectName: "Environmental St.", time: "10:15 - 11:00 AM", room: "Rm 102" },
-            { ttmD_DayName: "Wednesday", TTMP_PeriodName: "4", ISMS_SubjectName: "Robotics & AI", time: "11:00 - 11:45 AM", room: "STEM Lab" },
-            { ttmD_DayName: "Wednesday", TTMP_PeriodName: "5", ISMS_SubjectName: "Library & Reading", time: "12:30 - 01:15 PM", room: "Library" },
-
-            { ttmD_DayName: "Thursday", TTMP_PeriodName: "1", ISMS_SubjectName: "General Science", time: "08:30 - 09:15 AM", room: "Sci Lab 1" },
-            { ttmD_DayName: "Thursday", TTMP_PeriodName: "2", ISMS_SubjectName: "Social Science", time: "09:15 - 10:00 AM", room: "Rm 102" },
-            { ttmD_DayName: "Thursday", TTMP_PeriodName: "3", ISMS_SubjectName: "Mathematics", time: "10:15 - 11:00 AM", room: "Rm 102" },
-            { ttmD_DayName: "Thursday", TTMP_PeriodName: "4", ISMS_SubjectName: "Music & Performing Arts", time: "11:00 - 11:45 AM", room: "Auditorium" },
-            { ttmD_DayName: "Thursday", TTMP_PeriodName: "5", ISMS_SubjectName: "English Composition", time: "12:30 - 01:15 PM", room: "Rm 102" },
-
-            { ttmD_DayName: "Friday", TTMP_PeriodName: "1", ISMS_SubjectName: "Mathematics Quiz & Prep", time: "08:30 - 09:15 AM", room: "Rm 102" },
-            { ttmD_DayName: "Friday", TTMP_PeriodName: "2", ISMS_SubjectName: "Science Experiments", time: "09:15 - 10:00 AM", room: "Sci Lab 1" },
-            { ttmD_DayName: "Friday", TTMP_PeriodName: "3", ISMS_SubjectName: "Social Studies Project", time: "10:15 - 11:00 AM", room: "Rm 102" },
-            { ttmD_DayName: "Friday", TTMP_PeriodName: "4", ISMS_SubjectName: "Club & Life Skills", time: "11:00 - 11:45 AM", room: "Activity Hall" },
-            { ttmD_DayName: "Friday", TTMP_PeriodName: "5", ISMS_SubjectName: "Weekly Assembly & Review", time: "12:30 - 01:15 PM", room: "Auditorium" },
-          ],
-        });
+      if (res.ok) {
+        const result = await res.json();
+        const gridweeks = toSafeArray(result.data?.gridweeks);
+        const periodslst = toSafeArray(result.data?.periodslst);
+        const studentTT = toSafeArray(result.data?.studentTT);
+        const matrix = toSafeArray(result.data?.matrix);
+        setTimetableData({ gridweeks, periodslst, studentTT, matrix });
+        if (gridweeks.length > 0 && !selectedTTDay) {
+          setSelectedTTDay(gridweeks[0].ttmD_DayName || "");
+        }
       }
-    } catch (err) {
-      console.error("Timetable fetch error:", err);
+    } catch (err: any) {
+      if (err.name === "AbortError") return;
+      console.error("Timetable API error:", err);
+      setErrorMessage(err.message || "Failed to load timetable from server");
     } finally {
-      setTimetableLoading(false);
+      setLoading(false);
     }
-  };
+  }, [session, selectedTTDay]);
 
-  // 3. Fetch Exams & Marks (Live VAPS endpoint /api/student/exam)
-  const fetchExam = async () => {
-    setExamLoading(true);
-    try {
-      const res = await fetch(CLIENT_API_ENDPOINTS.EXAM, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          asmay_id: session?.ASMAY_Id || 195,
-          amst_id: session?.AMST_ID || 1204,
-          MI_Id: session?.miid || 31,
-        }),
-      });
-      const json = await res.json();
-      if (json.success && (json.data?.exams?.length > 0 || json.data?.examReportList?.length > 0)) {
-        setExamData({
-          exams: json.data.exams || [{ emE_ExamName: "Periodic Assessment Term 1", emE_Id: 101 }],
-          reports: json.data.examReportList || [],
+  // 8. Fetch Exam
+  const fetchExam = useCallback(
+    async (
+      mode = examMode,
+      examId = selectedExamId,
+      subjectId = selectedSubjectId,
+      currSession?: SessionInfo | null
+    ) => {
+      const s = currSession || session;
+      if (!s) return;
+      try {
+        setLoading(true);
+        setErrorMessage(null);
+        const res = await fetch(CLIENT_API_ENDPOINTS.EXAM, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            asmay_id: s.ASMAY_Id || 0,
+            amst_id: s.AMST_ID || 0,
+            MI_Id: s.miid || 31,
+            type: mode,
+            examId: examId,
+            subjectId: subjectId,
+          }),
         });
-      } else {
-        // Fallback realistic exam mark sheet
-        setExamData({
-          exams: [{ emE_ExamName: "Periodic Assessment Term 1", emE_Id: 101 }],
-          reports: [
-            { ISMS_SubjectName: "Mathematics", ESTMPS_MaxMarks: 100, ESTMPS_ObtainedMarks: 94, ESTMPS_ObtainedGrade: "A+", remarks: "Outstanding" },
-            { ISMS_SubjectName: "General Science", ESTMPS_MaxMarks: 100, ESTMPS_ObtainedMarks: 89, ESTMPS_ObtainedGrade: "A", remarks: "Very Good" },
-            { ISMS_SubjectName: "English Language & Lit.", ESTMPS_MaxMarks: 100, ESTMPS_ObtainedMarks: 95, ESTMPS_ObtainedGrade: "A+", remarks: "Excellent" },
-            { ISMS_SubjectName: "Social Studies", ESTMPS_MaxMarks: 100, ESTMPS_ObtainedMarks: 91, ESTMPS_ObtainedGrade: "A+", remarks: "Commendable" },
-            { ISMS_SubjectName: "Computer & Robotics", ESTMPS_MaxMarks: 100, ESTMPS_ObtainedMarks: 98, ESTMPS_ObtainedGrade: "A+", remarks: "Distinction" },
-          ],
-        });
+        if (res.ok) {
+          const result = await res.json();
+          const exams = toSafeArray(result.data?.exams).map((e: any) => ({
+            id: String(e.emE_Id),
+            name: e.emE_ExamName || e.EME_ExamName,
+          }));
+          const subjects = toSafeArray(result.data?.subjects).map((s: any) => ({
+            id: String(s.ismS_Id),
+            name: s.ismS_SubjectName || s.ISMS_SubjectName,
+          }));
+          const reports = toSafeArray(result.data?.examReportList).map((r: any) => ({
+            subject: r.SubjectName || r.ISMS_SubjectName || "Subject",
+            exam: r.exm_name || r.emE_ExamName || "Exam",
+            maxMarks: Number(r.ESTMPS_MaxMarks || 100),
+            passMarks: Number(r.ESTMPS_PassMarks || 35),
+            obtainedMarks: Number(r.ESTMPS_ObtainedMarks || 0),
+            grade: r.ESTMPS_Grade || "N/A",
+          }));
+          setExamsList(exams);
+          setSubjectsList(subjects);
+          setExamMarksData(reports);
+          if (exams.length > 0 && !selectedExamId) setSelectedExamId(exams[0].id);
+          if (subjects.length > 0 && !selectedSubjectId) setSelectedSubjectId(subjects[0].id);
+        }
+      } catch (err: any) {
+        if (err.name === "AbortError") return;
+        console.error("Exam API error:", err);
+        setErrorMessage(err.message || "Failed to load exam data from server");
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      console.error("Exam fetch error:", err);
-      setExamData({
-        exams: [{ emE_ExamName: "Periodic Assessment Term 1", emE_Id: 101 }],
-        reports: [
-          { ISMS_SubjectName: "Mathematics", ESTMPS_MaxMarks: 100, ESTMPS_ObtainedMarks: 94, ESTMPS_ObtainedGrade: "A+", remarks: "Outstanding" },
-          { ISMS_SubjectName: "General Science", ESTMPS_MaxMarks: 100, ESTMPS_ObtainedMarks: 89, ESTMPS_ObtainedGrade: "A", remarks: "Very Good" },
-          { ISMS_SubjectName: "English Language & Lit.", ESTMPS_MaxMarks: 100, ESTMPS_ObtainedMarks: 95, ESTMPS_ObtainedGrade: "A+", remarks: "Excellent" },
-          { ISMS_SubjectName: "Social Studies", ESTMPS_MaxMarks: 100, ESTMPS_ObtainedMarks: 91, ESTMPS_ObtainedGrade: "A+", remarks: "Commendable" },
-          { ISMS_SubjectName: "Computer & Robotics", ESTMPS_MaxMarks: 100, ESTMPS_ObtainedMarks: 98, ESTMPS_ObtainedGrade: "A+", remarks: "Distinction" },
-        ],
-      });
-    } finally {
-      setExamLoading(false);
-    }
-  };
-
-  // Helper calculations for Attendance
-  const totalHeld = attendanceData.reduce((acc, curr) => acc + (curr.CLASS_HELD || 0), 0);
-  const totalPresent = attendanceData.reduce((acc, curr) => acc + (curr.TOTAL_PRESENT || 0), 0);
-  const totalAbsent = Math.max(0, totalHeld - totalPresent);
-  const overallAttendancePct = totalHeld > 0 ? ((totalPresent / totalHeld) * 100).toFixed(1) : "96.5";
-
-  // Helper calculations for Exam
-  const examReports = examData.reports.length > 0 ? examData.reports : [
-    { ISMS_SubjectName: "Mathematics", ESTMPS_MaxMarks: 100, ESTMPS_ObtainedMarks: 94, ESTMPS_ObtainedGrade: "A+", remarks: "Outstanding" },
-    { ISMS_SubjectName: "General Science", ESTMPS_MaxMarks: 100, ESTMPS_ObtainedMarks: 89, ESTMPS_ObtainedGrade: "A", remarks: "Very Good" },
-    { ISMS_SubjectName: "English Language & Lit.", ESTMPS_MaxMarks: 100, ESTMPS_ObtainedMarks: 95, ESTMPS_ObtainedGrade: "A+", remarks: "Excellent" },
-    { ISMS_SubjectName: "Social Studies", ESTMPS_MaxMarks: 100, ESTMPS_ObtainedMarks: 91, ESTMPS_ObtainedGrade: "A+", remarks: "Commendable" },
-    { ISMS_SubjectName: "Computer & Robotics", ESTMPS_MaxMarks: 100, ESTMPS_ObtainedMarks: 98, ESTMPS_ObtainedGrade: "A+", remarks: "Distinction" },
-  ];
-  const totalMaxMarks = examReports.reduce((acc, curr) => acc + (curr.ESTMPS_MaxMarks || 100), 0);
-  const totalObtainedMarks = examReports.reduce((acc, curr) => acc + (curr.ESTMPS_ObtainedMarks || 0), 0);
-  const overallExamPct = totalMaxMarks > 0 ? ((totalObtainedMarks / totalMaxMarks) * 100).toFixed(1) : "93.4";
-
-  // Dynamic Greeting based on current hour
-  const currentHour = currentTime.getHours();
-  const greeting =
-    currentHour < 12 ? "Good Morning" : currentHour < 17 ? "Good Afternoon" : "Good Evening";
-
-  const studentName = session?.username || "Aarav Sharma";
-  const schoolName = session?.initname || "Green Valley Public School";
-  const academicYear = session?.ASMAY_Year || "2025-2026";
-  const studentRoll = session?.rawResponse?.amsT_RollNo || session?.rawResponse?.rollNo || "12";
-  const studentAdmNo = session?.rawResponse?.amsT_AdmNo || "GVPS-1023";
-  const studentClass = session?.rawResponse?.classname || "Class 5 - Section B";
-
-  // Active Subject Icon Resolver
-  const getSubjectIcon = (name: string) => {
-    const lower = (name || "").toLowerCase();
-    if (lower.includes("math")) return <Calculator size={16} style={{ color: "#0284c7" }} />;
-    if (lower.includes("scien") || lower.includes("lab")) return <FlaskConical size={16} style={{ color: "#16a34a" }} />;
-    if (lower.includes("eng")) return <BookOpen size={16} style={{ color: "#9333ea" }} />;
-    if (lower.includes("social") || lower.includes("hist") || lower.includes("geo")) return <Globe size={16} style={{ color: "#ea580c" }} />;
-    if (lower.includes("comp") || lower.includes("robot") || lower.includes("ai")) return <Cpu size={16} style={{ color: "#0d9488" }} />;
-    return <GraduationCap size={16} style={{ color: "#475569" }} />;
-  };
-
-  // AI Space & Chatbot State
-  const [chatMessages, setChatMessages] = useState<
-    Array<{
-      id: string;
-      sender: "bot" | "user";
-      text: string;
-      time: string;
-      suggestions?: string[];
-    }>
-  >([
-    {
-      id: "msg-welcome-1",
-      sender: "bot",
-      text: "Hello Aarav! 👋 I'm GreenBot, your Green Valley AI campus companion! I have real-time access to your daily timetable, attendance records, exam scores, and campus circulars. Ask me anything!",
-      time: "Just now",
-      suggestions: [
-        "What is my timetable today?",
-        "How is my attendance?",
-        "Show my latest exam scores",
-        "What are the latest school notices?",
-        "Explain photosynthesis simply",
-      ],
     },
-  ]);
-  const [chatInputText, setChatInputText] = useState("");
-  const [isTyping, setIsTyping] = useState(false);
-  const chatMessagesEndRef = React.useRef<HTMLDivElement | null>(null);
+    [session, examMode, selectedExamId, selectedSubjectId]
+  );
 
-  const scrollToBottom = () => {
-    chatMessagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  // 9. Fetch Over All Exam
+  const fetchExamOverall = useCallback(
+    async (
+      mode = overallMode,
+      subId = selectedOverallSubjectId,
+      exId = selectedOverallExamId,
+      currSession?: SessionInfo | null
+    ) => {
+      const s = currSession || session;
+      if (!s) return;
+      try {
+        setLoading(true);
+        setErrorMessage(null);
+        const res = await fetch(CLIENT_API_ENDPOINTS.EXAM_OVERALL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            asmay_id: s.ASMAY_Id || 0,
+            amst_id: s.AMST_ID || 0,
+            MI_Id: s.miid || 31,
+            type: mode,
+            isms_id: subId,
+            eme_id: exId,
+          }),
+        });
+        if (res.ok) {
+          const result = await res.json();
+          const subjects = toSafeArray(result.data?.subjectList).map((s: any) => ({
+            id: String(s.ismS_Id),
+            name: s.ismS_SubjectName || s.ISMS_SubjectName,
+          }));
+          const exams = toSafeArray(result.data?.examList).map((e: any) => ({
+            id: String(e.emE_Id),
+            name: e.emE_ExamName || e.EME_ExamName,
+          }));
+          const reports = toSafeArray(result.data?.examReportList);
+          setOverallSubjects(subjects);
+          setOverallExams(exams);
+          setExamOverallReports(reports);
+          if (subjects.length > 0 && !selectedOverallSubjectId) setSelectedOverallSubjectId(subjects[0].id);
+          if (exams.length > 0 && !selectedOverallExamId) setSelectedOverallExamId(exams[0].id);
+        }
+      } catch (err: any) {
+        if (err.name === "AbortError") return;
+        console.error("Exam Overall API error:", err);
+        setErrorMessage(err.message || "Failed to load overall exam data from server");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [session, overallMode, selectedOverallSubjectId, selectedOverallExamId]
+  );
+
+  // Guard ref to ensure initial data load triggers exactly once
+  const initialLoadDoneRef = useRef(false);
+
+  // On mount: load user session & trigger live API calls exactly ONCE
+  useEffect(() => {
+    if (initialLoadDoneRef.current) return;
+    initialLoadDoneRef.current = true;
+
+    const s = getUserSession();
+    if (s) {
+      setSession(s);
+      fetchStudentDetails(s);
+      fetchAttendance(s);
+      fetchFees(s);
+      fetchNotices(s);
+      fetchHomework(s);
+      fetchTimetable(s);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Navigate to module screen and refresh data
+  const handleNavigateTo = (screen: StudentScreen) => {
+    setCurrentScreen(screen);
+    setErrorMessage(null);
+    if (screen === "dashboard") {
+      fetchStudentDetails();
+      fetchAttendance();
+      fetchFees();
+      fetchNotices();
+      fetchHomework();
+      fetchTimetable();
+    }
+    if (screen === "student-details") fetchStudentDetails();
+    if (screen === "fees") fetchFees();
+    if (screen === "attendance") fetchAttendance();
+    if (screen === "events") fetchEvents(selectedEventMonth);
+    if (screen === "notice") fetchNotices();
+    if (screen === "homework") fetchHomework();
+    if (screen === "timetable") fetchTimetable();
+    if (screen === "exam") fetchExam();
+    if (screen === "exam-overall") fetchExamOverall();
   };
 
-  useEffect(() => {
-    if (currentScreen === "aispace") {
-      scrollToBottom();
-    }
-  }, [chatMessages, currentScreen, isTyping]);
+  // AI Chat Handler
+  const handleSendChatMessage = (promptText?: string) => {
+    const q = (promptText || chatInputText).trim();
+    if (!q) return;
 
-  const handleSendChatMessage = (customQuery?: string) => {
-    const query = (customQuery || chatInputText).trim();
-    if (!query) return;
+    const userMsg = {
+      id: `msg-user-${Date.now()}`,
+      sender: "user" as const,
+      text: q,
+      time: new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }),
+    };
 
-    const userMessageId = `msg-user-${Date.now()}`;
-    const userTime = new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
-
-    // Append user message
-    setChatMessages((prev) => [
-      ...prev,
-      {
-        id: userMessageId,
-        sender: "user",
-        text: query,
-        time: userTime,
-      },
-    ]);
+    setChatMessages((prev) => [...prev, userMsg]);
     setChatInputText("");
     setIsTyping(true);
 
     setTimeout(() => {
-      const lower = query.toLowerCase();
+      const lower = q.toLowerCase();
       let botReply = "";
       let suggestions: string[] = [];
 
-      if (lower.includes("timetable") || lower.includes("period") || lower.includes("class") || lower.includes("schedule")) {
-        botReply = `📅 Here is your schedule for Class 5-B today:\n\n• Period 1 (08:30 - 09:15 AM): Mathematics with Mr. Ramesh Kumar (Rm 102)\n• Period 2 (09:15 - 10:00 AM): English Literature (Rm 102)\n• Period 3 (10:15 - 11:00 AM): General Science Practical in Sci Lab 1\n• Period 4 (11:00 - 11:45 AM): Social Studies (Rm 102)\n• Period 5 (12:30 - 01:15 PM): Computer & Robotics in STEM Lab\n\n💡 Tip: Don't forget your science practical workbook!`;
-        suggestions = ["How is my attendance?", "Show my exam marks", "What are the latest circulars?"];
-      } else if (lower.includes("attendance") || lower.includes("present") || lower.includes("absent") || lower.includes("leave")) {
-        botReply = `📊 Official Attendance Overview for ${studentName} (${studentAdmNo}):\n\n• Overall Attendance: ${overallAttendancePct}%\n• Sessions Held: ${totalHeld || 115} Sessions\n• Sessions Present: ${totalPresent || 111} Sessions\n• Days Absent: ${totalAbsent || 4} Sessions\n• Status: ✅ Well above the mandatory 75% CBSE requirement!\n\nKeep up the great consistency, Aarav!`;
-        suggestions = ["What is my timetable today?", "Show my exam marks", "Explain photosynthesis simply"];
-      } else if (lower.includes("exam") || lower.includes("mark") || lower.includes("result") || lower.includes("grade") || lower.includes("score")) {
-        botReply = `📝 Periodic Assessment Term-1 Performance Report:\n\n• Overall Average: ${overallExamPct}% • Grade A+ (Distinction)\n• Mathematics: 94 / 100 (A+) — Outstanding\n• General Science: 89 / 100 (A) — Very Good\n• English Language: 95 / 100 (A+) — Excellent\n• Social Studies: 91 / 100 (A+) — Commendable\n• Computer & Robotics: 98 / 100 (A+) — Top in Class!\n\n🌟 You ranked in the top 5% of Class 5! Keep up the brilliant work.`;
-        suggestions = ["What is my timetable today?", "How is my attendance?", "Help me with math"];
-      } else if (lower.includes("notice") || lower.includes("circular") || lower.includes("event") || lower.includes("holiday")) {
-        botReply = `🔔 Official Green Valley School Circulars for Class 5:\n\n1. [URGENT] Class 5 Periodic Assessment Term-2 Schedule officially announced.\n2. [CIRCULAR] Annual Science & STEM Robotics Exhibition 2026 registrations are open.\n3. [SPORTS] Inter-House Athletics Trials this Thursday at 03:30 PM.\n4. [INFO] Winter School Timings (08:30 AM start) take effect from November 1st.`;
-        suggestions = ["When is the science exhibition?", "Show my exam marks", "What is my timetable?"];
-      } else if (lower.includes("science") || lower.includes("photo") || lower.includes("plant") || lower.includes("sun") || lower.includes("sky")) {
-        if (lower.includes("sky") || lower.includes("blue")) {
-          botReply = `🌌 Why is the sky blue? (Rayleigh Scattering):\n\nSunlight looks white, but it's made of all the colors of the rainbow! 🌈\n\nWhen sunlight reaches Earth's atmosphere, it scatters in all directions by gases and particles. Blue light travels in smaller, shorter waves than other colors, so it scatters much more than red or yellow. That's why we see a lovely blue sky! ☀️✨`;
-        } else {
-          botReply = `🌱 How Photosynthesis Works (In Simple Words):\n\nThink of green plants as tiny nature chefs! 👨‍🍳🍃\n\n1. Sunlight: Leaves capture light energy using chlorophyll.\n2. Water: Roots absorb moisture from the soil.\n3. Carbon Dioxide (CO₂): Leaves absorb gas from the air.\n\nThey combine these to produce Glucose (food for energy) and release fresh Oxygen (O₂) for us to breathe!\n\nFormula: 6CO₂ + 6H₂O + Light ➔ C₆H₁₂O₆ + 6O₂ ✨`;
-        }
-        suggestions = ["Tell me another science fact", "What is gravity?", "Help me with math"];
-      } else if (lower.includes("math") || lower.includes("fraction") || lower.includes("multiply") || lower.includes("divide")) {
-        botReply = `🧮 Mathematics Concept Helper:\n\nA fraction represents a piece or part of a whole thing! 🍕\n\n• Numerator (Top Number): The number of parts you currently have.\n• Denominator (Bottom Number): Total parts the whole is divided into.\n\nExample: If a pizza has 4 slices and you eat 1 slice, you ate 1/4 (one-fourth) of the pizza! 3/4 remains.\n\nWould you like me to quiz you on fraction addition?`;
-        suggestions = ["Yes, give me a math quiz!", "Show my exam marks", "What is my timetable?"];
-      } else if (lower.includes("quiz") || lower.includes("yes")) {
-        botReply = `🎯 Quick GreenBot Math Challenge!\n\nWhat is: 1/4 + 2/4 = ?\n\nA) 3/8\nB) 3/4\nC) 2/8\n\nType your answer and let's see if you get it right! 🚀`;
-        suggestions = ["B) 3/4", "A) 3/8", "C) 2/8"];
-      } else if (lower.includes("3/4") || lower.includes("b")) {
-        botReply = `🎉 Bingo! That's 100% CORRECT, Aarav! 🌟\n\nSince the denominators are both 4, we simply add the numerators: 1 + 2 = 3. So 1/4 + 2/4 = 3/4!\n\nYou're a math superstar! ⭐`;
-        suggestions = ["Give me another question", "Show my timetable", "How is my attendance?"];
+      if (lower.includes("attendance")) {
+        botReply = `📊 Live Attendance Report:\n• Cumulative Attendance: ${dynamicAttendanceRate}%\n• Total Working Days: ${totalWorkingDays}\n• Days Present: ${totalPresentDays}\n• Status: ${dynamicAttendanceRate >= 75 ? "Excellent (Above CBSE 75% norm) ✅" : "Needs Attention ⚠️"}`;
+        suggestions = ["Show timetable", "Check fee dues", "Show exam scorecards"];
+      } else if (lower.includes("exam") || lower.includes("marks") || lower.includes("score")) {
+        botReply = `📝 Examination Summary:\n• Evaluated Subjects: ${examMarksData.length}\n• Assessment Mode: ${examMode === "EWAS" ? "Exam-Wise Analysis" : "Subject-Wise Analysis"}\n• Recent Subjects Recorded: ${examMarksData.slice(0, 3).map((m) => `${m.subject}: ${m.obtainedMarks}/${m.maxMarks} (Grade ${m.grade})`).join(", ") || "Active Scorecards available"}`;
+        suggestions = ["Open Exam Results tab", "Check homework", "Show timetable"];
+      } else if (lower.includes("fee") || lower.includes("due") || lower.includes("balance")) {
+        botReply = `💳 Fee Analysis Ledger:\n• Pending Balance: ₹${totalFeeBalance.toLocaleString()}\n• Total Receivable: ₹${feeData.reduce((acc, f) => acc + f.receivable, 0).toLocaleString()}\n• Total Paid: ₹${feeData.reduce((acc, f) => acc + f.collection, 0).toLocaleString()}\n• Account Status: ${totalFeeBalance <= 0 ? "All Clear (Zero Outstanding) 🎉" : "Dues Pending at Accounts Desk"}`;
+        suggestions = ["Open Fees tab", "Check attendance", "Show notices"];
+      } else if (lower.includes("timetable") || lower.includes("class") || lower.includes("period")) {
+        botReply = timetableData.studentTT.length > 0
+          ? `🗓️ Weekly Time-Table:\n• Total Weekly Periods: ${timetableData.studentTT.length}\n• Next Scheduled Class: ${timetableData.studentTT[0]?.ISMS_SubjectName || "Class"}${timetableData.studentTT[0]?.EmpName ? ` by ${timetableData.studentTT[0].EmpName}` : ""}`
+          : `🗓️ Weekly Time-Table: No published timetable periods found on the server for the current session.`;
+        suggestions = ["Open Time-Table tab", "Check homework diary", "Ask something else"];
+      } else if (lower.includes("homework") || lower.includes("diary")) {
+        botReply = `📚 Home-work Diary:\n• Assigned Tasks: ${homeworkData.length}\n• Latest: ${homeworkData[0]?.subject ? `${homeworkData[0].subject} - ${homeworkData[0].topic} (Due: ${homeworkData[0].dueDate})` : "All daily homework updated from faculty"}`;
+        suggestions = ["Open Home-work tab", "Check school notices", "Show attendance"];
       } else {
-        botReply = `🤖 Thanks for asking, Aarav! I've noted your question: "${query}".\n\nAs your Green Valley campus assistant, I can immediately pull up your live timetable, attendance percentages, report cards, or explain science and math topics. What would you like to explore next?`;
-        suggestions = ["What is my timetable today?", "How is my attendance?", "Show my exam marks", "Tell me school notices"];
+        botReply = `🤖 Thanks for asking! As your Green Valley Smart Campus Assistant, I have access to your live academic records, morning attendance, fee ledger, and class schedules. You can also explore any module from the navigation bar above!`;
+        suggestions = ["What is my attendance rate?", "Show my exam results", "What is my timetable today?", "Do I have pending fee balance?"];
       }
 
       setChatMessages((prev) => [
@@ -490,527 +788,988 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
     }, 600);
   };
 
+  const studentDisplayName = studentDetails.name || session?.name || session?.username || "Student";
+  const studentDisplayClass =
+    [studentDetails.className, studentDetails.sectionName].filter(Boolean).join(" - ") ||
+    [session?.asmcL_ClassName, session?.asms_sectionname].filter(Boolean).join(" - ") ||
+    "Student Profile";
+  const schoolName = session?.initname || "Green Valley Public School";
+
+  // Dynamic attendance metrics
+  const totalWorkingDays = attendanceData.reduce((acc, a) => acc + a.classHeld, 0);
+  const totalPresentDays = attendanceData.reduce((acc, a) => acc + a.totalPresent, 0);
+  const dynamicAttendanceRate =
+    totalWorkingDays > 0 ? Math.round((totalPresentDays / totalWorkingDays) * 1000) / 10 : 0;
+
+  // Dynamic fee metrics
+  const totalFeeBalance = feeData.reduce((acc, f) => acc + f.balance, 0);
+
+  // Empty state renderer
+  const renderEmptyState = (msg: string) => (
+    <div
+      style={{
+        background: "rgba(255, 255, 255, 0.95)",
+        borderRadius: "18px",
+        border: "1.2px solid rgba(254, 215, 170, 0.8)",
+        padding: "3rem 1.5rem",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        textAlign: "center",
+        boxShadow: "0 4px 18px rgba(234, 88, 12, 0.04)",
+      }}
+    >
+      <div
+        style={{
+          width: 56,
+          height: 56,
+          borderRadius: "50%",
+          background: "#fff7ed",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: "#ea580c",
+          marginBottom: "1rem",
+        }}
+      >
+        <Inbox size={28} />
+      </div>
+      <h4 style={{ fontFamily: "Outfit, sans-serif", fontSize: "1.1rem", fontWeight: 800, color: "#1e293b", margin: 0 }}>
+        No Records Found
+      </h4>
+      <p style={{ fontSize: "0.78rem", color: "#64748b", marginTop: "0.35rem", maxWidth: "420px", lineHeight: 1.5 }}>
+        {msg}
+      </p>
+      <button
+        onClick={() => handleNavigateTo(currentScreen)}
+        style={{
+          marginTop: "1.25rem",
+          display: "inline-flex",
+          alignItems: "center",
+          gap: "0.45rem",
+          padding: "0.45rem 1.15rem",
+          borderRadius: "9999px",
+          background: "linear-gradient(135deg, #f97316 0%, #ea580c 100%)",
+          color: "#ffffff",
+          fontWeight: 800,
+          fontSize: "0.78rem",
+          border: "none",
+          cursor: "pointer",
+          boxShadow: "0 3px 10px rgba(234, 88, 12, 0.25)",
+        }}
+      >
+        <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
+        <span>Refresh from Server</span>
+      </button>
+    </div>
+  );
+
   return (
     <div className="dashboard-page">
-      {/* FLOATING AMBIENT ORBS (FROM ROLESELECTIONSCREEN THEME) */}
+      {/* Floating Ambient Orbs (Matching modern software theme) */}
       <div className="kiosk-orb kiosk-orb-one" />
       <div className="kiosk-orb kiosk-orb-two" />
 
-      {/* GLOBAL PERSISTENT COMMAND NAVBAR */}
+      {/* TOP COMMAND NAVBAR (ROLE SELECTION COMMAND THEME) */}
       <header className="dash-navbar">
-        <div className="dash-logo-link" onClick={() => setCurrentScreen("dashboard")}>
-          <div className="dash-logo-box">
+        <div className="command-brand" onClick={handleLogout} style={{ cursor: "pointer" }}>
+          <div className="command-mark" aria-hidden="true">
             <svg width="34" height="34" viewBox="0 0 48 48" fill="none">
-              <path d="M24 7c4 4 10 6 14 3 0 8-7 13-14 14C17 23 10 18 10 10c4 3 10 1 14-3Z" fill="#f97316" />
-              <path d="M24 24V11" stroke="#ea580c" strokeWidth="2.5" strokeLinecap="round" />
-              <path d="M5 36c7-4.5 13-3.5 19 1 6-4.5 12-5.5 19-1V18c-7-4.5-13-3.5-19 1-6-4.5-12-5.5-19-1v18Z" fill="#c2410c" />
+              <path d="M24 7c4 4 10 6 14 3 0 8-7 13-14 14C17 23 10 18 10 10c4 3 10 1 14-3Z" fill="#ea580c" />
+              <path d="M24 24V11" stroke="#c2410c" strokeWidth="2.5" strokeLinecap="round" />
+              <path d="M5 36c7-4.5 13-3.5 19 1 6-4.5 12-5.5 19-1V18c-7-4.5-13-3.5-19 1-6-4.5-12-5.5-19-1v18Z" fill="#9a3412" />
               <path d="M24 19v18" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
             </svg>
           </div>
-          <div className="dash-school-text">
-            <p className="command-kicker" style={{ margin: 0 }}>GREEN VALLEY • SMART CAMPUS</p>
-            <h1>{schoolName}</h1>
-          </div>
-        </div>
-
-        {/* Global Nav Tools */}
-        <div className="dash-nav-actions">
-          {/* Live Campus Online Status Badge */}
-          <div className="command-live-status">
-            <span /> Campus online • VAPS
-          </div>
-
-          {/* Student Profile Pill -> Click opens Profile Screen */}
-          <div
-            className="dash-profile-pill"
-            style={{ cursor: "pointer", transition: "all 0.25s ease" }}
-            onClick={() => setCurrentScreen("profile")}
-            title="Click to view full student profile"
-          >
-            <img src={session?.img || "/student_avatar.png"} alt={studentName} className="dash-user-avatar" />
-            <div className="dash-user-info">
-              <span className="dash-user-name">{studentName}</span>
-              <span className="dash-user-role">
-                {studentClass} | Roll: {studentRoll}
+          <div>
+            <p className="command-kicker">GREEN VALLEY • SMART CAMPUS</p>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", flexWrap: "nowrap" }}>
+              <h1 style={{ margin: 0, fontFamily: "Outfit, sans-serif", fontSize: "1.15rem", fontWeight: 800, color: "#1e293b", whiteSpace: "nowrap" }}>
+                {schoolName}
+              </h1>
+              <span
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.35rem",
+                  background: "linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%)",
+                  color: "#c2410c",
+                  fontSize: "0.74rem",
+                  fontWeight: 800,
+                  padding: "0.22rem 0.75rem",
+                  borderRadius: "9999px",
+                  border: "1.5px solid rgba(251, 146, 60, 0.4)",
+                  boxShadow: "0 2px 8px rgba(234, 88, 12, 0.08)",
+                  letterSpacing: "0.02em",
+                  whiteSpace: "nowrap",
+                  flexShrink: 0,
+                }}
+              >
+                <GraduationCap size={12} style={{ color: "#ea580c" }} />
+                PAGE 4 • STUDENT &amp; PARENT PORTAL
               </span>
             </div>
           </div>
+        </div>
 
-          {/* Real-time Clock Widget */}
-          <div className="command-time">
-            <Calendar size={15} />
-            <span>{currentTime.toLocaleDateString("en-US", { weekday: "short", day: "2-digit", month: "short" })}</span>
-            <b>{currentTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true })}</b>
+        {/* Profile Pill & Action Controls */}
+        <div className="dash-nav-actions" style={{ flexWrap: "nowrap" }}>
+          {/* Student Profile Pill */}
+          <div
+            className="dash-profile-pill cursor-pointer"
+            onClick={() => handleNavigateTo("student-details")}
+            title="Click to view Student Profile"
+          >
+            <img
+              src={studentDetails.photo && studentDetails.photo.startsWith("http") ? studentDetails.photo : "/student_avatar.png"}
+              alt={studentDisplayName}
+              className="dash-user-avatar"
+            />
+            <div className="dash-user-info">
+              <span className="dash-user-name">{studentDisplayName}</span>
+              <span className="dash-user-role">{studentDisplayClass} • Adm: {studentDetails.admNo || session?.AMST_ID || "—"}</span>
+            </div>
           </div>
 
-          {/* Kiosk Back / Home */}
-          <button className="dash-kiosk-back-btn" onClick={handleLogout}>
-            <Home size={14} /> Kiosk Home
+          {/* Campus Online Pill */}
+          <div className="command-live-status">
+            <span style={{ background: "#16a34a" }} />
+            <span>Campus online</span>
+          </div>
+
+          {/* Command Time Pill */}
+          <div className="dash-clock-widget">
+            <Calendar size={13} style={{ color: "#ea580c" }} />
+            <span>
+              {currentTime.toLocaleDateString("en-US", { weekday: "short", day: "2-digit", month: "short" })} •{" "}
+              <b>{currentTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true })}</b>
+            </span>
+          </div>
+
+          {/* Fullscreen Button */}
+          <button className="command-fullscreen" onClick={toggleFullscreen}>
+            {isFullscreen ? <Minimize size={15} /> : <Maximize size={15} />}
+            <span>{isFullscreen ? "Exit" : "Full screen"}</span>
+          </button>
+
+          {/* Back to Kiosk Home */}
+          <button className="dash-kiosk-back-btn" onClick={handleLogout} title="Return to Kiosk Home">
+            <Home size={14} /> Back to Kiosk
           </button>
         </div>
       </header>
 
-      {/* TICKER ANNOUNCEMENTS BAR */}
-      <div className="dash-ticker-bar" style={{ flexShrink: 0, height: 26, fontSize: "0.72rem" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-          <span className="ticker-badge-live" style={{ background: "#ea580c", color: "#ffffff", padding: "0.15rem 0.45rem", fontSize: "0.62rem" }}>
-            <Sparkles size={10} /> Announcements
-          </span>
-          <div className="ticker-content" style={{ fontSize: "0.72rem" }}>
-            <div className="ticker-item">
-              <span className="ticker-tag" style={{ color: "#ea580c" }}>• CBSE 2026:</span>
-              <span>Periodic Assessment Term 2 dates announced. Verify timetable inside portal.</span>
-            </div>
-            <div className="ticker-item">
-              <span className="ticker-tag" style={{ color: "#ea580c" }}>• Campus Motto:</span>
-              <span>{SLOGANS[sloganIndex].quote}</span>
-            </div>
-            <div className="ticker-item">
-              <span className="ticker-tag" style={{ color: "#ea580c" }}>• STEM Hub:</span>
-              <span>Robotics & AI Lab workshops scheduled for this Friday.</span>
-            </div>
-          </div>
+      {/* HORIZONTAL MODULES NAVIGATION TABS */}
+      <nav
+        style={{
+          flexShrink: 0,
+          background: "rgba(255, 255, 255, 0.88)",
+          backdropFilter: "blur(14px)",
+          WebkitBackdropFilter: "blur(14px)",
+          borderBottom: "1.5px solid rgba(254, 215, 170, 0.6)",
+          padding: "8px 24px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          overflowX: "auto",
+          gap: "8px",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+          <button
+            onClick={() => handleNavigateTo("dashboard")}
+            style={{
+              padding: "6px 14px",
+              borderRadius: "9999px",
+              fontSize: "0.82rem",
+              fontWeight: 800,
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              cursor: "pointer",
+              whiteSpace: "nowrap",
+              transition: "all 0.2s ease",
+              border: currentScreen === "dashboard" ? "1.5px solid #ea580c" : "1.5px solid rgba(254, 215, 170, 0.5)",
+              background: currentScreen === "dashboard" ? "#ea580c" : "rgba(255, 255, 255, 0.9)",
+              color: currentScreen === "dashboard" ? "#ffffff" : "#475569",
+              boxShadow: currentScreen === "dashboard" ? "0 2px 8px rgba(234, 88, 12, 0.25)" : "none",
+            }}
+          >
+            <Home size={14} />
+            <span>Overview</span>
+          </button>
+
+          {[
+            { id: "student-details" as StudentScreen, name: "Student Details", icon: GraduationCap },
+            { id: "exam" as StudentScreen, name: "Exam", icon: FileText },
+            { id: "fees" as StudentScreen, name: "Fees", icon: Receipt },
+            { id: "attendance" as StudentScreen, name: "Attendance", icon: UserCheck },
+            { id: "events" as StudentScreen, name: "Events", icon: CalendarDays },
+            { id: "notice" as StudentScreen, name: "Notice", icon: AlertTriangle },
+            { id: "homework" as StudentScreen, name: "Home-work", icon: BookOpen },
+            { id: "timetable" as StudentScreen, name: "Time-Table", icon: Clock },
+            { id: "exam-overall" as StudentScreen, name: "Over All Exam", icon: BarChart2 },
+            { id: "aispace" as StudentScreen, name: "GreenBot AI", icon: Sparkles },
+          ].map((tab) => {
+            const Icon = tab.icon;
+            const isActive = currentScreen === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => handleNavigateTo(tab.id)}
+                style={{
+                  padding: "6px 12px",
+                  borderRadius: "9999px",
+                  fontSize: "0.82rem",
+                  fontWeight: 700,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  cursor: "pointer",
+                  whiteSpace: "nowrap",
+                  transition: "all 0.2s ease",
+                  border: isActive ? "1.5px solid #ea580c" : "1.5px solid rgba(254, 215, 170, 0.5)",
+                  background: isActive ? "#ea580c" : "rgba(255, 255, 255, 0.9)",
+                  color: isActive ? "#ffffff" : "#475569",
+                  boxShadow: isActive ? "0 2px 8px rgba(234, 88, 12, 0.25)" : "none",
+                }}
+              >
+                <Icon size={14} />
+                <span>{tab.name}</span>
+              </button>
+            );
+          })}
         </div>
-        <span
-          className="dash-view-all"
-          style={{ cursor: "pointer", fontSize: "0.68rem", color: "#ea580c", fontWeight: 700 }}
-          onClick={() => setSelectedNotice(NOTICES[0])}
+
+        {currentScreen !== "dashboard" && (
+          <button
+            onClick={() => handleNavigateTo("dashboard")}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              padding: "6px 14px",
+              borderRadius: "9999px",
+              background: "#fff7ed",
+              border: "1.5px solid #fed7aa",
+              color: "#c2410c",
+              fontSize: "0.82rem",
+              fontWeight: 800,
+              cursor: "pointer",
+              whiteSpace: "nowrap",
+            }}
+          >
+            <ArrowLeft size={14} />
+            <span>Back to Hub</span>
+          </button>
+        )}
+      </nav>
+
+      {/* ERROR BANNER IF ANY */}
+      {errorMessage && (
+        <div
+          style={{
+            background: "#fff1f2",
+            borderBottom: "1px solid #fecdd3",
+            padding: "8px 16px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            fontSize: "0.78rem",
+            color: "#be123c",
+          }}
         >
-          View Notices →
-        </span>
-      </div>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <AlertCircle size={15} style={{ color: "#e11d48", flexShrink: 0 }} />
+            <span>{errorMessage}</span>
+          </div>
+          <button
+            onClick={() => setErrorMessage(null)}
+            style={{ border: "none", background: "transparent", color: "#fb7185", cursor: "pointer" }}
+          >
+            <X size={14} />
+          </button>
+        </div>
+      )}
+
+      {/* LOADING BANNER */}
+      {loading && (
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "8px",
+            padding: "6px 16px",
+            fontSize: "0.78rem",
+            fontWeight: 800,
+            color: "#ea580c",
+            background: "rgba(255, 247, 237, 0.95)",
+            borderBottom: "1px solid rgba(254, 215, 170, 0.7)",
+          }}
+        >
+          <RefreshCw size={14} className="animate-spin" />
+          <span>Synchronizing live data with school server...</span>
+        </div>
+      )}
 
       {/* ========================================================
-          SCREEN ROUTER: EITHER MAIN DASHBOARD OR DEDICATED SCREEN
+          VIEW 0: MAIN DASHBOARD OVERVIEW (6 BALANCED CONTAINERS GRID)
           ======================================================== */}
-
-      {/* VIEW 1: MAIN STUDENT HUB (ROLESELECTIONSCREEN COMMAND CENTER THEME) */}
       {currentScreen === "dashboard" && (
-        <main className="student-portal-hub">
-          {/* COMMAND HERO BANNER */}
+        <main className="dash-main-hub">
+          {/* HERO BANNER (ROLE SELECTION COMMAND THEME) */}
           <section className="student-hub-hero">
             <div className="student-hero-title-group">
-              <div className="hero-chip" style={{ marginBottom: "0.35rem" }}>
-                <Sparkles size={13} /> ONE CAMPUS. ACADEMIC HUB.
+              <div style={{ display: "inline-flex", alignItems: "center", gap: "0.45rem", marginBottom: "0.25rem" }}>
+                <span
+                  style={{
+                    background: "#ea580c",
+                    color: "#ffffff",
+                    padding: "2px 8px",
+                    borderRadius: "9999px",
+                    fontSize: "0.65rem",
+                    fontWeight: 900,
+                    letterSpacing: "0.04em",
+                  }}
+                >
+                  PAGE 4
+                </span>
+                <span style={{ fontSize: "0.74rem", fontWeight: 800, color: "#ea580c", display: "inline-flex", alignItems: "center", gap: "4px" }}>
+                  <Sparkles size={13} /> STUDENT &amp; PARENT PORTAL • ACADEMIC HUB
+                </span>
               </div>
               <h2>
-                {greeting}, <span>{studentName}!</span>
+                Welcome Back, <span>{studentDisplayName}</span>
               </h2>
-              <p>
-                Academic Year {academicYear} • Official student portal for real-time attendance, weekly timetable, and academic marks.
-              </p>
+              <p>Real-time academic ledger, morning attendance, examination scorecards, and school notices.</p>
               <div className="student-hero-chips">
                 <span className="student-hero-chip">
-                  <CheckCircle2 size={12} style={{ color: "#ea580c" }} /> {studentClass}
+                  <GraduationCap size={12} /> {studentDisplayClass}
                 </span>
                 <span className="student-hero-chip">
-                  <User size={12} style={{ color: "#ea580c" }} /> Roll: {studentRoll} • Adm: {studentAdmNo}
+                  <Award size={12} /> Adm: {studentDetails.admNo || session?.AMST_ID || "—"}
                 </span>
-                <span className="student-hero-chip" style={{ color: "#16a34a", borderColor: "rgba(22, 163, 74, 0.35)", background: "#f0fdf4" }}>
-                  <Percent size={12} style={{ color: "#16a34a" }} /> Live Attendance: {overallAttendancePct}%
+                <span className="student-hero-chip">
+                  <Calendar size={12} /> AY: {studentDetails.academicYear || session?.ASMAY_Year || "2024-2025"}
                 </span>
-                <span className="student-hero-chip" style={{ color: "#7c3aed", borderColor: "rgba(124, 58, 237, 0.35)", background: "#f5f3ff" }}>
-                  <Award size={12} style={{ color: "#7c3aed" }} /> Latest Exam: Grade A+
+                <span className="student-hero-chip highlight">
+                  <UserCheck size={12} /> Attendance: {dynamicAttendanceRate}%
                 </span>
-              </div>
-              <div className="hero-trust" style={{ marginTop: "0.55rem", fontSize: "11px" }}>
-                <ShieldCheck size={14} style={{ color: "#ea580c" }} /><span>Secure kiosk session</span><i />
-                <Activity size={14} style={{ color: "#ea580c" }} /><span>Live VAPS connected</span>
+                <span className="student-hero-chip live">
+                  <Receipt size={12} /> Dues: ₹{totalFeeBalance.toLocaleString()}
+                </span>
+                <span className="student-hero-chip">
+                  <AlertCircle size={12} /> {noticesData.length} Notices
+                </span>
               </div>
             </div>
 
-            <div className="student-hero-right-meta">
-              <span className="student-vaps-connected-pill">
-                <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#16a34a" }} />
-                VAPS Cloud Synced
-              </span>
-              <button
-                onClick={() => setCurrentScreen("aispace")}
-                className="ai-space-hero-btn"
-                title="Launch GreenBot AI Learning Space"
-              >
-                <div className="ai-space-robot-avatar-wrap">
-                  <img src="/ai_robot.png" alt="GreenBot" className="ai-space-robot-img" />
-                  <span className="ai-space-status-dot" />
+            {/* UNIFIED 3D STAGE CAPSULE */}
+            <div className="student-hero-capsule">
+              <div className="hero-avatar-podium">
+                <div className="hero-avatar-halo" />
+                <img
+                  src={studentDetails.photo && studentDetails.photo.startsWith("http") ? studentDetails.photo : "/student_avatar.png"}
+                  alt={studentDisplayName}
+                  className="hero-avatar-3d-img"
+                />
+                <span className="hero-avatar-tag">Student Hub</span>
+              </div>
+
+              <div className="hero-capsule-divider" />
+
+              <div className="hero-honor-stage">
+                <div className="hero-honor-icon-bubble">
+                  <Award size={18} />
                 </div>
-                <div className="ai-space-btn-text">
-                  <div className="ai-space-btn-label">
-                    <Sparkles size={11} /> AI SPACE
+                <div className="hero-honor-text">
+                  <span className="hero-honor-title">Excellence</span>
+                  <span className="hero-honor-badge">Verified Learner</span>
+                </div>
+              </div>
+
+              <div className="hero-capsule-divider" />
+
+              {/* AI Space Launch Button */}
+              <button
+                type="button"
+                onClick={() => setCurrentScreen("aispace")}
+                className="hero-ai-capsule-btn"
+                title="Launch Student GreenBot AI Space"
+              >
+                <div className="hero-ai-robo-wrap">
+                  <img src="/ai_robot.png" alt="GreenBot" className="hero-ai-robo-img" />
+                  <span className="hero-ai-pulse-dot" />
+                </div>
+                <div style={{ textAlign: "center" }}>
+                  <div className="hero-ai-kicker">
+                    <Sparkles size={9} style={{ display: "inline", verticalAlign: "middle", marginRight: 2 }} /> AI SPACE
                   </div>
-                  <span className="ai-space-btn-title">Ask GreenBot →</span>
+                  <span className="hero-ai-action">Ask GreenBot →</span>
                 </div>
               </button>
             </div>
           </section>
 
-          {/* BALANCED 6 COMPACT CONTAINERS (ROLE-TILE THEME) */}
+          {/* 6 COMPACT BALANCED CONTAINERS (3 COLUMNS × 2 ROWS) */}
           <section className="student-hub-grid">
-            {/* CONTAINER 1: 📊 ATTENDANCE TRACKER (WORKING MODULE) */}
+            {/* CONTAINER 1: 📊 ATTENDANCE TRACKER */}
             <div
               className="student-hub-card"
-              style={{ "--card-accent": "#16a34a" } as React.CSSProperties}
-              onClick={() => setCurrentScreen("attendance")}
-              title="Click to open Full Attendance Screen"
+              onClick={() => handleNavigateTo("attendance")}
+              title="Click to open Full Attendance Ledger"
             >
               <div className="student-hub-card-header">
                 <div className="student-card-title-group">
-                  <div className="student-card-icon-box" style={{ background: "#dcfce7", color: "#16a34a" }}>
-                    <CheckCircle2 size={18} />
+                  <div className="student-card-icon-box">
+                    <UserCheck size={19} />
                   </div>
                   <div className="student-card-headings">
                     <h3>Attendance Tracker</h3>
-                    <span>Official Attendance Register</span>
+                    <span>Monthly Roster &amp; Biometrics</span>
                   </div>
                 </div>
                 <span
                   style={{
-                    background: "#dcfce7",
-                    color: "#15803d",
-                    fontSize: "0.65rem",
-                    fontWeight: 700,
-                    padding: "0.15rem 0.45rem",
+                    background: "#fff7ed",
+                    color: "#ea580c",
+                    border: "1px solid rgba(254, 215, 170, 0.8)",
+                    fontSize: "0.68rem",
+                    fontWeight: 800,
+                    padding: "0.2rem 0.65rem",
                     borderRadius: "9999px",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "5px",
                   }}
                 >
-                  ● Active
+                  <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#16a34a" }} />
+                  {dynamicAttendanceRate}% Rate
                 </span>
               </div>
 
               <div className="student-hub-card-body">
                 <div className="student-metric-hero">
-                  <span className="student-metric-val" style={{ color: "#16a34a" }}>
-                    {overallAttendancePct}%
-                  </span>
-                  <span className="student-metric-label">Cumulative Present</span>
+                  <span className="student-metric-val">{dynamicAttendanceRate}%</span>
+                  <span className="student-metric-label">Cumulative Presence</span>
                 </div>
 
-                {/* Progress bar */}
-                <div style={{ height: "6px", width: "100%", background: "#e2e8f0", borderRadius: "9999px", overflow: "hidden" }}>
-                  <div style={{ height: "100%", width: `${overallAttendancePct}%`, background: "#16a34a", borderRadius: "9999px" }} />
-                </div>
-
-                <div className="student-card-pills-list">
-                  <div className="student-card-subitem">
-                    <span style={{ fontWeight: 600 }}>Total Sessions Held:</span>
-                    <strong style={{ color: "#0f172a" }}>{totalHeld || 115} Sessions</strong>
-                  </div>
-                  <div className="student-card-subitem">
-                    <span style={{ fontWeight: 600 }}>Days Present:</span>
-                    <strong style={{ color: "#16a34a" }}>{totalPresent || 111} Days</strong>
-                  </div>
-                </div>
-              </div>
-
-              <div className="student-hub-card-footer">
-                <button
-                  className="student-open-screen-btn"
-                  style={{ background: "#16a34a", color: "#ffffff" }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setCurrentScreen("attendance");
-                  }}
-                >
-                  Open Full Attendance Screen <ArrowRight size={13} />
-                </button>
-              </div>
-            </div>
-
-            {/* CONTAINER 2: 📅 CLASS TIMETABLE (WORKING MODULE) */}
-            <div
-              className="student-hub-card"
-              style={{ "--card-accent": "#0284c7" } as React.CSSProperties}
-              onClick={() => setCurrentScreen("timetable")}
-              title="Click to open Full Timetable Screen"
-            >
-              <div className="student-hub-card-header">
-                <div className="student-card-title-group">
-                  <div className="student-card-icon-box" style={{ background: "#dbeafe", color: "#1d4ed8" }}>
-                    <CalendarDays size={18} />
-                  </div>
-                  <div className="student-card-headings">
-                    <h3>Class Timetable</h3>
-                    <span>Weekly Subject Schedule</span>
-                  </div>
-                </div>
-                <span
-                  style={{
-                    background: "#dbeafe",
-                    color: "#1d4ed8",
-                    fontSize: "0.65rem",
-                    fontWeight: 700,
-                    padding: "0.15rem 0.45rem",
-                    borderRadius: "9999px",
-                  }}
-                >
-                  ● Live Sync
-                </span>
-              </div>
-
-              <div className="student-hub-card-body">
-                <div className="student-metric-hero">
-                  <span className="student-metric-val" style={{ color: "#1d4ed8" }}>
-                    {timetableData.days.length || 5} Days
-                  </span>
-                  <span className="student-metric-label">Weekly Schedule</span>
-                </div>
-
-                <div className="student-card-pills-list">
-                  <div className="student-card-subitem" style={{ background: "#eff6ff", borderColor: "#bfdbfe" }}>
-                    <span style={{ fontWeight: 700, color: "#1e40af" }}>Period 1:</span>
-                    <span style={{ fontWeight: 600 }}>Mathematics • Rm 102</span>
-                  </div>
-                  <div className="student-card-subitem">
-                    <span style={{ fontWeight: 600 }}>Period 2:</span>
-                    <span style={{ fontWeight: 600 }}>English Literature</span>
-                  </div>
-                  <div className="student-card-subitem">
-                    <span style={{ fontWeight: 600 }}>Period 3:</span>
-                    <span style={{ fontWeight: 600 }}>General Science Lab</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="student-hub-card-footer">
-                <button
-                  className="student-open-screen-btn"
-                  style={{ background: "#0284c7", color: "#ffffff" }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setCurrentScreen("timetable");
-                  }}
-                >
-                  Open Full Timetable Screen <ArrowRight size={13} />
-                </button>
-              </div>
-            </div>
-
-            {/* CONTAINER 3: 📝 EXAMS & REPORT CARD (WORKING MODULE) */}
-            <div
-              className="student-hub-card"
-              style={{ "--card-accent": "#ea580c" } as React.CSSProperties}
-              onClick={() => setCurrentScreen("exam")}
-              title="Click to open Full Exam & Results Screen"
-            >
-              <div className="student-hub-card-header">
-                <div className="student-card-title-group">
-                  <div className="student-card-icon-box" style={{ background: "#ffedd5", color: "#ea580c" }}>
-                    <Award size={18} />
-                  </div>
-                  <div className="student-card-headings">
-                    <h3>Exams & Results</h3>
-                    <span>Assessment Report Card</span>
-                  </div>
-                </div>
-                <span
-                  style={{
-                    background: "#ffedd5",
-                    color: "#c2410c",
-                    fontSize: "0.65rem",
-                    fontWeight: 700,
-                    padding: "0.15rem 0.45rem",
-                    borderRadius: "9999px",
-                  }}
-                >
-                  ● Evaluated
-                </span>
-              </div>
-
-              <div className="student-hub-card-body">
-                <div className="student-metric-hero">
-                  <span className="student-metric-val" style={{ color: "#ea580c" }}>
-                    {overallExamPct}%
-                  </span>
-                  <span className="student-metric-label">Grade A+ (Distinction)</span>
-                </div>
-
-                {/* Progress bar */}
-                <div style={{ height: "6px", width: "100%", background: "#e2e8f0", borderRadius: "9999px", overflow: "hidden" }}>
-                  <div style={{ height: "100%", width: `${overallExamPct}%`, background: "#ea580c", borderRadius: "9999px" }} />
-                </div>
-
-                <div className="student-card-pills-list">
-                  <div className="student-card-subitem">
-                    <span style={{ fontWeight: 600 }}>Active Assessment:</span>
-                    <strong style={{ color: "#0f172a" }}>Periodic Assessment 1</strong>
-                  </div>
-                  <div className="student-card-subitem">
-                    <span style={{ fontWeight: 600 }}>Total Marks Obtained:</span>
-                    <strong style={{ color: "#ea580c" }}>
-                      {totalObtainedMarks} / {totalMaxMarks}
-                    </strong>
-                  </div>
-                </div>
-              </div>
-
-              <div className="student-hub-card-footer">
-                <button
-                  className="student-open-screen-btn"
-                  style={{ background: "#ea580c", color: "#ffffff" }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setCurrentScreen("exam");
-                  }}
-                >
-                  Open Full Report Card Screen <ArrowRight size={13} />
-                </button>
-              </div>
-            </div>
-
-            {/* CONTAINER 4: 🎬 CAMPUS LIFE VIDEO & VIRTUAL TOUR */}
-            <div
-              className="student-hub-card"
-              style={{ "--card-accent": "#dc2626" } as React.CSSProperties}
-              onClick={() => setIsVideoModalOpen(true)}
-              title="Click to play campus tour video"
-            >
-              <div className="student-hub-card-header">
-                <div className="student-card-title-group">
-                  <div className="student-card-icon-box" style={{ background: "#fee2e2", color: "#dc2626" }}>
-                    <Film size={18} />
-                  </div>
-                  <div className="student-card-headings">
-                    <h3>Campus Life & Video Tour</h3>
-                    <span>Smart Infrastructure & Labs</span>
-                  </div>
-                </div>
-                <span
-                  style={{
-                    background: "#fee2e2",
-                    color: "#dc2626",
-                    fontSize: "0.65rem",
-                    fontWeight: 700,
-                    padding: "0.15rem 0.45rem",
-                    borderRadius: "9999px",
-                  }}
-                >
-                  ▶ Watch HD
-                </span>
-              </div>
-
-              <div className="student-hub-card-body" style={{ padding: "0.45rem" }}>
-                <div className="student-video-box">
-                  <img
-                    src="/campus_banner.jpg"
-                    alt="Campus Tour"
-                    className="student-video-poster"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = "/hero_school_building.jpg";
+                {/* 3D Progress Bar */}
+                <div style={{ height: "7px", width: "100%", background: "#ffedd5", borderRadius: "9999px", overflow: "hidden" }}>
+                  <div
+                    style={{
+                      height: "100%",
+                      width: `${Math.min(100, Math.max(0, dynamicAttendanceRate))}%`,
+                      background: "linear-gradient(90deg, #ea580c 0%, #16a34a 100%)",
+                      borderRadius: "9999px",
+                      boxShadow: "0 2px 6px rgba(234, 88, 12, 0.35)",
                     }}
                   />
-                  <div className="student-video-overlay">
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <span
-                        style={{
-                          background: "rgba(0, 0, 0, 0.65)",
-                          color: "#ffffff",
-                          fontSize: "0.62rem",
-                          fontWeight: 700,
-                          padding: "2px 6px",
-                          borderRadius: 4,
-                          backdropFilter: "blur(4px)",
-                        }}
-                      >
-                        ⏱ 03:45
-                      </span>
-                      <span
-                        style={{
-                          background: "#dc2626",
-                          color: "#ffffff",
-                          fontSize: "0.6rem",
-                          fontWeight: 800,
-                          padding: "1px 5px",
-                          borderRadius: 4,
-                        }}
-                      >
-                        VIDEO
-                      </span>
-                    </div>
+                </div>
 
-                    <div className="student-video-play-btn" style={{ background: "#ea580c" }}>
-                      <Play size={18} fill="#ffffff" style={{ marginLeft: "2px" }} />
+                {/* 4-Tile Duo Grid Widget */}
+                <div className="student-kpi-duo-grid">
+                  <div className="student-kpi-mini-card highlight">
+                    <div className="student-kpi-mini-icon highlight">
+                      <Calendar size={14} />
                     </div>
-
-                    <div style={{ color: "#ffffff" }}>
-                      <div style={{ fontSize: "0.78rem", fontWeight: 800, textShadow: "0 1px 3px rgba(0,0,0,0.8)" }}>
-                        Green Valley Smart Campus Tour
-                      </div>
-                      <div style={{ fontSize: "0.65rem", color: "#cbd5e1", textShadow: "0 1px 2px rgba(0,0,0,0.8)" }}>
-                        Explore science labs, robotics studio & sports arena
-                      </div>
+                    <div className="student-kpi-mini-meta">
+                      <span className="student-kpi-mini-label">Total Days</span>
+                      <strong className="student-kpi-mini-val highlight">{totalWorkingDays} Held</strong>
                     </div>
                   </div>
+                  <div className="student-kpi-mini-card">
+                    <div className="student-kpi-mini-icon">
+                      <CheckCircle2 size={14} />
+                    </div>
+                    <div className="student-kpi-mini-meta">
+                      <span className="student-kpi-mini-label">Present</span>
+                      <strong className="student-kpi-mini-val">{totalPresentDays} Days</strong>
+                    </div>
+                  </div>
+                  <div className="student-kpi-mini-card">
+                    <div className="student-kpi-mini-icon">
+                      <AlertCircle size={14} />
+                    </div>
+                    <div className="student-kpi-mini-meta">
+                      <span className="student-kpi-mini-label">Absent</span>
+                      <strong className="student-kpi-mini-val">
+                        {attendanceData.reduce((acc, a) => acc + a.totalAbsent, 0)} Days
+                      </strong>
+                    </div>
+                  </div>
+                  <div className="student-kpi-mini-card">
+                    <div className="student-kpi-mini-icon">
+                      <ShieldCheck size={14} />
+                    </div>
+                    <div className="student-kpi-mini-meta">
+                      <span className="student-kpi-mini-label">Status</span>
+                      <strong className="student-kpi-mini-val highlight">
+                        {dynamicAttendanceRate >= 75 ? "Compliant" : "Low Ratio"}
+                      </strong>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="student-sub-status-strip">
+                  <Clock size={12} />
+                  <span>Gate Biometric Punch Synced with Server</span>
                 </div>
               </div>
 
               <div className="student-hub-card-footer">
                 <button
                   className="student-open-screen-btn"
-                  style={{ background: "#dc2626", color: "#ffffff" }}
                   onClick={(e) => {
                     e.stopPropagation();
-                    setIsVideoModalOpen(true);
+                    handleNavigateTo("attendance");
                   }}
                 >
-                  <Play size={13} fill="#ffffff" /> Play Campus Video Tour
+                  <UserCheck size={13} /> Open Full Attendance Ledger <ArrowRight size={13} />
                 </button>
               </div>
             </div>
 
-            {/* CONTAINER 5: 🔔 OFFICIAL NOTIFICATIONS & CIRCULARS */}
+            {/* CONTAINER 2: 🗓️ CLASS TIME-TABLE */}
             <div
               className="student-hub-card"
-              style={{ "--card-accent": "#7c3aed" } as React.CSSProperties}
+              onClick={() => handleNavigateTo("timetable")}
+              title="Click to open Full Time-Table Screen"
             >
               <div className="student-hub-card-header">
                 <div className="student-card-title-group">
-                  <div className="student-card-icon-box" style={{ background: "#ede9fe", color: "#7c3aed" }}>
-                    <Bell size={18} />
+                  <div className="student-card-icon-box">
+                    <Clock size={19} />
                   </div>
                   <div className="student-card-headings">
-                    <h3>School Notifications</h3>
-                    <span>Official Circulars & Alerts</span>
+                    <h3>Class Time-Table</h3>
+                    <span>Weekly Periods &amp; Subjects</span>
                   </div>
                 </div>
                 <span
                   style={{
-                    background: "#ede9fe",
-                    color: "#7c3aed",
-                    fontSize: "0.65rem",
-                    fontWeight: 700,
-                    padding: "0.15rem 0.45rem",
+                    background: "#fff7ed",
+                    color: "#ea580c",
+                    border: "1px solid rgba(254, 215, 170, 0.8)",
+                    fontSize: "0.68rem",
+                    fontWeight: 800,
+                    padding: "0.2rem 0.65rem",
                     borderRadius: "9999px",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "5px",
                   }}
                 >
-                  {NOTICES.length} New
+                  <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#ea580c" }} />
+                  {timetableData.studentTT.length} Period{timetableData.studentTT.length === 1 ? "" : "s"}
                 </span>
               </div>
 
-              <div className="student-hub-card-body" style={{ padding: "0.45rem 0.65rem" }}>
+              <div className="student-hub-card-body">
+                <div className="student-metric-hero">
+                  <span className="student-metric-val">{timetableData.studentTT.length} Period{timetableData.studentTT.length === 1 ? "" : "s"}</span>
+                  <span className="student-metric-label">Scheduled Load</span>
+                </div>
+
+                <div className="student-timetable-preview-list">
+                  {timetableData.studentTT.slice(0, 3).map((tt, idx) => (
+                    <div key={idx} className="student-period-item">
+                      <span className="period-time-badge">{tt.TTMP_PeriodName || `P${idx + 1}`}</span>
+                      <span className="period-subject-name">{tt.ISMS_SubjectName || "Subject"}</span>
+                      <span className="period-room-tag">{tt.EmpName ? tt.EmpName.split(" ")[0] : "Faculty"}</span>
+                    </div>
+                  ))}
+                  {timetableData.studentTT.length === 0 && (
+                    <div style={{ padding: "0.85rem", textAlign: "center", color: "#64748b", fontSize: "0.82rem" }}>
+                      No published timetable periods for current term.
+                    </div>
+                  )}
+                </div>
+
+                <div className="student-sub-status-strip">
+                  <BookOpen size={12} />
+                  <span>Weekly distribution verified with Academic Office</span>
+                </div>
+              </div>
+
+              <div className="student-hub-card-footer">
+                <button
+                  className="student-open-screen-btn btn-warm-tint"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleNavigateTo("timetable");
+                  }}
+                >
+                  <Clock size={13} /> View Full Class Time-Table <ArrowRight size={13} />
+                </button>
+              </div>
+            </div>
+
+            {/* CONTAINER 3: 📈 EXAM RESULTS & EVALUATION */}
+            <div
+              className="student-hub-card"
+              onClick={() => handleNavigateTo("exam")}
+              title="Click to open Exam Scorecards"
+            >
+              <div className="student-hub-card-header">
+                <div className="student-card-title-group">
+                  <div className="student-card-icon-box">
+                    <FileText size={19} />
+                  </div>
+                  <div className="student-card-headings">
+                    <h3>Exam Results</h3>
+                    <span>Marks &amp; Scorecards</span>
+                  </div>
+                </div>
+                <span
+                  style={{
+                    background: "#fff7ed",
+                    color: "#ea580c",
+                    border: "1px solid rgba(254, 215, 170, 0.8)",
+                    fontSize: "0.68rem",
+                    fontWeight: 800,
+                    padding: "0.2rem 0.65rem",
+                    borderRadius: "9999px",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "5px",
+                  }}
+                >
+                  <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#ea580c" }} />
+                  {examMarksData.length} Subjects
+                </span>
+              </div>
+
+              <div className="student-hub-card-body">
+                <div className="student-metric-hero">
+                  <span className="student-metric-val">
+                    {examMarksData.length > 0
+                      ? `${Math.round(
+                          (examMarksData.reduce((acc, m) => acc + m.obtainedMarks, 0) /
+                            Math.max(1, examMarksData.reduce((acc, m) => acc + m.maxMarks, 0))) *
+                            100
+                        )}%`
+                      : "—"}
+                  </span>
+                  <span className="student-metric-label">Assessment Average</span>
+                </div>
+
+                {/* 4-Tile Duo Grid Widget */}
+                <div className="student-kpi-duo-grid">
+                  <div className="student-kpi-mini-card highlight">
+                    <div className="student-kpi-mini-icon highlight">
+                      <Award size={14} />
+                    </div>
+                    <div className="student-kpi-mini-meta">
+                      <span className="student-kpi-mini-label">Evaluated</span>
+                      <strong className="student-kpi-mini-val highlight">{examMarksData.length} Subjects</strong>
+                    </div>
+                  </div>
+                  <div className="student-kpi-mini-card">
+                    <div className="student-kpi-mini-icon">
+                      <TrendingUp size={14} />
+                    </div>
+                    <div className="student-kpi-mini-meta">
+                      <span className="student-kpi-mini-label">Top Grade</span>
+                      <strong className="student-kpi-mini-val">
+                        {examMarksData[0]?.grade || "—"}
+                      </strong>
+                    </div>
+                  </div>
+                  <div className="student-kpi-mini-card">
+                    <div className="student-kpi-mini-icon">
+                      <CheckCircle2 size={14} />
+                    </div>
+                    <div className="student-kpi-mini-meta">
+                      <span className="student-kpi-mini-label">Result</span>
+                      <strong className="student-kpi-mini-val">100% Pass</strong>
+                    </div>
+                  </div>
+                  <div className="student-kpi-mini-card">
+                    <div className="student-kpi-mini-icon">
+                      <Sparkles size={14} />
+                    </div>
+                    <div className="student-kpi-mini-meta">
+                      <span className="student-kpi-mini-label">Analysis</span>
+                      <strong className="student-kpi-mini-val highlight">Term 2 Ready</strong>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="student-sub-status-strip">
+                  <BarChart2 size={12} />
+                  <span>CBSE Benchmarked Grading &amp; Scorecards</span>
+                </div>
+              </div>
+
+              <div className="student-hub-card-footer">
+                <button
+                  className="student-open-screen-btn"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleNavigateTo("exam");
+                  }}
+                >
+                  <FileText size={13} /> Open Detailed Scorecards <ArrowRight size={13} />
+                </button>
+              </div>
+            </div>
+
+            {/* CONTAINER 4: 💳 TUITION FEE ANALYSIS */}
+            <div
+              className="student-hub-card"
+              onClick={() => handleNavigateTo("fees")}
+              title="Click to open Fee Ledger"
+            >
+              <div className="student-hub-card-header">
+                <div className="student-card-title-group">
+                  <div className="student-card-icon-box">
+                    <Receipt size={19} />
+                  </div>
+                  <div className="student-card-headings">
+                    <h3>Fee Analysis</h3>
+                    <span>Tuition &amp; Collections</span>
+                  </div>
+                </div>
+                <span
+                  style={{
+                    background: totalFeeBalance <= 0 ? "#f0fdf4" : "#fff7ed",
+                    color: totalFeeBalance <= 0 ? "#16a34a" : "#ea580c",
+                    border: `1px solid ${totalFeeBalance <= 0 ? "#bbf7d0" : "rgba(254, 215, 170, 0.8)"}`,
+                    fontSize: "0.68rem",
+                    fontWeight: 800,
+                    padding: "0.2rem 0.65rem",
+                    borderRadius: "9999px",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "5px",
+                  }}
+                >
+                  <span
+                    style={{
+                      width: 6,
+                      height: 6,
+                      borderRadius: "50%",
+                      background: totalFeeBalance <= 0 ? "#16a34a" : "#ea580c",
+                    }}
+                  />
+                  {totalFeeBalance <= 0 ? "Dues Cleared" : `₹${totalFeeBalance.toLocaleString()} Due`}
+                </span>
+              </div>
+
+              <div className="student-hub-card-body">
+                <div className="student-metric-hero">
+                  <span className="student-metric-val">₹{totalFeeBalance.toLocaleString()}</span>
+                  <span className="student-metric-label">
+                    {totalFeeBalance <= 0 ? "Zero Outstanding Dues" : "Pending Balance Dues"}
+                  </span>
+                </div>
+
+                {/* 4-Tile Duo Grid Widget */}
+                <div className="student-kpi-duo-grid">
+                  <div className="student-kpi-mini-card highlight">
+                    <div className="student-kpi-mini-icon highlight">
+                      <Receipt size={14} />
+                    </div>
+                    <div className="student-kpi-mini-meta">
+                      <span className="student-kpi-mini-label">Receivable</span>
+                      <strong className="student-kpi-mini-val highlight">
+                        ₹{feeData.reduce((acc, f) => acc + f.receivable, 0).toLocaleString()}
+                      </strong>
+                    </div>
+                  </div>
+                  <div className="student-kpi-mini-card">
+                    <div className="student-kpi-mini-icon">
+                      <CheckCircle2 size={14} />
+                    </div>
+                    <div className="student-kpi-mini-meta">
+                      <span className="student-kpi-mini-label">Paid / Collect</span>
+                      <strong className="student-kpi-mini-val">
+                        ₹{feeData.reduce((acc, f) => acc + f.collection, 0).toLocaleString()}
+                      </strong>
+                    </div>
+                  </div>
+                  <div className="student-kpi-mini-card">
+                    <div className="student-kpi-mini-icon">
+                      <Sparkles size={14} />
+                    </div>
+                    <div className="student-kpi-mini-meta">
+                      <span className="student-kpi-mini-label">Concession</span>
+                      <strong className="student-kpi-mini-val">
+                        ₹{feeData.reduce((acc, f) => acc + f.concession, 0).toLocaleString()}
+                      </strong>
+                    </div>
+                  </div>
+                  <div className="student-kpi-mini-card">
+                    <div className="student-kpi-mini-icon">
+                      <ShieldCheck size={14} />
+                    </div>
+                    <div className="student-kpi-mini-meta">
+                      <span className="student-kpi-mini-label">Status</span>
+                      <strong className="student-kpi-mini-val highlight">
+                        {totalFeeBalance <= 0 ? "Receipts Cleared" : "Action Needed"}
+                      </strong>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="student-sub-status-strip">
+                  <Receipt size={12} />
+                  <span>VAPS Cloud Online Fee Ledger &amp; Counter Verified</span>
+                </div>
+              </div>
+
+              <div className="student-hub-card-footer">
+                <button
+                  className="student-open-screen-btn btn-warm-tint"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleNavigateTo("fees");
+                  }}
+                >
+                  <Receipt size={13} /> Open Academic Fee Ledger <ArrowRight size={13} />
+                </button>
+              </div>
+            </div>
+
+            {/* CONTAINER 5: 📚 HOME-WORK DIARY */}
+            <div
+              className="student-hub-card"
+              onClick={() => handleNavigateTo("homework")}
+              title="Click to open Home-work Diary"
+            >
+              <div className="student-hub-card-header">
+                <div className="student-card-title-group">
+                  <div className="student-card-icon-box">
+                    <BookOpen size={19} />
+                  </div>
+                  <div className="student-card-headings">
+                    <h3>Home-work Diary</h3>
+                    <span>Daily Tasks &amp; Deadlines</span>
+                  </div>
+                </div>
+                <span
+                  style={{
+                    background: "#fff7ed",
+                    color: "#ea580c",
+                    border: "1px solid rgba(254, 215, 170, 0.8)",
+                    fontSize: "0.68rem",
+                    fontWeight: 800,
+                    padding: "0.2rem 0.65rem",
+                    borderRadius: "9999px",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "5px",
+                  }}
+                >
+                  <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#ea580c" }} />
+                  {homeworkData.length} Assigned
+                </span>
+              </div>
+
+              <div className="student-hub-card-body">
+                <div className="student-metric-hero">
+                  <span className="student-metric-val">{homeworkData.length} Tasks</span>
+                  <span className="student-metric-label">Assigned for Submission</span>
+                </div>
+
+                <div className="student-timetable-preview-list">
+                  {homeworkData.slice(0, 3).map((hw, idx) => (
+                    <div key={idx} className="student-period-item">
+                      <span className="period-time-badge">{hw.subject}</span>
+                      <span className="period-subject-name">{hw.topic}</span>
+                      <span className="period-room-tag">{hw.dueDate || "Due Soon"}</span>
+                    </div>
+                  ))}
+                  {homeworkData.length === 0 && (
+                    <div style={{ padding: "0.85rem", textAlign: "center", color: "#64748b", fontSize: "0.82rem" }}>
+                      No homework assignments currently recorded on the school server.
+                    </div>
+                  )}
+                </div>
+
+                <div className="student-sub-status-strip">
+                  <Clock size={12} />
+                  <span>Verify homework completion with guardian before 07:00 PM</span>
+                </div>
+              </div>
+
+              <div className="student-hub-card-footer">
+                <button
+                  className="student-open-screen-btn"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleNavigateTo("homework");
+                  }}
+                >
+                  <BookOpen size={13} /> Open Home-work Diary <ArrowRight size={13} />
+                </button>
+              </div>
+            </div>
+
+            {/* CONTAINER 6: 📢 OFFICIAL NOTICES & CIRCULARS */}
+            <div
+              className="student-hub-card"
+              onClick={() => handleNavigateTo("notice")}
+              title="Click to view all notices"
+            >
+              <div className="student-hub-card-header">
+                <div className="student-card-title-group">
+                  <div className="student-card-icon-box">
+                    <AlertTriangle size={19} />
+                  </div>
+                  <div className="student-card-headings">
+                    <h3>Notice Board</h3>
+                    <span>School Circulars &amp; COE</span>
+                  </div>
+                </div>
+                <span
+                  style={{
+                    background: "#fff7ed",
+                    color: "#ea580c",
+                    border: "1px solid rgba(254, 215, 170, 0.8)",
+                    fontSize: "0.68rem",
+                    fontWeight: 800,
+                    padding: "0.2rem 0.65rem",
+                    borderRadius: "9999px",
+                  }}
+                >
+                  {noticesData.length} Circulars
+                </span>
+              </div>
+
+              <div className="student-hub-card-body" style={{ padding: "0.35rem 0.85rem" }}>
                 <div className="student-notices-list">
-                  {NOTICES.map((notice) => (
+                  {noticesData.slice(0, 3).map((notice) => (
                     <div
                       key={notice.id}
                       className="student-notice-item"
-                      onClick={() => setSelectedNotice(notice)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedNoticeModal(notice);
+                      }}
                       title="Click to read full circular"
                     >
                       <span
                         style={{
-                          fontSize: "0.58rem",
+                          fontSize: "0.6rem",
                           fontWeight: 800,
-                          padding: "1px 5px",
-                          borderRadius: 4,
-                          background: notice.tagBg,
-                          color: notice.tagColor,
+                          padding: "2px 6px",
+                          borderRadius: 6,
+                          background: "#fff7ed",
+                          color: "#ea580c",
+                          border: "1px solid rgba(254, 215, 170, 0.8)",
                           flexShrink: 0,
                         }}
                       >
-                        {notice.tag}
+                        NOTICE
                       </span>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div
                           style={{
-                            fontSize: "0.7rem",
+                            fontSize: "0.74rem",
                             fontWeight: 700,
                             color: "#0f172a",
                             whiteSpace: "nowrap",
@@ -1020,114 +1779,54 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
                         >
                           {notice.title}
                         </div>
-                        <span style={{ fontSize: "0.6rem", color: "#64748b" }}>{notice.authority}</span>
+                        <span style={{ fontSize: "0.64rem", color: "#64748b" }}>
+                          {notice.authority || "Office of Principal"}
+                        </span>
                       </div>
-                      <span style={{ fontSize: "0.6rem", color: "#94a3b8", flexShrink: 0 }}>{notice.time}</span>
+                      <span style={{ fontSize: "0.64rem", color: "#94a3b8", flexShrink: 0 }}>
+                        {notice.startDate || "Active"}
+                      </span>
                     </div>
                   ))}
+                  {noticesData.length === 0 && (
+                    <div style={{ padding: "0.85rem", textAlign: "center", color: "#64748b", fontSize: "0.82rem" }}>
+                      No official notices or circulars published at this time.
+                    </div>
+                  )}
                 </div>
               </div>
 
               <div className="student-hub-card-footer">
                 <button
-                  className="student-open-screen-btn"
-                  style={{ background: "#7c3aed", color: "#ffffff" }}
-                  onClick={() => setSelectedNotice(NOTICES[0])}
-                >
-                  <Megaphone size={13} /> View All Circulars & Notices
-                </button>
-              </div>
-            </div>
-
-            {/* CONTAINER 6: ✨ DAILY SLOGANS & STUDENT INSPIRATION */}
-            <div
-              className="student-hub-card"
-              style={{ "--card-accent": "#c026d3" } as React.CSSProperties}
-            >
-              <div className="student-hub-card-header">
-                <div className="student-card-title-group">
-                  <div className="student-card-icon-box" style={{ background: "#fdf4ff", color: "#c026d3" }}>
-                    <Sparkles size={18} />
-                  </div>
-                  <div className="student-card-headings">
-                    <h3>Daily Slogan & Wisdom</h3>
-                    <span>School Values & Inspiration</span>
-                  </div>
-                </div>
-                <span
-                  style={{
-                    background: "#fdf4ff",
-                    color: "#c026d3",
-                    fontSize: "0.65rem",
-                    fontWeight: 700,
-                    padding: "0.15rem 0.45rem",
-                    borderRadius: "9999px",
+                  className="student-open-screen-btn btn-warm-tint"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleNavigateTo("notice");
                   }}
                 >
-                  Thought of the Day
-                </span>
-              </div>
-
-              <div className="student-hub-card-body" style={{ padding: "0.45rem 0.65rem" }}>
-                <div className="student-slogan-wrap">
-                  <Quote
-                    size={48}
-                    style={{
-                      position: "absolute",
-                      right: -5,
-                      bottom: -8,
-                      color: "rgba(192, 38, 211, 0.12)",
-                      pointerEvents: "none",
-                    }}
-                  />
-                  <p className="student-slogan-quote">
-                    &ldquo;{SLOGANS[sloganIndex].quote}&rdquo;
-                  </p>
-                  <div className="student-slogan-author">
-                    <span>— {SLOGANS[sloganIndex].author}</span>
-                    <span
-                      style={{
-                        background: "rgba(192, 38, 211, 0.12)",
-                        color: "#a21caf",
-                        padding: "1px 6px",
-                        borderRadius: 4,
-                        fontSize: "0.62rem",
-                      }}
-                    >
-                      {SLOGANS[sloganIndex].badge}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="student-hub-card-footer">
-                <button
-                  className="student-open-screen-btn"
-                  style={{ background: "#a21caf", color: "#ffffff" }}
-                  onClick={() => setSloganIndex((prev) => (prev + 1) % SLOGANS.length)}
-                  title="Click to view next inspirational thought"
-                >
-                  <RefreshCw size={13} /> Next Inspirational Thought ↻
+                  <Megaphone size={13} /> View All School Notices <ArrowRight size={13} />
                 </button>
               </div>
             </div>
           </section>
 
-          {/* COMPACT BOTTOM STRIP: STUDENT ID & CREDENTIALS VERIFICATION */}
+          {/* COMPACT BOTTOM STRIP: OFFICIAL STUDENT RECORD & QUICK LAUNCHERS */}
           <section
             style={{
-              background: "rgba(255, 255, 255, 0.9)",
+              background: "rgba(255, 255, 255, 0.95)",
               borderRadius: "14px",
-              padding: "0.5rem 1.15rem",
-              border: "1px solid rgba(254, 215, 170, 0.65)",
+              padding: "0.45rem 1.15rem",
+              border: "1.2px solid rgba(251, 146, 60, 0.3)",
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
-              boxShadow: "0 4px 14px rgba(234, 88, 12, 0.05)",
+              boxShadow: "0 2px 10px rgba(234, 88, 12, 0.04)",
               flexShrink: 0,
+              gap: "1rem",
+              flexWrap: "wrap",
             }}
           >
-            <div style={{ display: "flex", alignItems: "center", gap: "0.85rem" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.85rem", minWidth: 0 }}>
               <div
                 style={{
                   width: 34,
@@ -1139,506 +1838,427 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
                   justifyContent: "center",
                   color: "#ea580c",
                   flexShrink: 0,
-                  border: "1px solid rgba(251, 146, 60, 0.3)",
+                  border: "1px solid rgba(251, 146, 60, 0.35)",
                 }}
               >
                 <GraduationCap size={18} />
               </div>
               <div>
-                <span style={{ fontSize: "0.76rem", fontWeight: 800, color: "#1e293b" }}>
-                  Official Student Academic Profile: {studentName}
+                <span style={{ fontSize: "0.78rem", fontWeight: 800, color: "#1e293b" }}>
+                  Official Student Record: {studentDisplayName} (Adm: {studentDetails.admNo || session?.AMST_ID || "—"})
                 </span>
-                <div style={{ fontSize: "0.68rem", color: "#64748b", display: "flex", gap: "0.6rem", marginTop: "1px" }}>
-                  <span>Class: <strong>{studentClass}</strong></span>
+                <div style={{ fontSize: "0.68rem", color: "#64748b", display: "flex", gap: "0.6rem", marginTop: "1px", flexWrap: "wrap" }}>
+                  <span>Class: <strong>{studentDisplayClass}</strong></span>
                   <span>•</span>
-                  <span>Admission No: <strong>{studentAdmNo}</strong></span>
+                  <span>Roll No: <strong>{studentDetails.rollNo || "—"}</strong></span>
                   <span>•</span>
-                  <span>System ID: <strong>{session?.AMST_ID || 1204}</strong></span>
+                  <span>Father: <strong>{studentDetails.fatherName || "—"}</strong></span>
                   <span>•</span>
-                  <span>Academic Year: <strong>{academicYear}</strong></span>
+                  <span>Status: <strong style={{ color: "#16a34a" }}>Active Verified Student</strong></span>
                 </div>
               </div>
             </div>
 
-            <button
-              onClick={() => setCurrentScreen("profile")}
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "0.35rem",
-                padding: "0.35rem 0.85rem",
-                borderRadius: "8px",
-                border: "1px solid rgba(251, 146, 60, 0.35)",
-                background: "#fff7ed",
-                color: "#ea580c",
-                fontWeight: 800,
-                fontSize: "0.74rem",
-                cursor: "pointer",
-                transition: "all 0.15s ease",
-              }}
-            >
-              <User size={13} /> View Complete Profile Screen →
-            </button>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.45rem", flexWrap: "wrap" }}>
+              <button
+                onClick={() => handleNavigateTo("student-details")}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.35rem",
+                  padding: "0.35rem 0.85rem",
+                  borderRadius: "9999px",
+                  border: "1.2px solid rgba(251, 146, 60, 0.4)",
+                  background: "#fff7ed",
+                  color: "#c2410c",
+                  fontWeight: 800,
+                  fontSize: "0.74rem",
+                  cursor: "pointer",
+                }}
+              >
+                <User size={13} /> Student Bio Profile →
+              </button>
+              <button
+                onClick={() => handleNavigateTo("events")}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.35rem",
+                  padding: "0.35rem 0.85rem",
+                  borderRadius: "9999px",
+                  border: "1.2px solid rgba(251, 146, 60, 0.4)",
+                  background: "#fff7ed",
+                  color: "#c2410c",
+                  fontWeight: 800,
+                  fontSize: "0.74rem",
+                  cursor: "pointer",
+                }}
+              >
+                <CalendarDays size={13} /> School Events (COE) →
+              </button>
+              <button
+                onClick={() => handleNavigateTo("exam-overall")}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.35rem",
+                  padding: "0.35rem 0.85rem",
+                  borderRadius: "9999px",
+                  border: "1.2px solid rgba(251, 146, 60, 0.4)",
+                  background: "#fff7ed",
+                  color: "#c2410c",
+                  fontWeight: 800,
+                  fontSize: "0.74rem",
+                  cursor: "pointer",
+                }}
+              >
+                <BarChart2 size={13} /> Over All Exam →
+              </button>
+              <button
+                onClick={() => handleNavigateTo("aispace")}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.35rem",
+                  padding: "0.35rem 0.85rem",
+                  borderRadius: "9999px",
+                  border: "1.2px solid #ea580c",
+                  background: "#ea580c",
+                  color: "#ffffff",
+                  fontWeight: 800,
+                  fontSize: "0.74rem",
+                  cursor: "pointer",
+                  boxShadow: "0 2px 6px rgba(234, 88, 12, 0.25)",
+                }}
+              >
+                <Sparkles size={13} /> Ask GreenBot AI →
+              </button>
+            </div>
           </section>
         </main>
       )}
 
       {/* ========================================================
-          VIEW 2: DEDICATED FULL SCREEN — ATTENDANCE LEDGER
+          VIEW 1: DEDICATED FULL SCREEN — STUDENT DETAILS / BIO
           ======================================================== */}
-      {currentScreen === "attendance" && (
+      {currentScreen === "student-details" && (
         <section className="student-fullscreen-page">
-          {/* FLOATING AMBIENT ORBS */}
           <div className="kiosk-orb kiosk-orb-one" />
           <div className="kiosk-orb kiosk-orb-two" />
 
-          {/* SCREEN HEADER WITH PROMINENT BACK BUTTON */}
           <div className="student-screen-subnav">
-            <button className="student-back-to-dash-btn" onClick={() => setCurrentScreen("dashboard")}>
+            <button className="student-back-to-dash-btn" onClick={() => handleNavigateTo("dashboard")}>
               <ArrowLeft size={16} /> Back to Dashboard
             </button>
 
             <div className="student-screen-title-area">
-              <div className="student-screen-icon-bubble" style={{ background: "#dcfce7", color: "#16a34a" }}>
-                <CheckCircle2 size={20} />
+              <div className="student-screen-icon-bubble" style={{ background: "#fff7ed", color: "#ea580c" }}>
+                <GraduationCap size={20} />
               </div>
               <div>
-                <h2>Official Attendance Record & Ledger</h2>
-                <p>Live VAPS Attendance Data • {studentName} ({studentAdmNo})</p>
+                <h2>Student Profile &amp; Academic Bio</h2>
+                <p>Personal Identification, Parent Info &amp; School Ledger • {studentDisplayName}</p>
               </div>
             </div>
 
             <div className="student-screen-nav-tools">
-              <span className="student-vaps-connected-pill">● VAPS Live Connected</span>
-              <button className="student-refresh-btn" onClick={fetchAttendance} disabled={attendanceLoading}>
-                <RefreshCw size={13} className={attendanceLoading ? "animate-spin" : ""} />
-                {attendanceLoading ? "Syncing..." : "Refresh"}
-              </button>
-              {/* Quick Jump Pills */}
-              <button className="student-screen-tab-pill" onClick={() => setCurrentScreen("timetable")}>
-                📅 Timetable
-              </button>
-              <button className="student-screen-tab-pill" onClick={() => setCurrentScreen("exam")}>
-                📝 Results
+              <button
+                className="student-refresh-btn"
+                onClick={() => fetchStudentDetails()}
+                style={{ borderColor: "#ea580c", color: "#ea580c" }}
+              >
+                <RefreshCw size={13} className={loading ? "animate-spin" : ""} /> Refresh Profile
               </button>
             </div>
           </div>
 
-          {/* MAIN SCREEN BODY */}
           <div className="student-screen-scroll-body">
-            {/* KPI METRICS ROW */}
+            {/* KPI STATS STRIP */}
             <div className="student-kpi-strip">
               <div className="student-kpi-card">
                 <div className="student-kpi-info">
-                  <span>Overall Attendance</span>
-                  <h4 style={{ color: "#16a34a" }}>{overallAttendancePct}%</h4>
+                  <span>Admission Number</span>
+                  <h4>{studentDetails.admNo || session?.AMST_ID || "—"}</h4>
                 </div>
-                <div className="student-kpi-icon" style={{ background: "#dcfce7", color: "#16a34a" }}>
-                  <Percent size={20} />
-                </div>
-              </div>
-
-              <div className="student-kpi-card">
-                <div className="student-kpi-info">
-                  <span>Total Working Classes</span>
-                  <h4>{totalHeld} Sessions</h4>
-                </div>
-                <div className="student-kpi-icon" style={{ background: "#dbeafe", color: "#1d4ed8" }}>
-                  <Layers size={20} />
+                <div className="student-kpi-icon" style={{ background: "#fff7ed", color: "#ea580c" }}>
+                  <Award size={20} />
                 </div>
               </div>
 
               <div className="student-kpi-card">
                 <div className="student-kpi-info">
-                  <span>Classes Attended</span>
-                  <h4 style={{ color: "#15803d" }}>{totalPresent} Days</h4>
+                  <span>Class &amp; Section</span>
+                  <h4>{studentDisplayClass}</h4>
                 </div>
-                <div className="student-kpi-icon" style={{ background: "#f0fdf4", color: "#15803d" }}>
-                  <Check size={20} />
+                <div className="student-kpi-icon" style={{ background: "#f0fdfa", color: "#0d9488" }}>
+                  <GraduationCap size={20} />
                 </div>
               </div>
 
               <div className="student-kpi-card">
                 <div className="student-kpi-info">
-                  <span>Classes Absent</span>
-                  <h4 style={{ color: totalAbsent > 5 ? "#dc2626" : "#b45309" }}>{totalAbsent} Days</h4>
+                  <span>Roll Number</span>
+                  <h4>{studentDetails.rollNo || "—"}</h4>
                 </div>
-                <div className="student-kpi-icon" style={{ background: "#fef3c7", color: "#b45309" }}>
-                  <Clock size={20} />
+                <div className="student-kpi-icon" style={{ background: "#eff6ff", color: "#2563eb" }}>
+                  <User size={20} />
+                </div>
+              </div>
+
+              <div className="student-kpi-card">
+                <div className="student-kpi-info">
+                  <span>Academic Year</span>
+                  <h4>{studentDetails.academicYear || session?.ASMAY_Year || "2024-2025"}</h4>
+                </div>
+                <div className="student-kpi-icon" style={{ background: "#f5f3ff", color: "#7c3aed" }}>
+                  <Calendar size={20} />
                 </div>
               </div>
             </div>
 
-            {/* TWO-COLUMN DETAIL VIEW */}
-            <div style={{ display: "grid", gridTemplateColumns: "1.75fr 1fr", gap: "1rem" }}>
-              {/* Left Column: Monthly Attendance Breakdown Table */}
-              <div className="student-screen-card">
-                <div className="student-screen-card-header">
-                  <h4>
-                    <Calendar size={16} style={{ color: "#ea580c" }} /> Monthly Academic Attendance Breakdown
-                  </h4>
-                  <span style={{ fontSize: "0.72rem", color: "#ea580c", fontWeight: 800 }}>
-                    Academic Year {academicYear}
-                  </span>
-                </div>
-
-                <div style={{ overflowX: "auto" }}>
-                  <table className="student-screen-table">
-                    <thead>
-                      <tr>
-                        <th>Academic Month</th>
-                        <th style={{ textAlign: "center" }}>Classes Held</th>
-                        <th style={{ textAlign: "center" }}>Days Attended</th>
-                        <th style={{ textAlign: "center" }}>Days Absent</th>
-                        <th style={{ textAlign: "center" }}>Attendance %</th>
-                        <th style={{ textAlign: "right" }}>Compliance Status</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {attendanceData.map((row, idx) => {
-                        const held = row.CLASS_HELD || 0;
-                        const present = row.TOTAL_PRESENT || 0;
-                        const absent = Math.max(0, held - present);
-                        const pct = held > 0 ? Math.round((present / held) * 100) : 100;
-                        return (
-                          <tr key={idx}>
-                            <td style={{ fontWeight: 700, color: "#1e293b" }}>{row.MONTH_NAME}</td>
-                            <td style={{ textAlign: "center", color: "#475569" }}>{held}</td>
-                            <td style={{ textAlign: "center", fontWeight: 700, color: "#16a34a" }}>{present}</td>
-                            <td style={{ textAlign: "center", color: absent > 0 ? "#b45309" : "#64748b" }}>{absent}</td>
-                            <td style={{ textAlign: "center" }}>
-                              <span
-                                style={{
-                                  display: "inline-block",
-                                  padding: "2px 10px",
-                                  borderRadius: "6px",
-                                  fontWeight: 800,
-                                  fontSize: "0.78rem",
-                                  background: pct >= 90 ? "#dcfce7" : pct >= 75 ? "#fef3c7" : "#fee2e2",
-                                  color: pct >= 90 ? "#15803d" : pct >= 75 ? "#b45309" : "#b91c1c",
-                                }}
-                              >
-                                {pct}%
-                              </span>
-                            </td>
-                            <td style={{ textAlign: "right" }}>
-                              <span style={{ fontWeight: 700, fontSize: "0.74rem", color: pct >= 75 ? "#16a34a" : "#dc2626" }}>
-                                {pct >= 75 ? "✓ Satisfactory" : "⚠ Shortage"}
-                              </span>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              {/* Right Column: Attendance Compliance & Rules Card */}
-              <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-                <div className="student-screen-card" style={{ padding: "1.25rem" }}>
-                  <h4 style={{ fontFamily: "Outfit, sans-serif", fontSize: "0.95rem", fontWeight: 800, color: "#1e293b", margin: "0 0 0.75rem 0", display: "flex", alignItems: "center", gap: "0.4rem" }}>
-                    <ShieldCheck size={18} style={{ color: "#16a34a" }} /> CBSE Exam Eligibility Standing
-                  </h4>
-                  <p style={{ fontSize: "0.76rem", color: "#475569", lineHeight: 1.5, margin: "0 0 1rem 0" }}>
-                    Under CBSE Examination By-Laws (Rule 13), a student must maintain a minimum of <strong>75% attendance</strong> to be eligible for board & internal periodic examinations.
-                  </p>
-
-                  <div style={{ background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: "10px", padding: "0.85rem", marginBottom: "0.75rem" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.76rem", fontWeight: 700, color: "#166534", marginBottom: "0.35rem" }}>
-                      <span>Current Status: Safe & Eligible</span>
-                      <span>{overallAttendancePct}% / 75% Min</span>
-                    </div>
-                    <div style={{ height: "8px", width: "100%", background: "#dcfce7", borderRadius: "9999px", overflow: "hidden" }}>
-                      <div style={{ height: "100%", width: `${overallAttendancePct}%`, background: "#16a34a", borderRadius: "9999px" }} />
-                    </div>
-                  </div>
-
-                  <div style={{ fontSize: "0.72rem", color: "#64748b", display: "flex", flexDirection: "column", gap: "0.35rem" }}>
-                    <span>• Medical leaves must be submitted within 3 days of return.</span>
-                    <span>• For discrepancies in biometric punch, contact Academic Office.</span>
-                  </div>
-                </div>
-
-                {/* Quick Navigation to Other Working Features */}
-                <div className="student-screen-card" style={{ padding: "1rem" }}>
-                  <span style={{ fontSize: "0.72rem", color: "#ea580c", fontWeight: 800, textTransform: "uppercase" }}>Other Working Modules</span>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem", marginTop: "0.5rem" }}>
-                    <button
-                      onClick={() => setCurrentScreen("timetable")}
-                      style={{
-                        padding: "0.6rem",
-                        borderRadius: "8px",
-                        border: "1px solid #bfdbfe",
-                        background: "#eff6ff",
-                        color: "#1e40af",
-                        fontWeight: 700,
-                        fontSize: "0.75rem",
-                        cursor: "pointer",
-                      }}
-                    >
-                      📅 Open Timetable →
-                    </button>
-                    <button
-                      onClick={() => setCurrentScreen("exam")}
-                      style={{
-                        padding: "0.6rem",
-                        borderRadius: "8px",
-                        border: "1px solid #fed7aa",
-                        background: "#fff7ed",
-                        color: "#c2410c",
-                        fontWeight: 700,
-                        fontSize: "0.75rem",
-                        cursor: "pointer",
-                      }}
-                    >
-                      📝 Open Results →
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* ========================================================
-          VIEW 3: DEDICATED FULL SCREEN — WEEKLY CLASS TIMETABLE
-          ======================================================== */}
-      {currentScreen === "timetable" && (
-        <section className="student-fullscreen-page">
-          {/* FLOATING AMBIENT ORBS */}
-          <div className="kiosk-orb kiosk-orb-one" />
-          <div className="kiosk-orb kiosk-orb-two" />
-
-          {/* SCREEN HEADER WITH PROMINENT BACK BUTTON */}
-          <div className="student-screen-subnav">
-            <button className="student-back-to-dash-btn" onClick={() => setCurrentScreen("dashboard")}>
-              <ArrowLeft size={16} /> Back to Dashboard
-            </button>
-
-            <div className="student-screen-title-area">
-              <div className="student-screen-icon-bubble" style={{ background: "#dbeafe", color: "#1d4ed8" }}>
-                <CalendarDays size={20} />
-              </div>
-              <div>
-                <h2>Weekly Class Timetable & Schedule</h2>
-                <p>Live VAPS Timetable • {studentClass} • {studentName}</p>
-              </div>
-            </div>
-
-            <div className="student-screen-nav-tools">
-              <span className="student-vaps-connected-pill">● Timetable Active</span>
-              <button className="student-refresh-btn" onClick={fetchTimetable} disabled={timetableLoading}>
-                <RefreshCw size={13} className={timetableLoading ? "animate-spin" : ""} />
-                {timetableLoading ? "Syncing..." : "Refresh"}
-              </button>
-              {/* Quick Jump Pills */}
-              <button className="student-screen-tab-pill" onClick={() => setCurrentScreen("attendance")}>
-                📊 Attendance
-              </button>
-              <button className="student-screen-tab-pill" onClick={() => setCurrentScreen("exam")}>
-                📝 Results
-              </button>
-            </div>
-          </div>
-
-          {/* MAIN SCREEN BODY */}
-          <div className="student-screen-scroll-body">
-            {/* DAY SELECTOR TOUCH BAR */}
-            <div className="student-day-tabs-bar" style={{ background: "rgba(255, 255, 255, 0.9)", border: "1px solid rgba(254, 215, 170, 0.65)" }}>
-              <button
-                className={`student-day-tab-btn ${selectedTimetableDay === "ALL" ? "active" : ""}`}
-                onClick={() => setSelectedTimetableDay("ALL")}
-              >
-                All Weekdays
-              </button>
-              {timetableData.days.map((day, idx) => (
-                <button
-                  key={idx}
-                  className={`student-day-tab-btn ${selectedTimetableDay === day.ttmD_DayName ? "active" : ""}`}
-                  onClick={() => setSelectedTimetableDay(day.ttmD_DayName)}
+            {/* DETAILS CONTAINER CARDS */}
+            {!studentDetails.name && !studentDetails.admNo && !loading ? (
+              renderEmptyState("No student profile details returned from the backend server.")
+            ) : (
+              <div style={{ display: "grid", gridTemplateColumns: "320px 1fr", gap: "1rem" }}>
+                {/* ID Card Left */}
+                <div
+                  className="student-screen-card"
+                  style={{
+                    padding: "1.5rem",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    textAlign: "center",
+                    gap: "1rem",
+                  }}
                 >
-                  {day.ttmD_DayName}
-                </button>
-              ))}
-            </div>
+                  <div
+                    style={{
+                      width: 120,
+                      height: 120,
+                      borderRadius: "50%",
+                      padding: 4,
+                      background: "linear-gradient(135deg, #f97316 0%, #ea580c 100%)",
+                      boxShadow: "0 8px 24px rgba(234, 88, 12, 0.25)",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <img
+                      src={
+                        studentDetails.photo && studentDetails.photo.startsWith("http")
+                          ? studentDetails.photo
+                          : "/student_avatar.png"
+                      }
+                      alt={studentDisplayName}
+                      style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%", background: "#ffffff" }}
+                    />
+                  </div>
+                  <div>
+                    <h3 style={{ fontFamily: "Outfit, sans-serif", fontSize: "1.25rem", fontWeight: 800, color: "#1e293b", margin: 0 }}>
+                      {studentDisplayName}
+                    </h3>
+                    <p style={{ fontSize: "0.82rem", fontWeight: 700, color: "#ea580c", margin: "3px 0 0 0" }}>
+                      {studentDisplayClass}
+                    </p>
+                    <span
+                      style={{
+                        display: "inline-block",
+                        marginTop: "8px",
+                        padding: "3px 12px",
+                        borderRadius: "9999px",
+                        background: "#dcfce7",
+                        color: "#16a34a",
+                        fontSize: "0.72rem",
+                        fontWeight: 800,
+                      }}
+                    >
+                      Active Student • Verified
+                    </span>
+                  </div>
 
-            {/* TIMETABLE DAYS & PERIODS DISPLAY */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-              {timetableData.days
-                .filter((d) => selectedTimetableDay === "ALL" || selectedTimetableDay === d.ttmD_DayName)
-                .map((day, idx) => {
-                  const dayPeriods = timetableData.periods.filter(
-                    (p) => p.ttmD_DayName?.toLowerCase() === day.ttmD_DayName?.toLowerCase()
-                  );
-                  return (
-                    <div key={idx} className="student-screen-card">
-                      <div className="student-screen-card-header">
-                        <h4>
-                          <Clock size={16} style={{ color: "#ea580c" }} /> {day.ttmD_DayName} Schedule
-                        </h4>
-                        <span style={{ fontSize: "0.72rem", color: "#64748b", fontWeight: 700 }}>
-                          {dayPeriods.length} Class Periods Configured
-                        </span>
+                  <div style={{ width: "100%", borderTop: "1px solid #f1f5f9", paddingTop: "0.75rem", display: "flex", flexDirection: "column", gap: "0.5rem", fontSize: "0.76rem" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between" }}>
+                      <span style={{ color: "#64748b" }}>Registration No:</span>
+                      <strong style={{ color: "#1e293b" }}>{studentDetails.regNo || "—"}</strong>
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "space-between" }}>
+                      <span style={{ color: "#64748b" }}>Date of Birth:</span>
+                      <strong style={{ color: "#1e293b" }}>{studentDetails.dob || "—"}</strong>
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "space-between" }}>
+                      <span style={{ color: "#64748b" }}>Gender:</span>
+                      <strong style={{ color: "#1e293b" }}>{studentDetails.gender || "—"}</strong>
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "space-between" }}>
+                      <span style={{ color: "#64748b" }}>Blood Group:</span>
+                      <strong style={{ color: "#ea580c" }}>{studentDetails.bloodGroup || "—"}</strong>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right Details Grid */}
+                <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                  {/* Parent Details Card */}
+                  <div className="student-screen-card">
+                    <div className="student-screen-card-header">
+                      <h4>
+                        <User size={18} style={{ color: "#ea580c" }} /> Parent &amp; Guardian Information
+                      </h4>
+                    </div>
+                    <div style={{ padding: "1.25rem", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", fontSize: "0.82rem" }}>
+                      <div style={{ background: "#fff7ed", padding: "0.85rem", borderRadius: "12px", border: "1px solid rgba(254, 215, 170, 0.7)" }}>
+                        <span style={{ fontSize: "0.68rem", fontWeight: 700, color: "#64748b", textTransform: "uppercase" }}>Father&apos;s Name</span>
+                        <div style={{ fontSize: "1rem", fontWeight: 800, color: "#1e293b", marginTop: "2px" }}>
+                          {studentDetails.fatherName || "—"}
+                        </div>
                       </div>
-
-                      <div style={{ padding: "1rem" }}>
-                        <div className="student-periods-grid">
-                          {dayPeriods.map((period, pIdx) => (
-                            <div key={pIdx} className="student-period-tile" style={{ border: "1px solid rgba(254, 215, 170, 0.65)" }}>
-                              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                                <span
-                                  style={{
-                                    fontSize: "0.68rem",
-                                    fontWeight: 800,
-                                    background: "#fff7ed",
-                                    color: "#ea580c",
-                                    padding: "2px 8px",
-                                    borderRadius: "6px",
-                                    border: "1px solid rgba(251, 146, 60, 0.25)",
-                                  }}
-                                >
-                                  Period {period.TTMP_PeriodName || pIdx + 1}
-                                </span>
-                                <span style={{ fontSize: "0.68rem", color: "#64748b", fontWeight: 600 }}>
-                                  {period.time || `0${8 + pIdx}:30 - 0${9 + pIdx}:15 AM`}
-                                </span>
-                              </div>
-
-                              <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", margin: "0.4rem 0" }}>
-                                <div
-                                  style={{
-                                    width: 34,
-                                    height: 34,
-                                    borderRadius: "8px",
-                                    background: "#f8fafc",
-                                    border: "1px solid #e2e8f0",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    flexShrink: 0,
-                                  }}
-                                >
-                                  {getSubjectIcon(period.ISMS_SubjectName)}
-                                </div>
-                                <div style={{ minWidth: 0 }}>
-                                  <h5
-                                    style={{
-                                      margin: 0,
-                                      fontSize: "0.85rem",
-                                      fontWeight: 800,
-                                      color: "#1e293b",
-                                      whiteSpace: "nowrap",
-                                      overflow: "hidden",
-                                      textOverflow: "ellipsis",
-                                    }}
-                                  >
-                                    {period.ISMS_SubjectName}
-                                  </h5>
-                                  <span style={{ fontSize: "0.68rem", color: "#64748b" }}>
-                                    Room: {period.room || "Room 102"}
-                                  </span>
-                                </div>
-                              </div>
-
-                              <div
-                                style={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "space-between",
-                                  fontSize: "0.68rem",
-                                  color: "#16a34a",
-                                  fontWeight: 700,
-                                  borderTop: "1px dashed rgba(254, 215, 170, 0.65)",
-                                  paddingTop: "0.35rem",
-                                }}
-                              >
-                                <span>Academic Session 2025-26</span>
-                                <span>● Regular</span>
-                              </div>
-                            </div>
-                          ))}
+                      <div style={{ background: "#fff7ed", padding: "0.85rem", borderRadius: "12px", border: "1px solid rgba(254, 215, 170, 0.7)" }}>
+                        <span style={{ fontSize: "0.68rem", fontWeight: 700, color: "#64748b", textTransform: "uppercase" }}>Mother&apos;s Name</span>
+                        <div style={{ fontSize: "1rem", fontWeight: 800, color: "#1e293b", marginTop: "2px" }}>
+                          {studentDetails.motherName || "—"}
                         </div>
                       </div>
                     </div>
-                  );
-                })}
-            </div>
+                  </div>
 
-            {/* BELL TIMINGS FOOTER BANNER */}
-            <div
-              style={{
-                background: "rgba(255, 255, 255, 0.9)",
-                border: "1px solid rgba(254, 215, 170, 0.65)",
-                borderRadius: "14px",
-                padding: "0.75rem 1.25rem",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                fontSize: "0.74rem",
-                color: "#475569",
-              }}
-            >
-              <span>🔔 <strong>Daily School Bell Timings:</strong> Morning Assembly (08:00 AM) • Periods 1-3 (08:30 - 10:45 AM) • Recess (10:45 - 11:15 AM) • Periods 4-6 (11:15 AM - 01:30 PM)</span>
-              <span style={{ color: "#ea580c", fontWeight: 800 }}>Green Valley Public School Master Schedule</span>
-            </div>
+                  {/* Contact Details Card */}
+                  <div className="student-screen-card">
+                    <div className="student-screen-card-header">
+                      <h4>
+                        <MapPin size={18} style={{ color: "#ea580c" }} /> Contact Details &amp; Permanent Address
+                      </h4>
+                    </div>
+                    <div style={{ padding: "1.25rem", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", fontSize: "0.82rem" }}>
+                      <div>
+                        <span style={{ fontSize: "0.7rem", fontWeight: 700, color: "#64748b" }}>Primary Contact Mobile</span>
+                        <div style={{ fontSize: "0.95rem", fontWeight: 800, color: "#1e293b", marginTop: "2px" }}>
+                          {studentDetails.mobile || "—"}
+                        </div>
+                      </div>
+                      <div>
+                        <span style={{ fontSize: "0.7rem", fontWeight: 700, color: "#64748b" }}>Registered Email</span>
+                        <div style={{ fontSize: "0.95rem", fontWeight: 800, color: "#1e293b", marginTop: "2px" }}>
+                          {studentDetails.email || "—"}
+                        </div>
+                      </div>
+                      <div style={{ gridColumn: "span 2" }}>
+                        <span style={{ fontSize: "0.7rem", fontWeight: 700, color: "#64748b" }}>Permanent Residential Address</span>
+                        <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#334155", marginTop: "3px", lineHeight: 1.5 }}>
+                          {studentDetails.address || "—"}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </section>
       )}
 
       {/* ========================================================
-          VIEW 4: DEDICATED FULL SCREEN — EXAM & RESULTS MARKSHEET
+          VIEW 2: DEDICATED FULL SCREEN — EXAM RESULTS
           ======================================================== */}
       {currentScreen === "exam" && (
         <section className="student-fullscreen-page">
-          {/* FLOATING AMBIENT ORBS */}
           <div className="kiosk-orb kiosk-orb-one" />
           <div className="kiosk-orb kiosk-orb-two" />
 
-          {/* SCREEN HEADER WITH PROMINENT BACK BUTTON */}
           <div className="student-screen-subnav">
-            <button className="student-back-to-dash-btn" onClick={() => setCurrentScreen("dashboard")}>
+            <button className="student-back-to-dash-btn" onClick={() => handleNavigateTo("dashboard")}>
               <ArrowLeft size={16} /> Back to Dashboard
             </button>
 
             <div className="student-screen-title-area">
-              <div className="student-screen-icon-bubble" style={{ background: "#ffedd5", color: "#ea580c" }}>
-                <Award size={20} />
+              <div className="student-screen-icon-bubble" style={{ background: "#fff7ed", color: "#ea580c" }}>
+                <FileText size={20} />
               </div>
               <div>
-                <h2>Official Examination Results & Marksheet</h2>
-                <p>Live VAPS Exam Report • {studentName} ({studentAdmNo})</p>
+                <h2>Examination Scorecards &amp; Evaluation</h2>
+                <p>Term Assessments, Marks Ledger &amp; Grade Analysis • {studentDisplayName}</p>
               </div>
             </div>
 
             <div className="student-screen-nav-tools">
-              <span className="student-vaps-connected-pill">● Marks Evaluated</span>
-              <button className="student-refresh-btn" onClick={fetchExam} disabled={examLoading}>
-                <RefreshCw size={13} className={examLoading ? "animate-spin" : ""} />
-                {examLoading ? "Syncing..." : "Refresh"}
-              </button>
-              {/* Quick Jump Pills */}
-              <button className="student-screen-tab-pill" onClick={() => setCurrentScreen("attendance")}>
-                📊 Attendance
-              </button>
-              <button className="student-screen-tab-pill" onClick={() => setCurrentScreen("timetable")}>
-                📅 Timetable
+              <div style={{ display: "flex", gap: "6px" }}>
+                <button
+                  onClick={() => {
+                    setExamMode("EWAS");
+                    fetchExam("EWAS", selectedExamId, selectedSubjectId);
+                  }}
+                  className={`student-screen-tab-pill ${examMode === "EWAS" ? "active" : ""}`}
+                >
+                  Exam-Wise Analysis
+                </button>
+                <button
+                  onClick={() => {
+                    setExamMode("SWAE");
+                    fetchExam("SWAE", selectedExamId, selectedSubjectId);
+                  }}
+                  className={`student-screen-tab-pill ${examMode === "SWAE" ? "active" : ""}`}
+                >
+                  Subject-Wise Analysis
+                </button>
+              </div>
+
+              {/* Dynamic Select Dropdown */}
+              <select
+                style={{
+                  fontSize: "0.78rem",
+                  fontWeight: 700,
+                  padding: "0.35rem 0.75rem",
+                  borderRadius: "8px",
+                  border: "1px solid rgba(234, 88, 12, 0.4)",
+                  background: "#ffffff",
+                  color: "#1e293b",
+                  outline: "none",
+                }}
+                value={examMode === "EWAS" ? selectedExamId : selectedSubjectId}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (examMode === "EWAS") {
+                    setSelectedExamId(val);
+                    fetchExam("EWAS", val, selectedSubjectId);
+                  } else {
+                    setSelectedSubjectId(val);
+                    fetchExam("SWAE", selectedExamId, val);
+                  }
+                }}
+              >
+                {examMode === "EWAS"
+                  ? examsList.map((ex) => (
+                      <option key={ex.id} value={ex.id}>
+                        {ex.name}
+                      </option>
+                    ))
+                  : subjectsList.map((sub) => (
+                      <option key={sub.id} value={sub.id}>
+                        {sub.name}
+                      </option>
+                    ))}
+              </select>
+
+              <button
+                className="student-refresh-btn"
+                onClick={() => fetchExam()}
+                style={{ borderColor: "#ea580c", color: "#ea580c" }}
+              >
+                <RefreshCw size={13} className={loading ? "animate-spin" : ""} /> Refresh Marks
               </button>
             </div>
           </div>
 
-          {/* MAIN SCREEN BODY */}
           <div className="student-screen-scroll-body">
-            {/* KPI METRICS ROW */}
+            {/* KPI STATS STRIP */}
             <div className="student-kpi-strip">
               <div className="student-kpi-card">
                 <div className="student-kpi-info">
-                  <span>Overall Percentage</span>
-                  <h4 style={{ color: "#ea580c" }}>{overallExamPct}%</h4>
+                  <span>Evaluated Subjects</span>
+                  <h4>{examMarksData.length} Subjects</h4>
                 </div>
-                <div className="student-kpi-icon" style={{ background: "#ffedd5", color: "#ea580c" }}>
-                  <Percent size={20} />
+                <div className="student-kpi-icon" style={{ background: "#fff7ed", color: "#ea580c" }}>
+                  <Award size={20} />
                 </div>
               </div>
 
@@ -1646,18 +2266,167 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
                 <div className="student-kpi-info">
                   <span>Total Marks Scored</span>
                   <h4>
-                    {totalObtainedMarks} <span style={{ fontSize: "0.9rem", color: "#64748b" }}>/ {totalMaxMarks}</span>
+                    {examMarksData.reduce((acc, m) => acc + m.obtainedMarks, 0)} /{" "}
+                    {examMarksData.reduce((acc, m) => acc + m.maxMarks, 0)}
                   </h4>
                 </div>
-                <div className="student-kpi-icon" style={{ background: "#dbeafe", color: "#1d4ed8" }}>
-                  <Award size={20} />
+                <div className="student-kpi-icon" style={{ background: "#f0fdfa", color: "#0d9488" }}>
+                  <TrendingUp size={20} />
                 </div>
               </div>
 
               <div className="student-kpi-card">
                 <div className="student-kpi-info">
-                  <span>Academic Grade</span>
-                  <h4 style={{ color: "#16a34a" }}>Grade A+</h4>
+                  <span>Average Percentage</span>
+                  <h4>
+                    {examMarksData.length > 0 && examMarksData.reduce((acc, m) => acc + m.maxMarks, 0) > 0
+                      ? `${Math.round(
+                          (examMarksData.reduce((acc, m) => acc + m.obtainedMarks, 0) /
+                            examMarksData.reduce((acc, m) => acc + m.maxMarks, 0)) *
+                            100
+                        )}%`
+                      : "—"}
+                  </h4>
+                </div>
+                <div className="student-kpi-icon" style={{ background: "#eff6ff", color: "#2563eb" }}>
+                  <Percent size={20} />
+                </div>
+              </div>
+
+              <div className="student-kpi-card">
+                <div className="student-kpi-info">
+                  <span>Pass Status</span>
+                  <h4>100% Passed</h4>
+                </div>
+                <div className="student-kpi-icon" style={{ background: "#dcfce7", color: "#16a34a" }}>
+                  <CheckCircle2 size={20} />
+                </div>
+              </div>
+            </div>
+
+            {/* MARKS TABLE */}
+            {examMarksData.length === 0 && !loading ? (
+              renderEmptyState("No examination marks records returned from the backend server for this selection.")
+            ) : (
+              <div className="student-screen-card">
+                <div className="student-screen-card-header">
+                  <h4>
+                    <FileText size={18} style={{ color: "#ea580c" }} /> Examination Scorecard Ledger
+                  </h4>
+                  <span style={{ fontSize: "0.78rem", fontWeight: 800, color: "#ea580c" }}>
+                    {examMarksData.length} Subjects Evaluated
+                  </span>
+                </div>
+                <div style={{ overflowX: "auto" }}>
+                  <table className="student-screen-table">
+                    <thead>
+                      <tr>
+                        <th>S.No</th>
+                        <th>{examMode === "EWAS" ? "Subject Name" : "Exam Name"}</th>
+                        <th>Max Marks</th>
+                        <th>Pass Marks</th>
+                        <th>Marks Obtained</th>
+                        <th>Percentage</th>
+                        <th>Grade</th>
+                        <th>Result</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {examMarksData.map((m, idx) => (
+                        <tr key={idx}>
+                          <td style={{ color: "#94a3b8", fontWeight: 700 }}>{idx + 1}</td>
+                          <td style={{ fontWeight: 800, color: "#0f172a" }}>
+                            {examMode === "EWAS" ? m.subject : m.exam}
+                          </td>
+                          <td style={{ color: "#64748b" }}>{m.maxMarks}</td>
+                          <td style={{ color: "#64748b" }}>{m.passMarks}</td>
+                          <td style={{ fontWeight: 800, color: "#ea580c", fontSize: "0.95rem" }}>
+                            {m.obtainedMarks}
+                          </td>
+                          <td style={{ fontWeight: 700 }}>
+                            {m.maxMarks > 0 ? `${Math.round((m.obtainedMarks / m.maxMarks) * 100)}%` : "—"}
+                          </td>
+                          <td>
+                            <span
+                              style={{
+                                padding: "2px 8px",
+                                borderRadius: 6,
+                                background: "#dcfce7",
+                                color: "#16a34a",
+                                fontWeight: 800,
+                                fontSize: "0.72rem",
+                              }}
+                            >
+                              {m.grade}
+                            </span>
+                          </td>
+                          <td>
+                            <span style={{ color: "#16a34a", fontWeight: 700, display: "inline-flex", alignItems: "center", gap: "4px" }}>
+                              <CheckCircle2 size={13} /> Pass
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* ========================================================
+          VIEW 3: DEDICATED FULL SCREEN — FEES ANALYSIS
+          ======================================================== */}
+      {currentScreen === "fees" && (
+        <section className="student-fullscreen-page">
+          <div className="kiosk-orb kiosk-orb-one" />
+          <div className="kiosk-orb kiosk-orb-two" />
+
+          <div className="student-screen-subnav">
+            <button className="student-back-to-dash-btn" onClick={() => handleNavigateTo("dashboard")}>
+              <ArrowLeft size={16} /> Back to Dashboard
+            </button>
+
+            <div className="student-screen-title-area">
+              <div className="student-screen-icon-bubble" style={{ background: "#fff7ed", color: "#ea580c" }}>
+                <Receipt size={20} />
+              </div>
+              <div>
+                <h2>Academic Year Fee Ledger &amp; Collections</h2>
+                <p>Tuition Fees, Receipt Ledgers &amp; Balance Dues • {studentDisplayName}</p>
+              </div>
+            </div>
+
+            <div className="student-screen-nav-tools">
+              <button
+                className="student-refresh-btn"
+                onClick={() => fetchFees()}
+                style={{ borderColor: "#ea580c", color: "#ea580c" }}
+              >
+                <RefreshCw size={13} className={loading ? "animate-spin" : ""} /> Refresh Fee Records
+              </button>
+            </div>
+          </div>
+
+          <div className="student-screen-scroll-body">
+            {/* KPI STATS STRIP */}
+            <div className="student-kpi-strip">
+              <div className="student-kpi-card">
+                <div className="student-kpi-info">
+                  <span>Total Receivable</span>
+                  <h4>₹{feeData.reduce((acc, f) => acc + f.receivable, 0).toLocaleString()}</h4>
+                </div>
+                <div className="student-kpi-icon" style={{ background: "#eff6ff", color: "#2563eb" }}>
+                  <Receipt size={20} />
+                </div>
+              </div>
+
+              <div className="student-kpi-card">
+                <div className="student-kpi-info">
+                  <span>Total Paid (Collection)</span>
+                  <h4>₹{feeData.reduce((acc, f) => acc + f.collection, 0).toLocaleString()}</h4>
                 </div>
                 <div className="student-kpi-icon" style={{ background: "#dcfce7", color: "#16a34a" }}>
                   <CheckCircle2 size={20} />
@@ -1666,511 +2435,1271 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
 
               <div className="student-kpi-card">
                 <div className="student-kpi-info">
-                  <span>Result Standing</span>
-                  <h4 style={{ color: "#15803d" }}>PASS • Distinction</h4>
+                  <span>Total Concession</span>
+                  <h4>₹{feeData.reduce((acc, f) => acc + f.concession, 0).toLocaleString()}</h4>
                 </div>
-                <div className="student-kpi-icon" style={{ background: "#f0fdf4", color: "#15803d" }}>
+                <div className="student-kpi-icon" style={{ background: "#f5f3ff", color: "#7c3aed" }}>
+                  <Sparkles size={20} />
+                </div>
+              </div>
+
+              <div className="student-kpi-card">
+                <div className="student-kpi-info">
+                  <span>Pending Balance Dues</span>
+                  <h4 style={{ color: totalFeeBalance <= 0 ? "#16a34a" : "#ea580c" }}>
+                    ₹{totalFeeBalance.toLocaleString()}
+                  </h4>
+                </div>
+                <div
+                  className="student-kpi-icon"
+                  style={{
+                    background: totalFeeBalance <= 0 ? "#dcfce7" : "#fff7ed",
+                    color: totalFeeBalance <= 0 ? "#16a34a" : "#ea580c",
+                  }}
+                >
                   <ShieldCheck size={20} />
                 </div>
               </div>
             </div>
 
-            {/* MARKSHEET CARD */}
-            <div className="student-screen-card">
-              <div className="student-screen-card-header">
-                <h4>
-                  <FileText size={16} style={{ color: "#ea580c" }} />{" "}
-                  {examData.exams[0]?.emE_ExamName || "Periodic Assessment Term 1"} — Official Report Card
-                </h4>
-                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                  <span style={{ fontSize: "0.72rem", background: "#dcfce7", color: "#15803d", fontWeight: 700, padding: "2px 8px", borderRadius: "6px" }}>
-                    Verified by Examination Controller
+            {/* FEE LEDGER TABLE */}
+            {feeData.length === 0 && !loading ? (
+              renderEmptyState("No fee ledger records returned from the backend server.")
+            ) : (
+              <div className="student-screen-card">
+                <div className="student-screen-card-header">
+                  <h4>
+                    <Receipt size={18} style={{ color: "#ea580c" }} /> Academic Year Fee Analysis Breakdown
+                  </h4>
+                  <span style={{ fontSize: "0.78rem", fontWeight: 800, color: "#ea580c" }}>
+                    {feeData.length} Terms Recorded
                   </span>
                 </div>
-              </div>
-
-              <div style={{ overflowX: "auto" }}>
-                <table className="student-screen-table">
-                  <thead>
-                    <tr>
-                      <th>Subject Name</th>
-                      <th style={{ textAlign: "center" }}>Maximum Marks</th>
-                      <th style={{ textAlign: "center" }}>Marks Obtained</th>
-                      <th style={{ textAlign: "center" }}>Score Progress</th>
-                      <th style={{ textAlign: "center" }}>Grade</th>
-                      <th style={{ textAlign: "center" }}>Remarks</th>
-                      <th style={{ textAlign: "right" }}>Evaluation</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {examReports.map((rpt, idx) => {
-                      const maxM = rpt.ESTMPS_MaxMarks || 100;
-                      const obtM = rpt.ESTMPS_ObtainedMarks || 0;
-                      const pct = Math.round((obtM / maxM) * 100);
-                      return (
+                <div style={{ overflowX: "auto" }}>
+                  <table className="student-screen-table">
+                    <thead>
+                      <tr>
+                        <th>Academic Year</th>
+                        <th>Receivable (₹)</th>
+                        <th>Collection / Paid (₹)</th>
+                        <th>Concession (₹)</th>
+                        <th>Adjusted (₹)</th>
+                        <th>Balance Dues (₹)</th>
+                        <th>Account Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {feeData.map((f, idx) => (
                         <tr key={idx}>
-                          <td style={{ fontWeight: 700, color: "#1e293b" }}>
-                            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                              {getSubjectIcon(rpt.ISMS_SubjectName)}
-                              <span>{rpt.ISMS_SubjectName}</span>
-                            </div>
+                          <td style={{ fontWeight: 800, color: "#0f172a" }}>{f.year}</td>
+                          <td style={{ color: "#334155" }}>₹{f.receivable.toLocaleString()}</td>
+                          <td style={{ fontWeight: 700, color: "#16a34a" }}>₹{f.collection.toLocaleString()}</td>
+                          <td style={{ color: "#7c3aed" }}>₹{f.concession.toLocaleString()}</td>
+                          <td style={{ color: "#64748b" }}>₹{f.adjusted.toLocaleString()}</td>
+                          <td style={{ fontWeight: 800, color: f.balance <= 0 ? "#16a34a" : "#ea580c" }}>
+                            ₹{f.balance.toLocaleString()}
                           </td>
-                          <td style={{ textAlign: "center", color: "#64748b" }}>{maxM}</td>
-                          <td style={{ textAlign: "center", fontWeight: 800, color: "#1e293b", fontSize: "0.9rem" }}>{obtM}</td>
-                          <td style={{ textAlign: "center", width: "180px" }}>
-                            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                              <div style={{ flex: 1, height: "6px", background: "#e2e8f0", borderRadius: "9999px", overflow: "hidden" }}>
-                                <div style={{ height: "100%", width: `${pct}%`, background: pct >= 80 ? "#16a34a" : pct >= 60 ? "#0284c7" : "#ea580c", borderRadius: "9999px" }} />
-                              </div>
-                              <span style={{ fontSize: "0.72rem", fontWeight: 700, color: "#475569" }}>{pct}%</span>
-                            </div>
-                          </td>
-                          <td style={{ textAlign: "center" }}>
+                          <td>
                             <span
                               style={{
                                 padding: "2px 8px",
-                                borderRadius: "6px",
+                                borderRadius: 6,
+                                background: f.balance <= 0 ? "#dcfce7" : "#fff7ed",
+                                color: f.balance <= 0 ? "#16a34a" : "#ea580c",
                                 fontWeight: 800,
-                                fontSize: "0.78rem",
-                                background: pct >= 90 ? "#dcfce7" : pct >= 75 ? "#eff6ff" : "#fef3c7",
-                                color: pct >= 90 ? "#15803d" : pct >= 75 ? "#1d4ed8" : "#b45309",
+                                fontSize: "0.72rem",
                               }}
                             >
-                              {rpt.ESTMPS_ObtainedGrade || "A+"}
-                            </span>
-                          </td>
-                          <td style={{ textAlign: "center", color: "#64748b", fontSize: "0.76rem" }}>
-                            {rpt.remarks || "Excellent"}
-                          </td>
-                          <td style={{ textAlign: "right" }}>
-                            <span style={{ color: pct >= 40 ? "#16a34a" : "#dc2626", fontWeight: 800, fontSize: "0.76rem" }}>
-                              {pct >= 40 ? "PASS" : "FAIL"}
+                              {f.status}
                             </span>
                           </td>
                         </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
-            </div>
-
-            {/* GRADING SCALE REFERENCE FOOTER */}
-            <div
-              style={{
-                background: "rgba(255, 255, 255, 0.9)",
-                border: "1px solid rgba(254, 215, 170, 0.65)",
-                borderRadius: "14px",
-                padding: "0.75rem 1.25rem",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                fontSize: "0.72rem",
-                color: "#64748b",
-              }}
-            >
-              <span>
-                <strong>CBSE Grading Scale:</strong> A1 (91–100% Outstanding) • A2 (81–90% Excellent) • B1 (71–80% Very Good) • B2 (61–70% Good) • C1 (51–60% Satisfactory) • D (33–40% Pass)
-              </span>
-              <span style={{ fontWeight: 800, color: "#166534" }}>Certified Academic Report Card</span>
-            </div>
+            )}
           </div>
         </section>
       )}
 
       {/* ========================================================
-          VIEW 5: DEDICATED FULL SCREEN — OFFICIAL STUDENT PROFILE
+          VIEW 4: DEDICATED FULL SCREEN — ATTENDANCE LEDGER
           ======================================================== */}
-      {currentScreen === "profile" && (
-        <section className="student-fullscreen-page">
-          {/* FLOATING AMBIENT ORBS */}
-          <div className="kiosk-orb kiosk-orb-one" />
-          <div className="kiosk-orb kiosk-orb-two" />
-
-          {/* SCREEN HEADER WITH PROMINENT BACK BUTTON */}
-          <div className="student-screen-subnav">
-            <button className="student-back-to-dash-btn" onClick={() => setCurrentScreen("dashboard")}>
-              <ArrowLeft size={16} /> Back to Dashboard
-            </button>
-
-            <div className="student-screen-title-area">
-              <div className="student-screen-icon-bubble" style={{ background: "#ede9fe", color: "#7c3aed" }}>
-                <User size={20} />
-              </div>
-              <div>
-                <h2>Official Student Profile & Credentials</h2>
-                <p>Enrolled Student Record • {schoolName}</p>
-              </div>
-            </div>
-
-            <div className="student-screen-nav-tools">
-              <button className="student-screen-tab-pill" onClick={() => setCurrentScreen("attendance")}>
-                📊 Attendance
-              </button>
-              <button className="student-screen-tab-pill" onClick={() => setCurrentScreen("timetable")}>
-                📅 Timetable
-              </button>
-              <button className="student-screen-tab-pill" onClick={() => setCurrentScreen("exam")}>
-                📝 Results
-              </button>
-            </div>
-          </div>
-
-          {/* MAIN SCREEN BODY */}
-          <div className="student-screen-scroll-body">
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "1.25rem" }}>
-              {/* ID Badge Card */}
-              <div className="student-screen-card" style={{ padding: "1.5rem", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center" }}>
-                <div style={{ position: "relative", width: 100, height: 100, marginBottom: "1rem" }}>
-                  <img
-                    src={session?.img || "/student_avatar.png"}
-                    alt={studentName}
-                    style={{ width: "100%", height: "100%", borderRadius: "50%", objectFit: "cover", border: "4px solid #fff7ed", boxShadow: "0 4px 14px rgba(234, 88, 12, 0.2)" }}
-                  />
-                  <span style={{ position: "absolute", bottom: 2, right: 2, width: 18, height: 18, background: "#16a34a", borderRadius: "50%", border: "2px solid #ffffff" }} />
-                </div>
-
-                <h3 style={{ fontFamily: "Outfit, sans-serif", fontSize: "1.3rem", fontWeight: 800, color: "#1e293b", margin: 0 }}>
-                  {studentName}
-                </h3>
-                <span style={{ fontSize: "0.82rem", color: "#ea580c", fontWeight: 800, margin: "0.25rem 0 0.75rem 0" }}>
-                  {studentClass}
-                </span>
-
-                <span style={{ background: "#dcfce7", color: "#15803d", fontSize: "0.72rem", fontWeight: 800, padding: "3px 10px", borderRadius: "9999px", marginBottom: "1rem" }}>
-                  ● Enrolled & Active Student
-                </span>
-
-                <div style={{ width: "100%", borderTop: "1px solid rgba(254, 215, 170, 0.5)", paddingTop: "1rem", display: "flex", flexDirection: "column", gap: "0.5rem", textAlign: "left", fontSize: "0.78rem" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <span style={{ color: "#64748b" }}>Roll Number:</span>
-                    <strong style={{ color: "#1e293b" }}>{studentRoll}</strong>
-                  </div>
-                  <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <span style={{ color: "#64748b" }}>Admission Number:</span>
-                    <strong style={{ color: "#1e293b" }}>{studentAdmNo}</strong>
-                  </div>
-                  <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <span style={{ color: "#64748b" }}>Academic Session:</span>
-                    <strong style={{ color: "#1e293b" }}>{academicYear}</strong>
-                  </div>
-                  <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <span style={{ color: "#64748b" }}>Bus Route:</span>
-                    <strong style={{ color: "#1e293b" }}>Route #14 (North Campus)</strong>
-                  </div>
-                </div>
-              </div>
-
-              {/* Academic Ledger & Credentials Card */}
-              <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-                <div className="student-screen-card" style={{ padding: "1.25rem" }}>
-                  <h4 style={{ fontFamily: "Outfit, sans-serif", fontSize: "1rem", fontWeight: 800, color: "#1e293b", margin: "0 0 1rem 0" }}>
-                    Official Institution Details & Affiliation
-                  </h4>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.85rem", fontSize: "0.78rem" }}>
-                    <div style={{ background: "#fffcf9", padding: "0.75rem", borderRadius: "10px", border: "1px solid rgba(254, 215, 170, 0.6)" }}>
-                      <span style={{ color: "#ea580c", fontSize: "0.68rem", fontWeight: 800 }}>INSTITUTION NAME</span>
-                      <div style={{ fontWeight: 800, color: "#1e293b", marginTop: "2px" }}>{schoolName}</div>
-                    </div>
-                    <div style={{ background: "#fffcf9", padding: "0.75rem", borderRadius: "10px", border: "1px solid rgba(254, 215, 170, 0.6)" }}>
-                      <span style={{ color: "#ea580c", fontSize: "0.68rem", fontWeight: 800 }}>AFFILIATION BOARD</span>
-                      <div style={{ fontWeight: 800, color: "#1e293b", marginTop: "2px" }}>CBSE New Delhi (Affil #1930421)</div>
-                    </div>
-                    <div style={{ background: "#fffcf9", padding: "0.75rem", borderRadius: "10px", border: "1px solid rgba(254, 215, 170, 0.6)" }}>
-                      <span style={{ color: "#ea580c", fontSize: "0.68rem", fontWeight: 800 }}>VAPS MI ID</span>
-                      <div style={{ fontWeight: 800, color: "#1e293b", marginTop: "2px" }}>{session?.miid || 31}</div>
-                    </div>
-                    <div style={{ background: "#fffcf9", padding: "0.75rem", borderRadius: "10px", border: "1px solid rgba(254, 215, 170, 0.6)" }}>
-                      <span style={{ color: "#ea580c", fontSize: "0.68rem", fontWeight: 800 }}>STUDENT VAPS ID</span>
-                      <div style={{ fontWeight: 800, color: "#1e293b", marginTop: "2px" }}>{session?.AMST_ID || 1204}</div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="student-screen-card" style={{ padding: "1.25rem" }}>
-                  <h4 style={{ fontFamily: "Outfit, sans-serif", fontSize: "1rem", fontWeight: 800, color: "#1e293b", margin: "0 0 1rem 0" }}>
-                    Academic Performance Summary
-                  </h4>
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "0.75rem", textAlign: "center" }}>
-                    <div style={{ background: "#f0fdf4", border: "1px solid #bbf7d0", padding: "0.85rem", borderRadius: "12px" }}>
-                      <span style={{ fontSize: "0.7rem", color: "#166534", fontWeight: 800 }}>ATTENDANCE RATE</span>
-                      <div style={{ fontSize: "1.4rem", fontWeight: 800, color: "#15803d" }}>{overallAttendancePct}%</div>
-                    </div>
-                    <div style={{ background: "#eff6ff", border: "1px solid #bfdbfe", padding: "0.85rem", borderRadius: "12px" }}>
-                      <span style={{ fontSize: "0.7rem", color: "#1e40af", fontWeight: 800 }}>EXAM PERCENTAGE</span>
-                      <div style={{ fontSize: "1.4rem", fontWeight: 800, color: "#2563eb" }}>{overallExamPct}%</div>
-                    </div>
-                    <div style={{ background: "#faf5ff", border: "1px solid #e9d5ff", padding: "0.85rem", borderRadius: "12px" }}>
-                      <span style={{ fontSize: "0.7rem", color: "#6b21a8", fontWeight: 800 }}>OVERALL GRADE</span>
-                      <div style={{ fontSize: "1.4rem", fontWeight: 800, color: "#7e22ce" }}>Grade A+</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* ========================================================
-          VIEW 6: DEDICATED FULL SCREEN — GREENBOT AI SPACE
-          ======================================================== */}
-      {currentScreen === "aispace" && (
+      {currentScreen === "attendance" && (
         <section className="student-fullscreen-page">
           <div className="kiosk-orb kiosk-orb-one" />
           <div className="kiosk-orb kiosk-orb-two" />
 
-          {/* SCREEN HEADER WITH PROMINENT BACK BUTTON */}
           <div className="student-screen-subnav">
-            <button className="student-back-to-dash-btn" onClick={() => setCurrentScreen("dashboard")}>
+            <button className="student-back-to-dash-btn" onClick={() => handleNavigateTo("dashboard")}>
               <ArrowLeft size={16} /> Back to Dashboard
             </button>
 
             <div className="student-screen-title-area">
-              <div
-                style={{
-                  width: 44,
-                  height: 44,
-                  borderRadius: "50%",
-                  overflow: "hidden",
-                  border: "2px solid #ea580c",
-                  boxShadow: "0 4px 14px rgba(234, 88, 12, 0.25)",
-                  flexShrink: 0,
-                  background: "#fff",
-                }}
-              >
-                <img src="/ai_robot.png" alt="GreenBot" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              <div className="student-screen-icon-bubble" style={{ background: "#fff7ed", color: "#ea580c" }}>
+                <UserCheck size={20} />
               </div>
               <div>
-                <h2>GreenBot AI Campus Assistant & Learning Space</h2>
-                <p>Interactive AI Companion • {studentName} ({studentClass})</p>
+                <h2>Morning Attendance Register &amp; Ledger</h2>
+                <p>Monthly Working Days, Presence Ratio &amp; Biometrics • {studentDisplayName}</p>
               </div>
             </div>
 
             <div className="student-screen-nav-tools">
               <button
                 className="student-refresh-btn"
-                onClick={() =>
-                  setChatMessages([
-                    {
-                      id: "welcome-reset",
-                      sender: "bot",
-                      text: "Chat refreshed! Hello Aarav, how can GreenBot assist your learning journey right now?",
-                      time: "Just now",
-                      suggestions: ["What is my timetable today?", "How is my attendance?", "Show my exam marks"],
-                    },
-                  ])
-                }
-                title="Clear conversation"
+                onClick={() => fetchAttendance()}
+                style={{ borderColor: "#ea580c", color: "#ea580c" }}
               >
-                <RefreshCw size={13} /> Reset Chat
+                <RefreshCw size={13} className={loading ? "animate-spin" : ""} /> Refresh Attendance
               </button>
-              <span
-                style={{
-                  background: "#f0fdf4",
-                  color: "#16a34a",
-                  padding: "0.32rem 0.75rem",
-                  borderRadius: 9999,
-                  fontSize: "0.72rem",
-                  fontWeight: 800,
-                  border: "1px solid rgba(22, 163, 74, 0.3)",
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "0.35rem",
-                }}
-              >
-                <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#16a34a" }} />
-                Campus AI Online
-              </span>
             </div>
           </div>
 
-          {/* SCREEN MAIN BODY (SPLIT 2 COLUMNS) */}
-          <div className="student-screen-scroll-body" style={{ overflow: "hidden" }}>
-            <div className="ai-space-screen-layout">
-              {/* LEFT SIDEBAR: ROBOT SHOWCASE & QUICK TOPICS */}
-              <aside className="ai-space-persona-card">
-                <div className="ai-robot-hero-box">
-                  <div className="ai-robot-showcase-frame">
-                    <img src="/ai_robot.png" alt="GreenBot" className="ai-robot-showcase-img" />
-                  </div>
-                  <h3>GreenBot</h3>
-                  <p>Smart Kiosk Companion</p>
+          <div className="student-screen-scroll-body">
+            {/* KPI STATS STRIP */}
+            <div className="student-kpi-strip">
+              <div className="student-kpi-card">
+                <div className="student-kpi-info">
+                  <span>Overall Attendance</span>
+                  <h4 style={{ color: dynamicAttendanceRate >= 75 ? "#16a34a" : "#ea580c" }}>
+                    {dynamicAttendanceRate}%
+                  </h4>
                 </div>
-
-                <div className="ai-speech-bubble-intro">
-                  &ldquo;Hi Aarav! I have live access to your Class 5-B timetable, attendance register, report cards, and school circulars. Tap any topic below or type your question!&rdquo;
+                <div className="student-kpi-icon" style={{ background: "#dcfce7", color: "#16a34a" }}>
+                  <UserCheck size={20} />
                 </div>
+              </div>
 
-                <div className="ai-quick-topics-list">
-                  <div style={{ fontSize: "0.68rem", fontWeight: 800, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.15rem" }}>
-                    Popular Student Queries
-                  </div>
-                  <button className="ai-topic-chip-btn" onClick={() => handleSendChatMessage("What is my timetable today?")}>
-                    <Calendar size={13} style={{ color: "#0284c7" }} /> Today&apos;s Timetable & Rooms
-                  </button>
-                  <button className="ai-topic-chip-btn" onClick={() => handleSendChatMessage("How is my attendance?")}>
-                    <CheckCircle2 size={13} style={{ color: "#16a34a" }} /> Monthly Attendance Turnout
-                  </button>
-                  <button className="ai-topic-chip-btn" onClick={() => handleSendChatMessage("Show my latest exam scores")}>
-                    <Award size={13} style={{ color: "#7c3aed" }} /> Term-1 Marks & Grades
-                  </button>
-                  <button className="ai-topic-chip-btn" onClick={() => handleSendChatMessage("What are the latest school notices?")}>
-                    <Bell size={13} style={{ color: "#ea580c" }} /> Official Campus Circulars
-                  </button>
-                  <button className="ai-topic-chip-btn" onClick={() => handleSendChatMessage("Explain photosynthesis simply")}>
-                    <Sparkles size={13} style={{ color: "#059669" }} /> Science: Photosynthesis
-                  </button>
+              <div className="student-kpi-card">
+                <div className="student-kpi-info">
+                  <span>Total Working Days</span>
+                  <h4>{totalWorkingDays} Days</h4>
                 </div>
-
-                {/* Student Context Card */}
-                <div
-                  style={{
-                    background: "#f8fafc",
-                    border: "1px solid #e2e8f0",
-                    borderRadius: "10px",
-                    padding: "0.55rem 0.75rem",
-                    fontSize: "0.68rem",
-                    color: "#64748b",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "2px",
-                  }}
-                >
-                  <div style={{ fontWeight: 800, color: "#1e293b" }}>{studentName}</div>
-                  <div>Class: {studentClass} • Roll #{studentRoll}</div>
-                  <div>Campus: Green Valley Public School</div>
+                <div className="student-kpi-icon" style={{ background: "#eff6ff", color: "#2563eb" }}>
+                  <Calendar size={20} />
                 </div>
-              </aside>
+              </div>
 
-              {/* RIGHT MAIN CHAT AREA */}
-              <div className="ai-space-chat-card">
-                {/* Mini Header */}
-                <div className="ai-chat-header">
-                  <div className="ai-chat-header-left">
-                    <Sparkles size={16} style={{ color: "#ea580c" }} />
-                    <span style={{ fontSize: "0.85rem", fontWeight: 800, color: "#1e293b" }}>
-                      AI Conversational Learning Assistant
-                    </span>
-                  </div>
-                  <div style={{ fontSize: "0.72rem", color: "#64748b" }}>
-                    Active Context: <strong style={{ color: "#0d9488" }}>Class 5-B Learner</strong>
-                  </div>
+              <div className="student-kpi-card">
+                <div className="student-kpi-info">
+                  <span>Total Days Present</span>
+                  <h4>{totalPresentDays} Days</h4>
                 </div>
+                <div className="student-kpi-icon" style={{ background: "#f0fdfa", color: "#0d9488" }}>
+                  <CheckCircle2 size={20} />
+                </div>
+              </div>
 
-                {/* Messages Stream */}
-                <div className="ai-chat-messages-stream">
-                  {chatMessages.map((msg) => (
-                    <div
-                      key={msg.id}
-                      className={`ai-msg-row ${msg.sender === "bot" ? "ai-msg-row-bot" : "ai-msg-row-user"}`}
-                    >
-                      {msg.sender === "bot" ? (
-                        <img src="/ai_robot.png" alt="GreenBot" className="ai-msg-avatar" style={{ border: "2px solid #0d9488" }} />
-                      ) : (
-                        <img src={session?.img || "/student_avatar.png"} alt={studentName} className="ai-msg-avatar" style={{ border: "2px solid #ea580c" }} />
-                      )}
+              <div className="student-kpi-card">
+                <div className="student-kpi-info">
+                  <span>Total Days Absent</span>
+                  <h4>{attendanceData.reduce((acc, a) => acc + a.totalAbsent, 0)} Days</h4>
+                </div>
+                <div className="student-kpi-icon" style={{ background: "#fee2e2", color: "#dc2626" }}>
+                  <AlertCircle size={20} />
+                </div>
+              </div>
+            </div>
 
-                      <div className="ai-msg-content-wrap">
-                        <div className="ai-msg-sender-meta">
-                          <span>{msg.sender === "bot" ? "GreenBot" : studentName}</span>
-                          {msg.sender === "bot" && (
+            {/* MONTHLY ATTENDANCE TABLE */}
+            {attendanceData.length === 0 && !loading ? (
+              renderEmptyState("No monthly attendance records returned from the backend server.")
+            ) : (
+              <div className="student-screen-card">
+                <div className="student-screen-card-header">
+                  <h4>
+                    <UserCheck size={18} style={{ color: "#ea580c" }} /> Monthly Working Days &amp; Attendance Ratio
+                  </h4>
+                  <span style={{ fontSize: "0.78rem", fontWeight: 800, color: "#ea580c" }}>
+                    {attendanceData.length} Months Logged
+                  </span>
+                </div>
+                <div style={{ overflowX: "auto" }}>
+                  <table className="student-screen-table">
+                    <thead>
+                      <tr>
+                        <th>Month Name</th>
+                        <th>Class Held (Working Days)</th>
+                        <th>Total Present</th>
+                        <th>Total Absent</th>
+                        <th>Presence Ratio (%)</th>
+                        <th>CBSE Compliance</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {attendanceData.map((item, idx) => (
+                        <tr key={idx}>
+                          <td style={{ fontWeight: 800, color: "#0f172a" }}>{item.month}</td>
+                          <td style={{ color: "#334155" }}>{item.classHeld} Days</td>
+                          <td style={{ fontWeight: 700, color: "#16a34a" }}>{item.totalPresent} Days</td>
+                          <td style={{ color: "#dc2626" }}>{item.totalAbsent} Days</td>
+                          <td style={{ fontWeight: 800, color: "#ea580c", fontSize: "0.95rem" }}>
+                            {item.percentage}%
+                          </td>
+                          <td>
                             <span
                               style={{
-                                background: "#f0fdfa",
-                                color: "#0d9488",
-                                fontSize: "0.6rem",
-                                padding: "1px 5px",
-                                borderRadius: 4,
+                                padding: "2px 8px",
+                                borderRadius: 6,
+                                background: item.percentage >= 75 ? "#dcfce7" : "#fee2e2",
+                                color: item.percentage >= 75 ? "#16a34a" : "#dc2626",
                                 fontWeight: 800,
+                                fontSize: "0.72rem",
                               }}
                             >
-                              AI Companion
+                              {item.percentage >= 75 ? "Compliant" : "Shortage"}
                             </span>
-                          )}
-                          <span>• {msg.time}</span>
-                        </div>
-
-                        <div className={`ai-bubble ${msg.sender === "bot" ? "ai-bubble-bot" : "ai-bubble-user"}`}>
-                          <div style={{ whiteSpace: "pre-wrap" }}>{msg.text}</div>
-
-                          {msg.suggestions && msg.suggestions.length > 0 && (
-                            <div className="ai-msg-suggestions-bar">
-                              {msg.suggestions.map((sug, sIdx) => (
-                                <button
-                                  key={sIdx}
-                                  className="ai-msg-suggestion-chip"
-                                  onClick={() => handleSendChatMessage(sug)}
-                                >
-                                  {sug}
-                                </button>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-
-                  {/* Typing Indicator */}
-                  {isTyping && (
-                    <div className="ai-msg-row ai-msg-row-bot">
-                      <img src="/ai_robot.png" alt="GreenBot" className="ai-msg-avatar" style={{ border: "2px solid #0d9488" }} />
-                      <div className="ai-typing-indicator">
-                        <span className="ai-typing-dot" />
-                        <span className="ai-typing-dot" />
-                        <span className="ai-typing-dot" />
-                      </div>
-                    </div>
-                  )}
-
-                  <div ref={chatMessagesEndRef} />
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
 
-                {/* Quick Prompts Bar */}
-                <div className="ai-quick-prompts-bar">
-                  <span style={{ fontSize: "0.68rem", fontWeight: 800, color: "#94a3b8", flexShrink: 0 }}>
-                    Quick Prompts:
+      {/* ========================================================
+          VIEW 5: DEDICATED FULL SCREEN — CALENDAR OF EVENTS (COE)
+          ======================================================== */}
+      {currentScreen === "events" && (
+        <section className="student-fullscreen-page">
+          <div className="kiosk-orb kiosk-orb-one" />
+          <div className="kiosk-orb kiosk-orb-two" />
+
+          <div className="student-screen-subnav">
+            <button className="student-back-to-dash-btn" onClick={() => handleNavigateTo("dashboard")}>
+              <ArrowLeft size={16} /> Back to Dashboard
+            </button>
+
+            <div className="student-screen-title-area">
+              <div className="student-screen-icon-bubble" style={{ background: "#fff7ed", color: "#ea580c" }}>
+                <CalendarDays size={20} />
+              </div>
+              <div>
+                <h2>Calendar of Events (COE)</h2>
+                <p>Institutional Sports Meets, Fests, Exams &amp; Holidays • {schoolName}</p>
+              </div>
+            </div>
+
+            <div className="student-screen-nav-tools">
+              <button
+                className="student-refresh-btn"
+                onClick={() => fetchEvents(selectedEventMonth)}
+                style={{ borderColor: "#ea580c", color: "#ea580c" }}
+              >
+                <RefreshCw size={13} className={loading ? "animate-spin" : ""} /> Refresh Events
+              </button>
+            </div>
+          </div>
+
+          <div className="student-screen-scroll-body">
+            {/* KPI STATS STRIP */}
+            <div className="student-kpi-strip">
+              <div className="student-kpi-card">
+                <div className="student-kpi-info">
+                  <span>Total Events</span>
+                  <h4>{eventsData.length} Scheduled</h4>
+                </div>
+                <div className="student-kpi-icon" style={{ background: "#fff7ed", color: "#ea580c" }}>
+                  <CalendarDays size={20} />
+                </div>
+              </div>
+
+              <div className="student-kpi-card">
+                <div className="student-kpi-info">
+                  <span>Sports &amp; Athletics</span>
+                  <h4>Annual Meet</h4>
+                </div>
+                <div className="student-kpi-icon" style={{ background: "#f0fdfa", color: "#0d9488" }}>
+                  <Award size={20} />
+                </div>
+              </div>
+
+              <div className="student-kpi-card">
+                <div className="student-kpi-info">
+                  <span>Academic Fests</span>
+                  <h4>Robotics STEM</h4>
+                </div>
+                <div className="student-kpi-icon" style={{ background: "#eff6ff", color: "#2563eb" }}>
+                  <Sparkles size={20} />
+                </div>
+              </div>
+
+              <div className="student-kpi-card">
+                <div className="student-kpi-info">
+                  <span>School Status</span>
+                  <h4>Term 2 Active</h4>
+                </div>
+                <div className="student-kpi-icon" style={{ background: "#dcfce7", color: "#16a34a" }}>
+                  <ShieldCheck size={20} />
+                </div>
+              </div>
+            </div>
+
+            {/* MONTH FILTER TABS */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.45rem",
+                padding: "0.45rem",
+                background: "rgba(255, 255, 255, 0.9)",
+                borderRadius: "14px",
+                border: "1px solid rgba(254, 215, 170, 0.65)",
+                overflowX: "auto",
+              }}
+            >
+              <span style={{ fontSize: "0.74rem", fontWeight: 800, color: "#64748b", margin: "0 0.5rem" }}>
+                Filter Month:
+              </span>
+              {[
+                { id: 0, name: "All Months" },
+                { id: 1, name: "Jan" },
+                { id: 2, name: "Feb" },
+                { id: 3, name: "Mar" },
+                { id: 4, name: "Apr" },
+                { id: 5, name: "May" },
+                { id: 6, name: "Jun" },
+                { id: 7, name: "Jul" },
+                { id: 8, name: "Aug" },
+                { id: 9, name: "Sep" },
+                { id: 10, name: "Oct" },
+                { id: 11, name: "Nov" },
+                { id: 12, name: "Dec" },
+              ].map((m) => (
+                <button
+                  key={m.id}
+                  onClick={() => {
+                    setSelectedEventMonth(m.id);
+                    fetchEvents(m.id);
+                  }}
+                  className={`student-screen-tab-pill ${selectedEventMonth === m.id ? "active" : ""}`}
+                >
+                  {m.name}
+                </button>
+              ))}
+            </div>
+
+            {/* EVENTS TABLE */}
+            {eventsData.length === 0 && !loading ? (
+              renderEmptyState("No events listed in the school calendar for this selection.")
+            ) : (
+              <div className="student-screen-card">
+                <div className="student-screen-card-header">
+                  <h4>
+                    <CalendarDays size={18} style={{ color: "#ea580c" }} /> Official Calendar of Events Schedule
+                  </h4>
+                  <span style={{ fontSize: "0.78rem", fontWeight: 800, color: "#ea580c" }}>
+                    {eventsData.length} Events Listed
                   </span>
-                  <button className="ai-quick-prompt-btn" onClick={() => handleSendChatMessage("What is my timetable today?")}>
-                    📅 Today&apos;s Timetable
-                  </button>
-                  <button className="ai-quick-prompt-btn" onClick={() => handleSendChatMessage("How is my attendance?")}>
-                    📊 My Attendance
-                  </button>
-                  <button className="ai-quick-prompt-btn" onClick={() => handleSendChatMessage("Show my exam marks")}>
-                    📝 Exam Marks
-                  </button>
-                  <button className="ai-quick-prompt-btn" onClick={() => handleSendChatMessage("What are the latest school notices?")}>
-                    🔔 Circulars
-                  </button>
-                  <button className="ai-quick-prompt-btn" onClick={() => handleSendChatMessage("Explain photosynthesis simply")}>
-                    🌱 Photosynthesis
-                  </button>
                 </div>
+                <div style={{ overflowX: "auto" }}>
+                  <table className="student-screen-table">
+                    <thead>
+                      <tr>
+                        <th>S.No</th>
+                        <th>Event Name</th>
+                        <th>Description / Details</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Venue / Location</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {eventsData.map((evt, idx) => (
+                        <tr key={idx}>
+                          <td style={{ color: "#94a3b8", fontWeight: 700 }}>{idx + 1}</td>
+                          <td style={{ fontWeight: 800, color: "#ea580c" }}>{evt.title}</td>
+                          <td style={{ color: "#334155" }}>{evt.desc || "—"}</td>
+                          <td style={{ fontWeight: 700, color: "#0f172a" }}>{evt.startDate || "—"}</td>
+                          <td style={{ fontWeight: 700, color: "#0f172a" }}>{evt.endDate || "—"}</td>
+                          <td>
+                            <span
+                              style={{
+                                padding: "2px 8px",
+                                borderRadius: 6,
+                                background: "#fff7ed",
+                                color: "#ea580c",
+                                fontWeight: 700,
+                                fontSize: "0.72rem",
+                                border: "1px solid rgba(254, 215, 170, 0.7)",
+                              }}
+                            >
+                              {evt.venue || "Campus"}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
 
-                {/* Chat Input Bar */}
-                <div className="ai-chat-input-bar">
-                  <input
-                    type="text"
-                    className="ai-chat-text-input"
-                    placeholder="Ask GreenBot about your classes, marks, homework, or science..."
-                    value={chatInputText}
-                    onChange={(e) => setChatInputText(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        handleSendChatMessage();
-                      }
-                    }}
-                  />
-                  <button
-                    className="ai-chat-send-btn"
-                    onClick={() => handleSendChatMessage()}
-                    title="Send message to GreenBot"
-                  >
-                    <Send size={15} />
-                  </button>
+      {/* ========================================================
+          VIEW 6: DEDICATED FULL SCREEN — NOTICE BOARD
+          ======================================================== */}
+      {currentScreen === "notice" && (
+        <section className="student-fullscreen-page">
+          <div className="kiosk-orb kiosk-orb-one" />
+          <div className="kiosk-orb kiosk-orb-two" />
+
+          <div className="student-screen-subnav">
+            <button className="student-back-to-dash-btn" onClick={() => handleNavigateTo("dashboard")}>
+              <ArrowLeft size={16} /> Back to Dashboard
+            </button>
+
+            <div className="student-screen-title-area">
+              <div className="student-screen-icon-bubble" style={{ background: "#fff7ed", color: "#ea580c" }}>
+                <AlertTriangle size={20} />
+              </div>
+              <div>
+                <h2>Official School Notice Board &amp; Circulars</h2>
+                <p>CBSE Updates, Administration Directives &amp; Academic News</p>
+              </div>
+            </div>
+
+            <div className="student-screen-nav-tools">
+              <button
+                className="student-refresh-btn"
+                onClick={() => fetchNotices()}
+                style={{ borderColor: "#ea580c", color: "#ea580c" }}
+              >
+                <RefreshCw size={13} className={loading ? "animate-spin" : ""} /> Refresh Notices
+              </button>
+            </div>
+          </div>
+
+          <div className="student-screen-scroll-body">
+            {/* KPI STATS STRIP */}
+            <div className="student-kpi-strip">
+              <div className="student-kpi-card">
+                <div className="student-kpi-info">
+                  <span>Active Notices</span>
+                  <h4>{noticesData.length} Published</h4>
                 </div>
+                <div className="student-kpi-icon" style={{ background: "#fff7ed", color: "#ea580c" }}>
+                  <AlertTriangle size={20} />
+                </div>
+              </div>
+
+              <div className="student-kpi-card">
+                <div className="student-kpi-info">
+                  <span>CBSE Directives</span>
+                  <h4>Term-2 Updated</h4>
+                </div>
+                <div className="student-kpi-icon" style={{ background: "#f0fdfa", color: "#0d9488" }}>
+                  <Award size={20} />
+                </div>
+              </div>
+
+              <div className="student-kpi-card">
+                <div className="student-kpi-info">
+                  <span>Campus Safety</span>
+                  <h4>Winter Timings</h4>
+                </div>
+                <div className="student-kpi-icon" style={{ background: "#eff6ff", color: "#2563eb" }}>
+                  <ShieldCheck size={20} />
+                </div>
+              </div>
+
+              <div className="student-kpi-card">
+                <div className="student-kpi-info">
+                  <span>Directives Status</span>
+                  <h4>VAPS Synced</h4>
+                </div>
+                <div className="student-kpi-icon" style={{ background: "#dcfce7", color: "#16a34a" }}>
+                  <CheckCircle2 size={20} />
+                </div>
+              </div>
+            </div>
+
+            {/* NOTICES TABLE */}
+            {noticesData.length === 0 && !loading ? (
+              renderEmptyState("No notices published on the notice board.")
+            ) : (
+              <div className="student-screen-card">
+                <div className="student-screen-card-header">
+                  <h4>
+                    <AlertTriangle size={18} style={{ color: "#ea580c" }} /> Official School Announcements
+                  </h4>
+                  <span style={{ fontSize: "0.78rem", fontWeight: 800, color: "#ea580c" }}>
+                    {noticesData.length} Notices
+                  </span>
+                </div>
+                <div style={{ overflowX: "auto" }}>
+                  <table className="student-screen-table">
+                    <thead>
+                      <tr>
+                        <th>S.No</th>
+                        <th>Notice Title</th>
+                        <th>Authority / Source</th>
+                        <th>Published Date</th>
+                        <th>Valid Until</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {noticesData.map((n, idx) => (
+                        <tr key={idx}>
+                          <td style={{ color: "#94a3b8", fontWeight: 700 }}>{idx + 1}</td>
+                          <td style={{ fontWeight: 800, color: "#0f172a" }}>{n.title}</td>
+                          <td style={{ color: "#64748b" }}>{n.authority || "Office of Principal"}</td>
+                          <td style={{ color: "#334155" }}>{n.startDate || "—"}</td>
+                          <td style={{ color: "#334155" }}>{n.endDate || "—"}</td>
+                          <td>
+                            <button
+                              onClick={() => setSelectedNoticeModal(n)}
+                              style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: "0.35rem",
+                                padding: "0.28rem 0.75rem",
+                                borderRadius: "8px",
+                                background: "#fff7ed",
+                                border: "1px solid rgba(254, 215, 170, 0.8)",
+                                color: "#c2410c",
+                                fontWeight: 800,
+                                fontSize: "0.74rem",
+                                cursor: "pointer",
+                              }}
+                            >
+                              <Eye size={12} /> View Full
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* ========================================================
+          VIEW 7: DEDICATED FULL SCREEN — HOMEWORK DIARY
+          ======================================================== */}
+      {currentScreen === "homework" && (
+        <section className="student-fullscreen-page">
+          <div className="kiosk-orb kiosk-orb-one" />
+          <div className="kiosk-orb kiosk-orb-two" />
+
+          <div className="student-screen-subnav">
+            <button className="student-back-to-dash-btn" onClick={() => handleNavigateTo("dashboard")}>
+              <ArrowLeft size={16} /> Back to Dashboard
+            </button>
+
+            <div className="student-screen-title-area">
+              <div className="student-screen-icon-bubble" style={{ background: "#fff7ed", color: "#ea580c" }}>
+                <BookOpen size={20} />
+              </div>
+              <div>
+                <h2>Daily Home-work &amp; Assignment Diary</h2>
+                <p>Subject Homework, Task Submissions &amp; Deadlines • {studentDisplayName}</p>
+              </div>
+            </div>
+
+            <div className="student-screen-nav-tools">
+              <button
+                className="student-refresh-btn"
+                onClick={() => fetchHomework()}
+                style={{ borderColor: "#ea580c", color: "#ea580c" }}
+              >
+                <RefreshCw size={13} className={loading ? "animate-spin" : ""} /> Refresh Homework
+              </button>
+            </div>
+          </div>
+
+          <div className="student-screen-scroll-body">
+            {/* KPI STATS STRIP */}
+            <div className="student-kpi-strip">
+              <div className="student-kpi-card">
+                <div className="student-kpi-info">
+                  <span>Total Tasks Assigned</span>
+                  <h4>{homeworkData.length} Tasks</h4>
+                </div>
+                <div className="student-kpi-icon" style={{ background: "#fff7ed", color: "#ea580c" }}>
+                  <BookOpen size={20} />
+                </div>
+              </div>
+
+              <div className="student-kpi-card">
+                <div className="student-kpi-info">
+                  <span>Subject Coverage</span>
+                  <h4>All Subjects</h4>
+                </div>
+                <div className="student-kpi-icon" style={{ background: "#f0fdfa", color: "#0d9488" }}>
+                  <GraduationCap size={20} />
+                </div>
+              </div>
+
+              <div className="student-kpi-card">
+                <div className="student-kpi-info">
+                  <span>Submission Status</span>
+                  <h4>Pending Verify</h4>
+                </div>
+                <div className="student-kpi-icon" style={{ background: "#eff6ff", color: "#2563eb" }}>
+                  <Clock size={20} />
+                </div>
+              </div>
+
+              <div className="student-kpi-card">
+                <div className="student-kpi-info">
+                  <span>Academic Record</span>
+                  <h4>Updated Daily</h4>
+                </div>
+                <div className="student-kpi-icon" style={{ background: "#dcfce7", color: "#16a34a" }}>
+                  <ShieldCheck size={20} />
+                </div>
+              </div>
+            </div>
+
+            {/* HOMEWORK TABLE */}
+            {homeworkData.length === 0 && !loading ? (
+              renderEmptyState("No homework assignments recorded on the server for this student.")
+            ) : (
+              <div className="student-screen-card">
+                <div className="student-screen-card-header">
+                  <h4>
+                    <BookOpen size={18} style={{ color: "#ea580c" }} /> Daily Subject Homework Roster
+                  </h4>
+                  <span style={{ fontSize: "0.78rem", fontWeight: 800, color: "#ea580c" }}>
+                    {homeworkData.length} Assignments
+                  </span>
+                </div>
+                <div style={{ overflowX: "auto" }}>
+                  <table className="student-screen-table">
+                    <thead>
+                      <tr>
+                        <th>S.No</th>
+                        <th>Subject Name</th>
+                        <th>Topic &amp; Assignment Task</th>
+                        <th>Assigned Date</th>
+                        <th>Submission Due Date</th>
+                        <th>Task Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {homeworkData.map((h, idx) => (
+                        <tr key={idx}>
+                          <td style={{ color: "#94a3b8", fontWeight: 700 }}>{idx + 1}</td>
+                          <td style={{ fontWeight: 800, color: "#ea580c", whiteSpace: "nowrap" }}>{h.subject}</td>
+                          <td>
+                            <strong style={{ color: "#0f172a", display: "block" }}>{h.topic}</strong>
+                            {h.desc && h.desc !== h.topic && (
+                              <span style={{ fontSize: "0.72rem", color: "#64748b" }}>{h.desc}</span>
+                            )}
+                          </td>
+                          <td style={{ color: "#334155", whiteSpace: "nowrap" }}>{h.assignedDate || "—"}</td>
+                          <td style={{ fontWeight: 700, color: "#0f172a", whiteSpace: "nowrap" }}>
+                            {h.dueDate || "—"}
+                          </td>
+                          <td style={{ whiteSpace: "nowrap" }}>
+                            <span
+                              style={{
+                                padding: "2px 8px",
+                                borderRadius: 6,
+                                background: "#fff7ed",
+                                color: "#ea580c",
+                                fontWeight: 800,
+                                fontSize: "0.72rem",
+                                border: "1px solid rgba(254, 215, 170, 0.8)",
+                              }}
+                            >
+                              {h.status}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* ========================================================
+          VIEW 8: DEDICATED FULL SCREEN — TIMETABLE
+          ======================================================== */}
+      {currentScreen === "timetable" && (
+        <section className="student-fullscreen-page">
+          <div className="kiosk-orb kiosk-orb-one" />
+          <div className="kiosk-orb kiosk-orb-two" />
+
+          <div className="student-screen-subnav">
+            <button className="student-back-to-dash-btn" onClick={() => handleNavigateTo("dashboard")}>
+              <ArrowLeft size={16} /> Back to Dashboard
+            </button>
+
+            <div className="student-screen-title-area">
+              <div className="student-screen-icon-bubble" style={{ background: "#fff7ed", color: "#ea580c" }}>
+                <Clock size={20} />
+              </div>
+              <div>
+                <h2>Weekly Class Time-Table &amp; Period Allocations</h2>
+                <p>Master Timetable, Room Schedules &amp; Teachers • {studentDisplayClass}</p>
+              </div>
+            </div>
+
+            <div className="student-screen-nav-tools">
+              <button
+                className="student-refresh-btn"
+                onClick={() => fetchTimetable()}
+                style={{ borderColor: "#ea580c", color: "#ea580c" }}
+              >
+                <RefreshCw size={13} className={loading ? "animate-spin" : ""} /> Refresh Timetable
+              </button>
+            </div>
+          </div>
+
+          <div className="student-screen-scroll-body">
+            {/* KPI STATS STRIP */}
+            <div className="student-kpi-strip">
+              <div className="student-kpi-card">
+                <div className="student-kpi-info">
+                  <span>Weekly Periods</span>
+                  <h4>{timetableData.studentTT.length} Total</h4>
+                </div>
+                <div className="student-kpi-icon" style={{ background: "#fff7ed", color: "#ea580c" }}>
+                  <Clock size={20} />
+                </div>
+              </div>
+
+              <div className="student-kpi-card">
+                <div className="student-kpi-info">
+                  <span>Teaching Days</span>
+                  <h4>{timetableData.gridweeks.length} Working Days</h4>
+                </div>
+                <div className="student-kpi-icon" style={{ background: "#f0fdfa", color: "#0d9488" }}>
+                  <Calendar size={20} />
+                </div>
+              </div>
+
+              <div className="student-kpi-card">
+                <div className="student-kpi-info">
+                  <span>Class &amp; Section</span>
+                  <h4>{studentDisplayClass}</h4>
+                </div>
+                <div className="student-kpi-icon" style={{ background: "#eff6ff", color: "#2563eb" }}>
+                  <GraduationCap size={20} />
+                </div>
+              </div>
+
+              <div className="student-kpi-card">
+                <div className="student-kpi-info">
+                  <span>Academic Session</span>
+                  <h4>{studentDetails.academicYear || session?.ASMAY_Year || "Active Term"}</h4>
+                </div>
+                <div className="student-kpi-icon" style={{ background: "#dcfce7", color: "#16a34a" }}>
+                  <ShieldCheck size={20} />
+                </div>
+              </div>
+            </div>
+
+            {/* DAY SELECTOR TABS */}
+            {timetableData.gridweeks.length > 0 && (
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.45rem",
+                  padding: "0.45rem",
+                  background: "rgba(255, 255, 255, 0.9)",
+                  borderRadius: "14px",
+                  border: "1px solid rgba(254, 215, 170, 0.65)",
+                  overflowX: "auto",
+                }}
+              >
+                <span style={{ fontSize: "0.74rem", fontWeight: 800, color: "#64748b", margin: "0 0.5rem" }}>
+                  Highlight Day:
+                </span>
+                <button
+                  onClick={() => setSelectedTTDay("")}
+                  className={`student-screen-tab-pill ${!selectedTTDay ? "active" : ""}`}
+                >
+                  All Days
+                </button>
+                {timetableData.gridweeks.map((g, idx) => {
+                  const dayName = g.ttmD_DayName || "";
+                  return (
+                    <button
+                      key={idx}
+                      onClick={() => setSelectedTTDay(dayName)}
+                      className={`student-screen-tab-pill ${selectedTTDay === dayName ? "active" : ""}`}
+                    >
+                      {dayName}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* TIMETABLE TABLE: Exactly mirrors grd_TT DataGridView matrix from StudentTT.cs */}
+            {timetableData.studentTT.length === 0 && timetableData.gridweeks.length === 0 && !loading ? (
+              renderEmptyState("No Data Available - No published timetable records found on the school server.")
+            ) : (
+              <div className="student-screen-card">
+                <div className="student-screen-card-header">
+                  <h4>
+                    <Clock size={18} style={{ color: "#ea580c" }} /> Student Time Table ({studentDetails.academicYear || session?.ASMAY_Year || "Current Session"})
+                  </h4>
+                  <span style={{ fontSize: "0.78rem", fontWeight: 800, color: "#ea580c" }}>
+                    {selectedTTDay ? `Highlighting: ${selectedTTDay}` : "Master Weekly Schedule"}
+                  </span>
+                </div>
+                <div style={{ overflowX: "auto" }}>
+                  <table className="student-screen-table">
+                    <thead>
+                      <tr>
+                        <th style={{ width: "50px", textAlign: "center" }}>SL.No.</th>
+                        <th style={{ minWidth: "120px" }}>DAYS</th>
+                        <th style={{ minWidth: "110px" }}>Period 01</th>
+                        <th style={{ minWidth: "110px" }}>Period 02</th>
+                        <th style={{ minWidth: "110px" }}>Period 03</th>
+                        <th style={{ minWidth: "110px" }}>Period 04</th>
+                        <th style={{ minWidth: "110px" }}>Period 05</th>
+                        <th style={{ minWidth: "110px" }}>Period 06</th>
+                        <th style={{ minWidth: "110px" }}>Period 07</th>
+                        <th style={{ minWidth: "110px" }}>Period 08</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {timetableData.gridweeks.map((g, rowIdx) => {
+                        const dayName = g.ttmD_DayName || "";
+                        const isDayHighlighted = selectedTTDay === "" || selectedTTDay.toLowerCase() === dayName.toLowerCase();
+                        return (
+                          <tr
+                            key={rowIdx}
+                            style={{
+                              background: selectedTTDay && selectedTTDay.toLowerCase() === dayName.toLowerCase() ? "#fff7ed" : undefined,
+                              opacity: isDayHighlighted ? 1 : 0.5,
+                            }}
+                          >
+                            <td style={{ textAlign: "center", color: "#94a3b8", fontWeight: 700 }}>
+                              {rowIdx + 1}
+                            </td>
+                            <td style={{ fontWeight: 800, color: "#ea580c" }}>
+                              {dayName || "—"}
+                            </td>
+                            {[1, 2, 3, 4, 5, 6, 7, 8].map((periodNum) => {
+                              const match = timetableData.studentTT.find(
+                                (item) =>
+                                  item.ttmD_DayName?.trim().toLowerCase() === dayName.trim().toLowerCase() &&
+                                  (item.TTMP_PeriodName === String(periodNum) ||
+                                    item.TTMP_PeriodName === `Period ${periodNum}` ||
+                                    item.TTMP_PeriodName === `0${periodNum}` ||
+                                    item.TTMP_PeriodName === `Period 0${periodNum}`)
+                              );
+                              return (
+                                <td key={periodNum} style={{ verticalAlign: "top" }}>
+                                  {match ? (
+                                    <div>
+                                      <div style={{ fontWeight: 800, color: "#0f172a", fontSize: "0.82rem" }}>
+                                        {match.ISMS_SubjectName}
+                                      </div>
+                                      {match.EmpName && (
+                                        <div style={{ fontSize: "0.68rem", color: "#64748b", marginTop: "2px" }}>
+                                          {match.EmpName}
+                                        </div>
+                                      )}
+                                    </div>
+                                  ) : (
+                                    <span style={{ color: "#cbd5e1" }}>—</span>
+                                  )}
+                                </td>
+                              );
+                            })}
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* ========================================================
+          VIEW 9: DEDICATED FULL SCREEN — OVER ALL EXAM
+          ======================================================== */}
+      {currentScreen === "exam-overall" && (
+        <section className="student-fullscreen-page">
+          <div className="kiosk-orb kiosk-orb-one" />
+          <div className="kiosk-orb kiosk-orb-two" />
+
+          <div className="student-screen-subnav">
+            <button className="student-back-to-dash-btn" onClick={() => handleNavigateTo("dashboard")}>
+              <ArrowLeft size={16} /> Back to Dashboard
+            </button>
+
+            <div className="student-screen-title-area">
+              <div className="student-screen-icon-bubble" style={{ background: "#fff7ed", color: "#ea580c" }}>
+                <BarChart2 size={20} />
+              </div>
+              <div>
+                <h2>Over All Exam Multi-Term Analytics</h2>
+                <p>Cumulative Performance, Cross-Exam Comparisons &amp; Trends • {studentDisplayName}</p>
+              </div>
+            </div>
+
+            <div className="student-screen-nav-tools">
+              <div style={{ display: "flex", gap: "6px" }}>
+                <button
+                  onClick={() => {
+                    setOverallMode("SubOVERALL");
+                    fetchExamOverall("SubOVERALL", selectedOverallSubjectId, selectedOverallExamId);
+                  }}
+                  className={`student-screen-tab-pill ${overallMode === "SubOVERALL" ? "active" : ""}`}
+                >
+                  Subject Multi-Term History
+                </button>
+                <button
+                  onClick={() => {
+                    setOverallMode("ExmOVERALL");
+                    fetchExamOverall("ExmOVERALL", selectedOverallSubjectId, selectedOverallExamId);
+                  }}
+                  className={`student-screen-tab-pill ${overallMode === "ExmOVERALL" ? "active" : ""}`}
+                >
+                  Exam Cross-Subject Analysis
+                </button>
+              </div>
+
+              {/* Dynamic Selector Dropdown */}
+              <select
+                style={{
+                  fontSize: "0.78rem",
+                  fontWeight: 700,
+                  padding: "0.35rem 0.75rem",
+                  borderRadius: "8px",
+                  border: "1px solid rgba(234, 88, 12, 0.4)",
+                  background: "#ffffff",
+                  color: "#1e293b",
+                  outline: "none",
+                }}
+                value={overallMode === "SubOVERALL" ? selectedOverallSubjectId : selectedOverallExamId}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (overallMode === "SubOVERALL") {
+                    setSelectedOverallSubjectId(val);
+                    fetchExamOverall("SubOVERALL", val, selectedOverallExamId);
+                  } else {
+                    setSelectedOverallExamId(val);
+                    fetchExamOverall("ExmOVERALL", selectedOverallSubjectId, val);
+                  }
+                }}
+              >
+                {overallMode === "SubOVERALL"
+                  ? overallSubjects.map((s) => (
+                      <option key={s.id} value={s.id}>
+                        {s.name}
+                      </option>
+                    ))
+                  : overallExams.map((ex) => (
+                      <option key={ex.id} value={ex.id}>
+                        {ex.name}
+                      </option>
+                    ))}
+              </select>
+
+              <button
+                className="student-refresh-btn"
+                onClick={() => fetchExamOverall()}
+                style={{ borderColor: "#ea580c", color: "#ea580c" }}
+              >
+                <RefreshCw size={13} className={loading ? "animate-spin" : ""} /> Refresh Analytics
+              </button>
+            </div>
+          </div>
+
+          <div className="student-screen-scroll-body">
+            {/* KPI STATS STRIP */}
+            <div className="student-kpi-strip">
+              <div className="student-kpi-card">
+                <div className="student-kpi-info">
+                  <span>Total Exam Records</span>
+                  <h4>{examOverallReports.length} Recorded</h4>
+                </div>
+                <div className="student-kpi-icon" style={{ background: "#fff7ed", color: "#ea580c" }}>
+                  <BarChart2 size={20} />
+                </div>
+              </div>
+
+              <div className="student-kpi-card">
+                <div className="student-kpi-info">
+                  <span>Selected Analytics Mode</span>
+                  <h4>{overallMode === "SubOVERALL" ? "Subject History" : "Cross-Subject"}</h4>
+                </div>
+                <div className="student-kpi-icon" style={{ background: "#f0fdfa", color: "#0d9488" }}>
+                  <Award size={20} />
+                </div>
+              </div>
+
+              <div className="student-kpi-card">
+                <div className="student-kpi-info">
+                  <span>Overall Standing</span>
+                  <h4>Grade A Achiever</h4>
+                </div>
+                <div className="student-kpi-icon" style={{ background: "#eff6ff", color: "#2563eb" }}>
+                  <TrendingUp size={20} />
+                </div>
+              </div>
+
+              <div className="student-kpi-card">
+                <div className="student-kpi-info">
+                  <span>Pass Verification</span>
+                  <h4>100% Verified</h4>
+                </div>
+                <div className="student-kpi-icon" style={{ background: "#dcfce7", color: "#16a34a" }}>
+                  <CheckCircle2 size={20} />
+                </div>
+              </div>
+            </div>
+
+            {/* OVERALL TABLE */}
+            {examOverallReports.length === 0 && !loading ? (
+              renderEmptyState("No cumulative overall examination records returned from the backend server.")
+            ) : (
+              <div className="student-screen-card">
+                <div className="student-screen-card-header">
+                  <h4>
+                    <BarChart2 size={18} style={{ color: "#ea580c" }} /> Cumulative Academic Performance History
+                  </h4>
+                  <span style={{ fontSize: "0.78rem", fontWeight: 800, color: "#ea580c" }}>
+                    {examOverallReports.length} Records Analyzed
+                  </span>
+                </div>
+                <div style={{ overflowX: "auto" }}>
+                  <table className="student-screen-table">
+                    <thead>
+                      <tr>
+                        <th>S.No</th>
+                        <th>{overallMode === "SubOVERALL" ? "Exam Name" : "Subject Name"}</th>
+                        <th>Marks Obtained</th>
+                        <th>Max Marks</th>
+                        <th>Pass Marks</th>
+                        <th>Grade</th>
+                        <th>Result</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {examOverallReports.map((r, idx) => (
+                        <tr key={idx}>
+                          <td style={{ color: "#94a3b8", fontWeight: 700 }}>{idx + 1}</td>
+                          <td style={{ fontWeight: 800, color: "#0f172a" }}>
+                            {r.exm_name || r.SubjectName || r.ISMS_SubjectName || "Record"}
+                          </td>
+                          <td style={{ fontWeight: 800, color: "#ea580c", fontSize: "0.95rem" }}>
+                            {r.ESTMPS_ObtainedMarks || 0}
+                          </td>
+                          <td style={{ color: "#64748b" }}>{r.ESTMPS_MaxMarks || "—"}</td>
+                          <td style={{ color: "#64748b" }}>{r.ESTMPS_PassMarks || "—"}</td>
+                          <td>
+                            <span
+                              style={{
+                                padding: "2px 8px",
+                                borderRadius: 6,
+                                background: "#dcfce7",
+                                color: "#16a34a",
+                                fontWeight: 800,
+                                fontSize: "0.72rem",
+                              }}
+                            >
+                              {r.ESTMPS_Grade || "A"}
+                            </span>
+                          </td>
+                          <td>
+                            <span style={{ color: "#16a34a", fontWeight: 700, display: "inline-flex", alignItems: "center", gap: "4px" }}>
+                              <CheckCircle2 size={13} /> Pass
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* ========================================================
+          VIEW 10: DEDICATED FULL SCREEN — GREENBOT AI SPACE
+          ======================================================== */}
+      {currentScreen === "aispace" && (
+        <section className="student-fullscreen-page">
+          <div className="kiosk-orb kiosk-orb-one" />
+          <div className="kiosk-orb kiosk-orb-two" />
+
+          <div className="student-screen-subnav">
+            <button className="student-back-to-dash-btn" onClick={() => handleNavigateTo("dashboard")}>
+              <ArrowLeft size={16} /> Back to Dashboard
+            </button>
+
+            <div className="student-screen-title-area">
+              <div className="student-screen-icon-bubble" style={{ background: "#fff7ed", color: "#ea580c" }}>
+                <Sparkles size={20} />
+              </div>
+              <div>
+                <h2>GreenBot • Student &amp; Parent AI Assistant</h2>
+                <p>Instant answers on attendance, exam scorecards, timetable, and school notices</p>
+              </div>
+            </div>
+
+            <div className="student-screen-nav-tools">
+              <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "0.74rem", fontWeight: 800, color: "#16a34a" }}>
+                <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#16a34a" }} />
+                AI Online
+              </div>
+            </div>
+          </div>
+
+          <div className="student-screen-scroll-body" style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+            <div
+              className="student-screen-card"
+              style={{
+                flex: 1,
+                display: "flex",
+                flexDirection: "column",
+                overflow: "hidden",
+                minHeight: "450px",
+              }}
+            >
+              {/* Chat Message Window */}
+              <div
+                style={{
+                  flex: 1,
+                  padding: "1.25rem",
+                  overflowY: "auto",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "0.85rem",
+                  background: "#f8fafc",
+                }}
+              >
+                {chatMessages.map((msg) => (
+                  <div
+                    key={msg.id}
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: msg.sender === "user" ? "flex-end" : "flex-start",
+                      maxWidth: "80%",
+                      alignSelf: msg.sender === "user" ? "flex-end" : "flex-start",
+                    }}
+                  >
+                    <div
+                      style={{
+                        padding: "0.75rem 1rem",
+                        borderRadius: "16px",
+                        background: msg.sender === "user" ? "#ea580c" : "#ffffff",
+                        color: msg.sender === "user" ? "#ffffff" : "#1e293b",
+                        fontSize: "0.82rem",
+                        lineHeight: 1.5,
+                        boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
+                        border: msg.sender === "user" ? "none" : "1px solid rgba(226, 232, 240, 0.9)",
+                        whiteSpace: "pre-wrap",
+                      }}
+                    >
+                      {msg.text}
+                    </div>
+                    <span style={{ fontSize: "0.65rem", color: "#94a3b8", marginTop: "3px", padding: "0 4px" }}>
+                      {msg.time}
+                    </span>
+
+                    {/* Suggestions Buttons */}
+                    {msg.suggestions && msg.suggestions.length > 0 && (
+                      <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginTop: "6px" }}>
+                        {msg.suggestions.map((sug, sIdx) => (
+                          <button
+                            key={sIdx}
+                            onClick={() => handleSendChatMessage(sug)}
+                            style={{
+                              fontSize: "0.72rem",
+                              fontWeight: 700,
+                              color: "#ea580c",
+                              background: "#fff7ed",
+                              border: "1px solid rgba(254, 215, 170, 0.8)",
+                              padding: "3px 10px",
+                              borderRadius: "9999px",
+                              cursor: "pointer",
+                            }}
+                          >
+                            {sug}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+
+                {isTyping && (
+                  <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "#64748b", fontSize: "0.75rem" }}>
+                    <RefreshCw size={13} className="animate-spin" style={{ color: "#ea580c" }} />
+                    <span>GreenBot is typing an answer...</span>
+                  </div>
+                )}
+                <div ref={chatMessagesEndRef} />
+              </div>
+
+              {/* Quick Prompts Bar */}
+              <div className="ai-quick-prompts-bar">
+                <span style={{ fontSize: "0.68rem", fontWeight: 800, color: "#94a3b8", flexShrink: 0 }}>
+                  Quick Prompts:
+                </span>
+                <button className="ai-quick-prompt-btn" onClick={() => handleSendChatMessage("What is my attendance rate?")}>
+                  📊 Attendance Ratio
+                </button>
+                <button className="ai-quick-prompt-btn" onClick={() => handleSendChatMessage("Show my exam results")}>
+                  📝 Exam Scorecards
+                </button>
+                <button className="ai-quick-prompt-btn" onClick={() => handleSendChatMessage("What is my timetable today?")}>
+                  🗓️ Today&apos;s Classes
+                </button>
+                <button className="ai-quick-prompt-btn" onClick={() => handleSendChatMessage("Do I have pending fee balance?")}>
+                  💳 Fee Balance Status
+                </button>
+                <button className="ai-quick-prompt-btn" onClick={() => handleSendChatMessage("Show homework diary")}>
+                  📚 Homework Diary
+                </button>
+              </div>
+
+              {/* Chat Input Bar */}
+              <div className="ai-chat-input-bar">
+                <input
+                  type="text"
+                  className="ai-chat-text-input"
+                  placeholder="Ask GreenBot about attendance, report card marks, timetable, or fees..."
+                  value={chatInputText}
+                  onChange={(e) => setChatInputText(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      handleSendChatMessage();
+                    }
+                  }}
+                />
+                <button
+                  className="ai-chat-send-btn"
+                  onClick={() => handleSendChatMessage()}
+                  title="Send message to GreenBot"
+                >
+                  <Send size={15} />
+                </button>
               </div>
             </div>
           </div>
@@ -2179,131 +3708,20 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
 
       {/* COMPACT COMMAND FOOTER */}
       <footer className="command-footer" style={{ marginTop: "auto", borderTop: "1px solid rgba(254, 215, 170, 0.5)", background: "rgba(255, 255, 255, 0.88)" }}>
-        <div><span className="footer-dot" /> Official Student Academic Command Portal</div>
+        <div><span className="footer-dot" /> Official Student &amp; Parent Academic Command Portal</div>
         <div className="footer-links">
           <span>CBSE Affiliation 1930421</span>
           <span>NAAC Grade A++</span>
-          <span>Campus: 6,200 Students</span>
-          <span>VAPS Cloud Online</span>
+          <span>Student Ledger Online</span>
+          <span>VAPS Cloud Connected</span>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.74rem", fontWeight: 700, color: "#ea580c" }}>
-          <ShieldCheck size={14} /> Safe & Encrypted Kiosk
+        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.74rem", fontWeight: 700, color: "#16a34a" }}>
+          <ShieldCheck size={14} /> Safe &amp; Encrypted Kiosk
         </div>
       </footer>
 
-      {/* ========================================================
-          VIDEO TOUR PLAYER MODAL
-          ======================================================== */}
-      {isVideoModalOpen && (
-        <div
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(15, 23, 42, 0.8)",
-            backdropFilter: "blur(6px)",
-            zIndex: 9999,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: "1rem",
-          }}
-          onClick={() => setIsVideoModalOpen(false)}
-        >
-          <div
-            style={{
-              background: "#0f172a",
-              borderRadius: "16px",
-              maxWidth: "760px",
-              width: "100%",
-              overflow: "hidden",
-              boxShadow: "0 25px 50px -12px rgba(0,0,0,0.5)",
-              border: "1px solid #334155",
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                padding: "0.75rem 1.25rem",
-                borderBottom: "1px solid #1e293b",
-                background: "#1e293b",
-              }}
-            >
-              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "#ffffff" }}>
-                <Film size={16} style={{ color: "#ea580c" }} />
-                <span style={{ fontWeight: 700, fontSize: "0.88rem" }}>
-                  Green Valley Public School — Smart Campus Virtual Tour & Highlights
-                </span>
-              </div>
-              <button
-                onClick={() => setIsVideoModalOpen(false)}
-                style={{
-                  border: "none",
-                  background: "#334155",
-                  color: "#ffffff",
-                  borderRadius: "50%",
-                  width: 28,
-                  height: 28,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  cursor: "pointer",
-                }}
-              >
-                <X size={15} />
-              </button>
-            </div>
-
-            <div style={{ position: "relative", width: "100%", height: "380px", background: "#000" }}>
-              <video
-                controls
-                autoPlay
-                poster="/campus_banner.jpg"
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
-              >
-                Your browser does not support the video tag.
-              </video>
-            </div>
-
-            <div
-              style={{
-                padding: "0.75rem 1.25rem",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                color: "#94a3b8",
-                fontSize: "0.75rem",
-                background: "#0f172a",
-              }}
-            >
-              <span>Smart Classrooms • Robotics STEM Studio • Olympic Sports Arena • Central Library</span>
-              <button
-                onClick={() => setIsVideoModalOpen(false)}
-                style={{
-                  padding: "0.35rem 0.85rem",
-                  background: "#ea580c",
-                  color: "#ffffff",
-                  border: "none",
-                  borderRadius: 6,
-                  fontWeight: 700,
-                  cursor: "pointer",
-                  fontSize: "0.75rem",
-                }}
-              >
-                Close Player
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ========================================================
-          OFFICIAL NOTICE DETAILS MODAL
-          ======================================================== */}
-      {selectedNotice && (
+      {/* NOTICE DETAILS MODAL */}
+      {selectedNoticeModal && (
         <div
           style={{
             position: "fixed",
@@ -2316,7 +3734,7 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
             justifyContent: "center",
             padding: "1rem",
           }}
-          onClick={() => setSelectedNotice(null)}
+          onClick={() => setSelectedNoticeModal(null)}
         >
           <div
             style={{
@@ -2347,16 +3765,18 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
                     borderRadius: 6,
                     fontSize: "0.68rem",
                     fontWeight: 800,
-                    background: selectedNotice.tagBg,
-                    color: selectedNotice.tagColor,
+                    background: "#fff7ed",
+                    color: "#ea580c",
                   }}
                 >
-                  {selectedNotice.tag}
+                  OFFICIAL NOTICE
                 </span>
-                <span style={{ fontSize: "0.72rem", color: "#64748b" }}>{selectedNotice.time}</span>
+                <span style={{ fontSize: "0.72rem", color: "#64748b" }}>
+                  Published: {selectedNoticeModal.startDate || "Active"}
+                </span>
               </div>
               <button
-                onClick={() => setSelectedNotice(null)}
+                onClick={() => setSelectedNoticeModal(null)}
                 style={{
                   border: "none",
                   background: "#e2e8f0",
@@ -2384,10 +3804,11 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
                   fontFamily: "Outfit, sans-serif",
                 }}
               >
-                {selectedNotice.title}
+                {selectedNoticeModal.title}
               </h3>
               <div style={{ fontSize: "0.72rem", color: "#ea580c", fontWeight: 700, marginBottom: "0.85rem" }}>
-                Issued by: {selectedNotice.authority} • Date: {selectedNotice.date}
+                Issued by: {selectedNoticeModal.authority || "School Administration"} • Valid Until:{" "}
+                {selectedNoticeModal.endDate || "Session End"}
               </div>
               <div
                 style={{
@@ -2400,7 +3821,7 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
                   lineHeight: 1.6,
                 }}
               >
-                {selectedNotice.details}
+                {selectedNoticeModal.details}
               </div>
             </div>
 
@@ -2414,7 +3835,7 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
               }}
             >
               <button
-                onClick={() => setSelectedNotice(null)}
+                onClick={() => setSelectedNoticeModal(null)}
                 style={{
                   padding: "0.38rem 1.15rem",
                   borderRadius: 8,

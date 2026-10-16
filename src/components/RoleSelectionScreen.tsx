@@ -128,7 +128,28 @@ export default function RoleSelectionScreen({
             </div>
             <div>
               <p className="command-kicker">GREEN VALLEY • SMART CAMPUS</p>
-              <h1>Green Valley Public School</h1>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", flexWrap: "wrap" }}>
+                <h1>Green Valley Public School</h1>
+                <span
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "0.35rem",
+                    background: "linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%)",
+                    color: "#c2410c",
+                    fontSize: "0.74rem",
+                    fontWeight: 800,
+                    padding: "0.22rem 0.75rem",
+                    borderRadius: "9999px",
+                    border: "1.5px solid rgba(234, 88, 12, 0.35)",
+                    boxShadow: "0 2px 8px rgba(234, 88, 12, 0.1)",
+                    letterSpacing: "0.02em",
+                  }}
+                >
+                  <Users size={12} style={{ color: "#ea580c" }} />
+                  PAGE 2 • ROLE SELECTION PORTAL
+                </span>
+              </div>
             </div>
           </div>
 
@@ -144,9 +165,26 @@ export default function RoleSelectionScreen({
 
         <section className="command-hero">
           <div className="command-hero-copy">
-            <div className="hero-chip"><Sparkles size={15} /> ONE CAMPUS. MANY JOURNEYS.</div>
+            <div className="hero-chip" style={{ display: "inline-flex", alignItems: "center", gap: "0.45rem" }}>
+              <span
+                style={{
+                  background: "#ea580c",
+                  color: "#ffffff",
+                  padding: "2px 8px",
+                  borderRadius: "9999px",
+                  fontSize: "0.65rem",
+                  fontWeight: 900,
+                  letterSpacing: "0.04em",
+                }}
+              >
+                PAGE 2
+              </span>
+              <Sparkles size={14} /> ROLE SELECTION PORTAL • ONE CAMPUS. MANY JOURNEYS.
+            </div>
             <h2>Where should we<br /><span>take you today?</span></h2>
-            <p>Choose your space to get started. Everything you need is one tap away.</p>
+            <p>
+              <strong style={{ color: "#c2410c" }}>Role Selection Portal:</strong> Choose your personal campus space to get started. Everything you need is one tap away.
+            </p>
             <div className="hero-trust"><ShieldCheck size={16} /><span>Secure kiosk access</span><i /> <Activity size={16} /><span>Live campus services</span></div>
           </div>
           <div className="hero-visual" aria-hidden="true">
@@ -210,7 +248,7 @@ export default function RoleSelectionScreen({
         </section>
 
         <footer className="command-footer">
-          <div><span className="footer-dot" /> Touch a portal to continue</div>
+          <div><span className="footer-dot" /> Role Selection Portal • Touch any role card above to proceed</div>
           <div className="footer-links"><span>CBSE Affiliation 1930281</span><span>NAAC Grade A++</span><span>Campus: 6,200 Students</span><span>Digital Campus Kiosk</span></div>
           <button className="assistant-button" onClick={onOpenBot}><span className="assistant-pulse" /> Need help? <b>Ask GreenBot</b></button>
         </footer>

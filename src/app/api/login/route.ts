@@ -5,14 +5,13 @@ import { VAPS_API_ENDPOINTS } from "@/config/api";
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
+    const body = await req.json().catch(() => ({}));
     const {
       username,
       password,
       mI_ID,
       loginUrl,
       role = "student",
-      isDemo = false,
     } = body;
 
     if (!username || !password) {
@@ -22,41 +21,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 1. Check for Demo / Local Test Mode Bypass (allows UI testing if network is down)
-    if (isDemo) {
-      const demoResponse: LoginResponseDTO = {
-        userName: username,
-        roleforlogin: role === "staff" ? "Staff" : role === "student" ? "Student" : role,
-        role: role,
-        userId: 101,
-        roleId: role === "staff" ? 2 : 3,
-        empcode: role === "staff" ? 5021 : 0,
-        AMST_ID: role === "student" ? 1204 : 0,
-        ASMAY_Year: "2025-2026",
-        asmaY_Id: 195,
-        MI_Idforlogin: 31,
-        instituteName: "Green Valley Public School",
-        mI_Name: "Green Valley Public School",
-        mI_logo: "",
-        message: null,
-      };
-
-      const session: SessionInfo = createSessionFromLoginDTO(
-        demoResponse,
-        role,
-        username
-      );
-
-      return NextResponse.json({
-        success: true,
-        message: "Demo login successful",
-        data: demoResponse,
-        session,
-        isDemo: true,
-      });
-    }
-
-    // 2. Resolve Server URL and Institution ID from env
+    // 1. Resolve Server URL and Institution ID from env
     const endpoint = loginUrl
       ? `${loginUrl.trim().replace(/\/+$/, "")}/api/LoginFacade/`
       : VAPS_API_ENDPOINTS.LOGIN_FACADE;

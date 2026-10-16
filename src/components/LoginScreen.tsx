@@ -28,6 +28,7 @@ import {
   Settings,
   Server,
   RefreshCw,
+  X,
 } from "lucide-react";
 import { SessionInfo } from "@/types/auth";
 import { saveUserSession, getRememberedUser } from "@/lib/session";
@@ -107,24 +108,24 @@ export default function LoginScreen({
   const roleConfig: Record<RoleType, RoleConfigDetail> = {
     student: {
       title: "Student & Parent Login",
-      subtitle: "Secure portal for academic records, schedules, and assessments.",
-      defaultUser: "GVPS-1023",
-      userPlaceholder: "Admission No / Roll No (e.g. GVPS-1023)",
+      subtitle: "Secure academic portal for performance, schedules, and assessments.",
+      defaultUser: "",
+      userPlaceholder: "Admission No / Roll No / Username",
       roleBadge: "Student & Parent Portal",
-      accentColor: "#0284c7",
-      accentGradient: "linear-gradient(135deg, #0284c7 0%, #0369a1 50%, #059669 100%)",
-      haloColor: "rgba(2, 132, 199, 0.22)",
-      heroTag: "STUDENT & PARENT ACADEMIC PORTAL",
+      accentColor: "#ea580c",
+      accentGradient: "linear-gradient(135deg, #ea580c 0%, #c2410c 50%, #f59e0b 100%)",
+      haloColor: "rgba(234, 88, 12, 0.25)",
+      heroTag: "STUDENT ACADEMIC & LEARNING SUITE",
       heroHeadline1: "Empowering Young Minds",
       heroHeadlineHighlight: "Gateway to Academic Excellence",
       heroSubtext:
-        "Welcome to Green Valley Public School. Access your interactive learning dashboard, term test schedules, live morning attendance, homework diary, and academic marksheets.",
+        "Access your interactive learning dashboard, term examination schedules, morning attendance, fee ledger, timetable, notices and homework diary.",
       sloganTitle: "STUDENT CREED & MOTTO",
-      sloganQuote: "“Dare to Dream, Learn with Passion, and Lead with Character.”",
-      sloganMotto: "Curiosity • Integrity • Compassion • Academic Excellence",
+      sloganQuote: "“Knowledge is Power • Strive for Academic Excellence.”",
+      sloganMotto: "Discipline • Integrity • Wisdom • Academic Excellence",
       features: [
         {
-          icon: <BookOpen size={20} className="text-sky-600" />,
+          icon: <BookOpen size={20} className="text-orange-600" />,
           title: "Tests & Assessments",
           desc: "Periodic tests, term exam timetables & instant scorecards",
         },
@@ -305,13 +306,12 @@ export default function LoginScreen({
     setVisitorPhoneError("");
   }, [role]);
 
-  const handleSubmit = async (e?: React.FormEvent, forceDemo: boolean = false) => {
+  const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     setIsSubmitting(true);
     setErrorMessage(null);
 
-    // If password is blank and user is trying default demo user, suggest credentials or offer demo
-    if (!password.trim() && !forceDemo) {
+    if (!password.trim()) {
       setIsSubmitting(false);
       setErrorMessage("Please enter your password to authenticate.");
       return;
@@ -329,7 +329,6 @@ export default function LoginScreen({
           mI_ID: institutionId,
           loginUrl: serverUrl,
           role: role,
-          isDemo: forceDemo,
         }),
       });
 
@@ -418,7 +417,7 @@ export default function LoginScreen({
 
   return (
     <div
-      className="login-page-container"
+      className="kiosk-command-center"
       style={{
         position: "relative",
         width: "100%",
@@ -432,37 +431,16 @@ export default function LoginScreen({
         fontFamily: "'Plus Jakarta Sans', system-ui, -apple-system, sans-serif",
         userSelect: "none",
         boxSizing: "border-box",
-        background: "#f8fafc",
+        background: "#fffcf9",
       }}
     >
-      {/* BACKGROUND IMAGE & FROSTED OVERLAY */}
-      <div
-        className="login-bg-layer"
-        style={{
-          position: "absolute",
-          inset: 0,
-          backgroundImage: `url('/login_bg.jpg')`,
-          backgroundSize: "cover",
-          backgroundPosition: "center bottom",
-          opacity: 0.22,
-          zIndex: 1,
-        }}
-      />
-      <div
-        className="login-gradient-overlay"
-        style={{
-          position: "absolute",
-          inset: 0,
-          background:
-            "radial-gradient(circle at 15% 20%, rgba(240, 249, 255, 0.96) 0%, rgba(248, 250, 252, 0.93) 50%, rgba(236, 253, 245, 0.95) 100%)",
-          zIndex: 2,
-          pointerEvents: "none",
-        }}
-      />
+      {/* FLOATING AMBIENT ORBS (MATCHING ROLE SELECTION SCREEN) */}
+      <div className="kiosk-orb kiosk-orb-one" />
+      <div className="kiosk-orb kiosk-orb-two" />
 
-      {/* TOP HEADER */}
+      {/* TOP COMMAND NAVBAR (ROLE SELECTION COMMAND THEME) */}
       <header
-        className="login-top-navbar"
+        className="command-header"
         style={{
           position: "relative",
           zIndex: 10,
@@ -474,106 +452,77 @@ export default function LoginScreen({
           background: "rgba(255, 255, 255, 0.88)",
           backdropFilter: "blur(16px)",
           WebkitBackdropFilter: "blur(16px)",
-          borderBottom: "1.5px solid rgba(226, 232, 240, 0.85)",
-          boxShadow: "0 1px 6px rgba(0, 0, 0, 0.02)",
+          borderBottom: "1.5px solid rgba(254, 215, 170, 0.65)",
+          boxShadow: "0 4px 18px rgba(234, 88, 12, 0.05)",
         }}
       >
         <div
-          className="login-school-logo"
-          onClick={onBackToKiosk}
-          role="button"
-          tabIndex={0}
-          style={{ display: "flex", alignItems: "center", gap: "12px", cursor: "pointer" }}
+          className="command-brand"
+          style={{ display: "flex", alignItems: "center", gap: "14px" }}
         >
-          <div
-            className="login-logo-mark"
-            style={{
-              width: "42px",
-              height: "42px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              filter: "drop-shadow(0 2px 6px rgba(0, 0, 0, 0.08))",
-            }}
-          >
-            <svg width="42" height="42" viewBox="0 0 48 48" fill="none">
-              <path
-                d="M24 7C28 11 34 13 38 10C38 18 31 23 24 24C17 23 10 18 10 10C14 13 20 11 24 7Z"
-                fill="#10b981"
-              />
-              <path
-                d="M24 24V11"
-                stroke="#059669"
-                strokeWidth="2.8"
-                strokeLinecap="round"
-              />
-              <path
-                d="M5 36C12 31.5 18 32.5 24 37C30 32.5 36 31.5 43 36V18C36 13.5 30 14.5 24 19C18 14.5 12 13.5 5 18V36Z"
-                fill="#0369a1"
-              />
-              <path
-                d="M24 19V37"
-                stroke="#ffffff"
-                strokeWidth="2.8"
-                strokeLinecap="round"
-              />
+          <button className="command-back" onClick={onBackToKiosk} aria-label="Back to role selection">
+            <ArrowLeft size={19} />
+          </button>
+          <div className="command-mark" aria-hidden="true" style={{ width: "42px", height: "42px" }}>
+            <svg width="34" height="34" viewBox="0 0 48 48" fill="none">
+              <path d="M24 7c4 4 10 6 14 3 0 8-7 13-14 14C17 23 10 18 10 10c4 3 10 1 14-3Z" fill="#f97316" />
+              <path d="M24 24V11" stroke="#ea580c" strokeWidth="2.5" strokeLinecap="round" />
+              <path d="M5 36c7-4.5 13-3.5 19 1 6-4.5 12-5.5 19-1V18c-7-4.5-13-3.5-19 1-6-4.5-12-5.5-19-1v18Z" fill="#c2410c" />
+              <path d="M24 19v18" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
             </svg>
           </div>
-          <div className="login-school-names">
-            <h1
-              style={{
-                fontFamily: "'Outfit', sans-serif",
-                fontSize: "1.35rem",
-                fontWeight: 800,
-                color: "#0c3558",
-                margin: 0,
-                lineHeight: 1.15,
-                letterSpacing: "-0.01em",
-              }}
-            >
-              Green Valley Public School
-            </h1>
-            <p
-              style={{
-                fontSize: "0.82rem",
-                fontWeight: 700,
-                color: "#059669",
-                letterSpacing: "0.03em",
-                margin: "2px 0 0 0",
-              }}
-            >
-              Learn • Grow • Excel • Smart Kiosk Portal
-            </p>
+          <div>
+            <p className="command-kicker" style={{ margin: "0 0 2px" }}>GREEN VALLEY • SMART CAMPUS</p>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", flexWrap: "wrap" }}>
+              <h1
+                style={{
+                  fontFamily: "'Outfit', sans-serif",
+                  fontSize: "1.35rem",
+                  fontWeight: 800,
+                  color: "#1e293b",
+                  margin: 0,
+                  lineHeight: 1.15,
+                  letterSpacing: "-0.025em",
+                }}
+              >
+                Green Valley Public School
+              </h1>
+              <span
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.35rem",
+                  background: "linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%)",
+                  color: "#c2410c",
+                  fontSize: "0.74rem",
+                  fontWeight: 800,
+                  padding: "0.22rem 0.75rem",
+                  borderRadius: "9999px",
+                  border: "1.5px solid rgba(234, 88, 12, 0.35)",
+                  boxShadow: "0 2px 8px rgba(234, 88, 12, 0.1)",
+                  letterSpacing: "0.02em",
+                }}
+              >
+                <ShieldCheck size={12} style={{ color: "#ea580c" }} />
+                PAGE 3 • ROLE AUTHENTICATION PORTAL
+              </span>
+            </div>
           </div>
         </div>
 
         <div
-          className="login-nav-right"
-          style={{ display: "flex", alignItems: "center", gap: "12px" }}
+          className="command-actions"
+          style={{ display: "flex", alignItems: "center", gap: "10px" }}
         >
+          {/* Live Campus Status */}
+          <div className="command-live-status"><span /> Campus online</div>
+
           {/* Live Clock & Date Badge */}
           {currentTime && (
-            <div
-              className="login-clock-widget"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "7px",
-                background: "rgba(255, 255, 255, 0.95)",
-                border: "1px solid rgba(203, 213, 225, 0.85)",
-                padding: "6px 14px",
-                borderRadius: "9999px",
-                boxShadow: "0 2px 6px rgba(0, 0, 0, 0.03)",
-                fontSize: "0.85rem",
-                fontWeight: 700,
-                color: "#1e293b",
-              }}
-            >
-              <Calendar size={15} style={{ color: config.accentColor }} />
-              <span className="login-clock-date">{formatDate(currentTime)}</span>
-              <span className="login-clock-divider" style={{ color: "#cbd5e1" }}>•</span>
-              <Clock size={15} style={{ color: "#059669" }} />
-              <span className="login-clock-time" style={{ color: "#0c3558" }}>{formatTime(currentTime)}</span>
+            <div className="command-time">
+              <Calendar size={15} />
+              <span>{formatDate(currentTime)}</span>
+              <b>{formatTime(currentTime)}</b>
             </div>
           )}
 
@@ -589,7 +538,7 @@ export default function LoginScreen({
               border: `1.5px solid ${config.accentColor}55`,
               background: `${config.accentColor}12`,
               color: config.accentColor,
-              fontSize: "0.84rem",
+              fontSize: "0.82rem",
               fontWeight: 800,
               letterSpacing: "0.02em",
             }}
@@ -610,73 +559,28 @@ export default function LoginScreen({
           <button
             type="button"
             onClick={() => setShowServerConfig(!showServerConfig)}
-            className="login-icon-pill-btn"
+            className="command-fullscreen"
             title="Configure School API Server & Institution ID (From App.config)"
             aria-label="Server Configuration"
             style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "6px",
-              padding: "0 12px",
-              height: "38px",
-              borderRadius: "9999px",
-              background: showServerConfig ? "#0c3558" : "rgba(255, 255, 255, 0.95)",
-              border: "1px solid rgba(203, 213, 225, 0.85)",
-              color: showServerConfig ? "#ffffff" : "#475569",
-              fontSize: "0.82rem",
-              fontWeight: 700,
               cursor: "pointer",
-              boxShadow: "0 2px 6px rgba(0, 0, 0, 0.02)",
+              background: showServerConfig ? "#ea580c" : undefined,
+              color: showServerConfig ? "#ffffff" : undefined,
             }}
           >
-            <Server size={15} style={{ color: showServerConfig ? "#38bdf8" : config.accentColor }} />
+            <Server size={14} style={{ color: showServerConfig ? "#ffffff" : config.accentColor }} />
             <span>API: MI-{institutionId}</span>
           </button>
 
           {/* Fullscreen Toggle Button */}
           <button
             onClick={toggleFullscreen}
-            className="login-icon-pill-btn"
+            className="command-fullscreen"
             title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
             aria-label="Toggle Fullscreen"
-            style={{
-              width: "38px",
-              height: "38px",
-              borderRadius: "50%",
-              background: "rgba(255, 255, 255, 0.95)",
-              border: "1px solid rgba(203, 213, 225, 0.85)",
-              color: "#475569",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              cursor: "pointer",
-            }}
           >
             {isFullscreen ? <Minimize size={16} /> : <Maximize size={16} />}
-          </button>
-
-          {/* Back to Kiosk Button */}
-          <button
-            className="login-back-kiosk-pill"
-            onClick={onBackToKiosk}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "7px",
-              background: "#0c3558",
-              color: "#ffffff",
-              border: "1px solid #0c3558",
-              borderRadius: "9999px",
-              padding: "7px 16px",
-              minHeight: "40px",
-              fontSize: "0.88rem",
-              fontWeight: 700,
-              cursor: "pointer",
-              boxShadow: "0 3px 10px rgba(12, 53, 88, 0.18)",
-            }}
-          >
-            <ArrowLeft size={16} strokeWidth={2.4} />
-            <span>Back to Kiosk</span>
+            <span>{isFullscreen ? "Exit" : "Full screen"}</span>
           </button>
         </div>
       </header>
@@ -714,25 +618,22 @@ export default function LoginScreen({
           }}
         >
           {/* Active Portal Pill Tag */}
-          <div
-            className="login-portal-tag-pill"
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "7px",
-              padding: "6px 14px",
-              borderRadius: "9999px",
-              border: `1.5px solid ${config.accentColor}40`,
-              background: `${config.accentColor}15`,
-              color: config.accentColor,
-              fontSize: "0.85rem",
-              fontWeight: 800,
-              letterSpacing: "0.08em",
-              width: "fit-content",
-            }}
-          >
-            <Sparkles size={16} />
-            <span>{config.heroTag}</span>
+          {/* Active Portal Pill Tag */}
+          <div className="hero-chip" style={{ display: "inline-flex", alignItems: "center", gap: "0.45rem", marginBottom: "0.2rem" }}>
+            <span
+              style={{
+                background: "#ea580c",
+                color: "#ffffff",
+                padding: "2px 8px",
+                borderRadius: "9999px",
+                fontSize: "0.65rem",
+                fontWeight: 900,
+                letterSpacing: "0.04em",
+              }}
+            >
+              PAGE 3
+            </span>
+            <Sparkles size={14} /> ROLE AUTHENTICATION • {config.heroTag}
           </div>
 
           {/* Headline with vibrant gradient highlight */}
@@ -742,10 +643,10 @@ export default function LoginScreen({
               fontFamily: "'Outfit', sans-serif",
               fontSize: "clamp(2rem, 3.4vw, 3.2rem)",
               fontWeight: 900,
-              color: "#0c3558",
-              lineHeight: 1.15,
+              color: "#1e293b",
+              lineHeight: 1.12,
               margin: 0,
-              letterSpacing: "-0.02em",
+              letterSpacing: "-0.03em",
             }}
           >
             {config.heroHeadline1}
@@ -753,7 +654,7 @@ export default function LoginScreen({
             <span
               className="login-hero-highlight"
               style={{
-                backgroundImage: config.accentGradient,
+                background: "linear-gradient(105deg, #ea580c 0%, #f59e0b 55%, #fb923c 100%)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
                 display: "inline-block",
@@ -767,26 +668,31 @@ export default function LoginScreen({
             className="login-hero-line"
             style={{
               width: "56px",
-              height: "4.5px",
+              height: "4px",
               borderRadius: "9999px",
               margin: "2px 0",
-              background: config.accentColor,
+              background: "#ea580c",
             }}
           />
 
           <p
             className="login-hero-subtext"
             style={{
-              fontSize: "clamp(0.92rem, 1.05vw, 1.15rem)",
-              color: "#334155",
+              fontSize: "clamp(0.92rem, 1.05vw, 1.12rem)",
+              color: "#64748b",
               fontWeight: 500,
               lineHeight: 1.45,
               margin: 0,
               maxWidth: "620px",
             }}
           >
-            {config.heroSubtext}
+            <strong style={{ color: "#c2410c" }}>{config.roleBadge}:</strong> {config.heroSubtext}
           </p>
+
+          <div className="hero-trust" style={{ marginTop: "4px" }}>
+            <ShieldCheck size={16} /><span>Secure kiosk access</span><i />
+            <Activity size={16} /><span>Live session synchronization</span>
+          </div>
 
           {/* Dynamic Institutional Slogan Strip */}
           <div
@@ -1063,41 +969,81 @@ export default function LoginScreen({
             flex: 0.85,
             width: "clamp(360px, 31vw, 450px)",
             maxWidth: "460px",
-            background: "rgba(255, 255, 255, 0.95)",
+            background: "rgba(255, 255, 255, 0.94)",
             backdropFilter: "blur(28px)",
             WebkitBackdropFilter: "blur(28px)",
-            border: "2px solid rgba(255, 255, 255, 0.95)",
-            borderRadius: "22px",
+            border: "1.5px solid rgba(254, 215, 170, 0.75)",
+            borderRadius: "26px",
             padding: "clamp(1.1rem, 1.9vh, 1.6rem) clamp(1.2rem, 1.9vw, 1.7rem)",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            boxShadow: `0 24px 60px -12px ${config.haloColor}, 0 0 0 1.5px rgba(255, 255, 255, 0.9)`,
+            boxShadow: `0 24px 60px -12px rgba(234, 88, 12, 0.14), 0 0 0 1.5px rgba(255, 255, 255, 0.9)`,
             transition: "all 0.3s ease",
             boxSizing: "border-box",
           }}
         >
-          {/* Card Crest Emblem */}
+          {/* 3D Character Stage matching Role Selection Tile */}
           <div
-            className="login-card-crest"
             style={{
-              width: "54px",
-              height: "54px",
-              borderRadius: "50%",
-              background: "#ffffff",
+              width: "100%",
+              height: "140px",
+              borderRadius: "20px",
+              background: `linear-gradient(180deg, #ffffff 0%, ${role === "student" ? "#fff7ed" : role === "staff" ? "#f0fdfa" : role === "alumni" ? "#fffbeb" : "#f5f3ff"} 100%)`,
+              border: "1px solid rgba(254, 215, 170, 0.65)",
               display: "flex",
-              alignItems: "center",
+              alignItems: "flex-end",
               justifyContent: "center",
-              marginBottom: "8px",
-              border: `2px solid ${config.accentColor}44`,
-              boxShadow: `0 8px 24px ${config.haloColor}`,
-              flexShrink: 0,
+              marginBottom: "12px",
+              position: "relative",
+              overflow: "hidden",
+              boxShadow: "inset 0 2px 6px rgba(0, 0, 0, 0.02)",
             }}
           >
-            {role === "student" && <GraduationCap size={30} style={{ color: config.accentColor }} />}
-            {role === "staff" && <BookOpen size={30} style={{ color: config.accentColor }} />}
-            {role === "visitor" && <Users size={30} style={{ color: config.accentColor }} />}
-            {role === "alumni" && <Star size={30} style={{ color: config.accentColor }} />}
+            <div
+              style={{
+                position: "absolute",
+                top: "10px",
+                left: "12px",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "5px",
+                padding: "3px 10px",
+                borderRadius: "999px",
+                background: "rgba(255, 255, 255, 0.95)",
+                fontSize: "0.72rem",
+                fontWeight: 800,
+                color: config.accentColor,
+                boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+                border: "1px solid rgba(255, 255, 255, 0.9)",
+              }}
+            >
+              {role === "student" && <GraduationCap size={13} />}
+              {role === "staff" && <Users size={13} />}
+              {role === "admin" && <ShieldCheck size={13} />}
+              {role === "guest" && <Users size={13} />}
+              {role === "alumni" && <Star size={13} />}
+              <span>{config.roleBadge}</span>
+            </div>
+            <img
+              src={
+                role === "student"
+                  ? "/student_avatar.png"
+                  : role === "staff"
+                  ? "/staff_avatar.png"
+                  : role === "alumni"
+                  ? "/alumni_avatar.png"
+                  : "/admin_avatar.png"
+              }
+              alt={config.title}
+              style={{
+                height: "135px",
+                width: "auto",
+                objectFit: "contain",
+                filter: "drop-shadow(0 10px 14px rgba(0, 0, 0, 0.14))",
+                transition: "all 0.35s ease",
+              }}
+            />
           </div>
 
           <h3
@@ -1106,7 +1052,7 @@ export default function LoginScreen({
               fontFamily: "'Outfit', sans-serif",
               fontSize: "clamp(1.28rem, 1.65vw, 1.65rem)",
               fontWeight: 900,
-              color: "#0c3558",
+              color: "#1e293b",
               margin: 0,
               textAlign: "center",
               lineHeight: 1.2,
@@ -1128,7 +1074,7 @@ export default function LoginScreen({
             {config.subtitle}
           </p>
 
-          {/* INSPIRING SLOGAN CARD (Replaces One-Tap Demo Fill!) */}
+          {/* INSPIRING SLOGAN CARD */}
           <div
             className="login-slogan-card"
             style={{
@@ -1287,59 +1233,38 @@ export default function LoginScreen({
                 padding: "10px 12px",
                 marginBottom: "10px",
                 display: "flex",
-                flexDirection: "column",
-                gap: "6px",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: "8px",
                 color: "#991b1b",
                 boxSizing: "border-box",
               }}
             >
-              <div style={{ display: "flex", alignItems: "flex-start", gap: "8px" }}>
-                <AlertCircle size={18} style={{ color: "#ef4444", flexShrink: 0, marginTop: "2px" }} />
-                <div style={{ flex: 1 }}>
-                  <span style={{ fontSize: "0.82rem", fontWeight: 700, lineHeight: 1.35, display: "block" }}>
-                    {errorMessage}
-                  </span>
-
-                </div>
+              <div style={{ display: "flex", alignItems: "center", gap: "8px", flex: 1 }}>
+                <AlertCircle size={18} style={{ color: "#ef4444", flexShrink: 0 }} />
+                <span style={{ fontSize: "0.82rem", fontWeight: 700, lineHeight: 1.35 }}>
+                  {errorMessage}
+                </span>
               </div>
-              <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "4px" }}>
-                <button
-                  type="button"
-                  onClick={() => handleSubmit(undefined, true)}
-                  style={{
-                    background: "#0c3558",
-                    color: "#ffffff",
-                    border: "none",
-                    borderRadius: "6px",
-                    padding: "5px 10px",
-                    fontSize: "0.75rem",
-                    fontWeight: 700,
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "4px",
-                  }}
-                >
-                  <Sparkles size={12} />
-                  <span>One-Tap Demo Bypass</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setErrorMessage(null)}
-                  style={{
-                    background: "transparent",
-                    color: "#64748b",
-                    border: "1px solid #cbd5e1",
-                    borderRadius: "6px",
-                    padding: "5px 10px",
-                    fontSize: "0.75rem",
-                    fontWeight: 600,
-                    cursor: "pointer",
-                  }}
-                >
-                  Dismiss
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={() => setErrorMessage(null)}
+                style={{
+                  background: "transparent",
+                  color: "#991b1b",
+                  border: "none",
+                  padding: "4px",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderRadius: "4px",
+                }}
+                aria-label="Dismiss error"
+                title="Dismiss"
+              >
+                <X size={16} />
+              </button>
             </div>
           )}
 
@@ -1628,6 +1553,8 @@ export default function LoginScreen({
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
+                  autoComplete="current-password"
+                  spellCheck={false}
                   style={{
                     width: "100%",
                     height: "44px",
@@ -1792,151 +1719,35 @@ export default function LoginScreen({
         </div>
       </main>
 
-      {/* BOTTOM DOCK VALUES & FOOTER */}
+      {/* BOTTOM COMMAND FOOTER (MATCHING ROLE SELECTION SCREEN) */}
       <footer
-        className="login-bottom-dock"
+        className="command-footer"
         style={{
           position: "relative",
           zIndex: 10,
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          padding: "8px 32px 10px 32px",
+          padding: "10px 32px",
           flexShrink: 0,
-          background: "rgba(255, 255, 255, 0.8)",
+          background: "rgba(255, 255, 255, 0.88)",
           backdropFilter: "blur(14px)",
           WebkitBackdropFilter: "blur(14px)",
-          borderTop: "1.5px solid rgba(226, 232, 240, 0.8)",
+          borderTop: "1.5px solid rgba(254, 215, 170, 0.65)",
         }}
       >
-        <div
-          className="login-dock-pill"
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "16px",
-            background: "rgba(255, 255, 255, 0.95)",
-            backdropFilter: "blur(16px)",
-            WebkitBackdropFilter: "blur(16px)",
-            padding: "5px 20px",
-            borderRadius: "9999px",
-            border: "1px solid rgba(255, 255, 255, 0.95)",
-            boxShadow: "0 3px 12px rgba(0, 0, 0, 0.03)",
-          }}
-        >
-          <div className="login-dock-item" style={{ display: "flex", alignItems: "center", gap: "7px" }}>
-            <div
-              className="login-dock-icon"
-              style={{
-                width: "28px",
-                height: "28px",
-                borderRadius: "50%",
-                background: "#e0f2fe",
-                color: "#0284c7",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                flexShrink: 0,
-              }}
-            >
-              <BookOpen size={16} />
-            </div>
-            <div className="login-dock-text" style={{ display: "flex", flexDirection: "column" }}>
-              <span className="login-dock-bold" style={{ fontSize: "0.85rem", fontWeight: 800, color: "#0c3558", lineHeight: 1.1 }}>Learn</span>
-              <span className="login-dock-sub" style={{ fontSize: "0.72rem", color: "#64748b", fontWeight: 600 }}>New Skills & Innovation</span>
-            </div>
-          </div>
-
-          <div className="login-dock-separator" style={{ width: "1px", height: "22px", background: "rgba(203, 213, 225, 0.85)" }} />
-
-          <div className="login-dock-item" style={{ display: "flex", alignItems: "center", gap: "7px" }}>
-            <div
-              className="login-dock-icon"
-              style={{
-                width: "28px",
-                height: "28px",
-                borderRadius: "50%",
-                background: "#dcfce7",
-                color: "#16a34a",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                flexShrink: 0,
-              }}
-            >
-              <Leaf size={16} />
-            </div>
-            <div className="login-dock-text" style={{ display: "flex", flexDirection: "column" }}>
-              <span className="login-dock-bold" style={{ fontSize: "0.85rem", fontWeight: 800, color: "#0c3558", lineHeight: 1.1 }}>Grow</span>
-              <span className="login-dock-sub" style={{ fontSize: "0.72rem", color: "#64748b", fontWeight: 600 }}>With Character & Confidence</span>
-            </div>
-          </div>
-
-          <div className="login-dock-separator" style={{ width: "1px", height: "22px", background: "rgba(203, 213, 225, 0.85)" }} />
-
-          <div className="login-dock-item" style={{ display: "flex", alignItems: "center", gap: "7px" }}>
-            <div
-              className="login-dock-icon"
-              style={{
-                width: "28px",
-                height: "28px",
-                borderRadius: "50%",
-                background: "#fef3c7",
-                color: "#d97706",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                flexShrink: 0,
-              }}
-            >
-              <Star size={16} />
-            </div>
-            <div className="login-dock-text" style={{ display: "flex", flexDirection: "column" }}>
-              <span className="login-dock-bold" style={{ fontSize: "0.85rem", fontWeight: 800, color: "#0c3558", lineHeight: 1.1 }}>Excel</span>
-              <span className="login-dock-sub" style={{ fontSize: "0.72rem", color: "#64748b", fontWeight: 600 }}>In Academics & Life</span>
-            </div>
-          </div>
-
-          <div className="login-dock-separator" style={{ width: "1px", height: "22px", background: "rgba(203, 213, 225, 0.85)" }} />
-
-          <div className="login-dock-item" style={{ display: "flex", alignItems: "center", gap: "7px" }}>
-            <div
-              className="login-dock-icon"
-              style={{
-                width: "28px",
-                height: "28px",
-                borderRadius: "50%",
-                background: "#fce7f3",
-                color: "#db2777",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                flexShrink: 0,
-              }}
-            >
-              <Users size={16} />
-            </div>
-            <div className="login-dock-text" style={{ display: "flex", flexDirection: "column" }}>
-              <span className="login-dock-bold" style={{ fontSize: "0.85rem", fontWeight: 800, color: "#0c3558", lineHeight: 1.1 }}>Collaborate</span>
-              <span className="login-dock-sub" style={{ fontSize: "0.72rem", color: "#64748b", fontWeight: 600 }}>For a Better Future</span>
-            </div>
-          </div>
+        <div>
+          <span className="footer-dot" /> Role Authentication Portal • Enter credentials or select role to login
         </div>
-
-        <div className="login-bottom-meta" style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "1px" }}>
-          <span
-            className="login-bottom-motto"
-            style={{ fontSize: "0.82rem", fontWeight: 700, color: "#065f46", letterSpacing: "0.02em" }}
-          >
-            — Green Valley Public School Smart Campus • CBSE Affiliation No. 1930421 —
-          </span>
-          <span
-            className="login-bottom-support"
-            style={{ fontSize: "0.74rem", fontWeight: 600, color: "#64748b" }}
-          >
-            Kiosk Support Desk: Ext. 104 • helpdesk@gvps.edu
-          </span>
+        <div className="footer-links">
+          <span>CBSE Affiliation 1930281</span>
+          <span>NAAC Grade A++</span>
+          <span>Campus: 6,200 Students</span>
+          <span>Digital Campus Kiosk</span>
         </div>
+        <button className="assistant-button" type="button" onClick={onBackToKiosk}>
+          <span className="assistant-pulse" /> Need help? <b>Ask GreenBot</b>
+        </button>
       </footer>
     </div>
   );

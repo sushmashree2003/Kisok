@@ -5,5 +5,5 @@ import StaffDashboard from "@/components/StaffDashboard";
 
 export default function StaffPage() {
   const router = useRouter();
-  return <StaffDashboard onBackToKiosk={() => router.push("/")} />;
+  return <StaffDashboard onBackToKiosk={() => router.push("/dashboard")} />;
 }
