@@ -4,80 +4,105 @@ import { VAPS_API_ENDPOINTS } from "@/config/api";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { asmay_id, amst_id, MI_Id, examId, portalUrl } = body;
+    const {
+      asmay_id,
+      amst_id,
+      MI_Id,
+      examId,
+      subjectId,
+      portalUrl,
+      type = "EWAS", // "EWAS" (Exam-Wise All Subjects) or "SWAE" (Subject-Wise All Exams)
+      asmcL_Id = 0,
+      asmS_Id = 0,
+    } = body;
 
-    // 1. Get Exams list from env
-    const getExamUrl = portalUrl
-      ? `${portalUrl.trim().replace(/\/+$/, "")}/api/ExamReportFacade/getexamdata/`
-      : VAPS_API_ENDPOINTS.EXAM_LIST;
+    const base = portalUrl
+      ? portalUrl.trim().replace(/\/+$/, "")
+      : VAPS_API_ENDPOINTS.PORTAL_URL.trim().replace(/\/+$/, "");
 
-    const examPayload = {
-      asmay_id: Number(asmay_id || 195),
-      amst_id: Number(amst_id || 1204),
+    const getExamUrl = `${base}/api/ExamReportFacade/getexamdata/`;
+    const getSubjectUrl = `${base}/api/CumulativeSubjectFacade/getSubjectsdata/`;
+    const detailsUrl = `${base}/api/ExamReportFacade/StudentExamDetails/`;
+
+    const commonPayload = {
+      asmay_id: Number(asmay_id || 0),
+      amst_id: Number(amst_id || 0),
       MI_Id: Number(MI_Id || 31),
-      Type: "EWAS",
     };
 
-    console.log("[Exam API] Fetching exam list from:", getExamUrl, examPayload);
-
-    const examListRes = await fetch(getExamUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify(examPayload),
-      signal: AbortSignal.timeout(12000),
-    });
+    // Parallel fetch exam list and subjects list
+    const [examListRes, subjListRes] = await Promise.allSettled([
+      fetch(getExamUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...commonPayload, Type: "EWAS" }),
+        signal: AbortSignal.timeout(10000),
+      }),
+      fetch(getSubjectUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...commonPayload,
+          asmcL_Id: Number(asmcL_Id || 0),
+          asmS_Id: Number(asmS_Id || 0),
+        }),
+        signal: AbortSignal.timeout(10000),
+      }),
+    ]);
 
     let examData: any = {};
-    if (examListRes.ok) {
-      examData = await examListRes.json();
+    let exams: any[] = [];
+    if (examListRes.status === "fulfilled" && examListRes.value.ok) {
+      examData = await examListRes.value.json();
+      exams = examData.examlist || [];
     }
 
-    // 2. If specific exam marks requested or default exam available
+    let subjects: any[] = [];
+    if (subjListRes.status === "fulfilled" && subjListRes.value.ok) {
+      const sData = await subjListRes.value.json();
+      subjects = sData.subjectlist || sData.subjlist || [];
+    }
+
+    // Determine IDs for details call
+    const selectedEmeId = examId || exams[0]?.emE_Id || 0;
+    const selectedSubjId = subjectId || subjects[0]?.ismS_Id || 0;
+
     let examReportList: any[] = [];
-    const selectedEmeId = examId || examData?.emE_Id || examData?.examlist?.[0]?.emE_Id;
+    let detailsData: any = {};
 
-    if (selectedEmeId) {
-      const detailsUrl = portalUrl
-        ? `${portalUrl.trim().replace(/\/+$/, "")}/api/ExamReportFacade/StudentExamDetails/`
-        : VAPS_API_ENDPOINTS.EXAM_DETAILS;
-      const detailsPayload = {
-        MI_Id: Number(MI_Id || 31),
-        asmay_id: Number(asmay_id || 195),
-        amst_id: Number(amst_id || 1204),
-        EME_Id: selectedEmeId,
-        type: "EWAS",
-      };
+    const detailsPayload = {
+      ...commonPayload,
+      EME_Id: type === "SWAE" ? 0 : selectedEmeId,
+      ISMS_Id: type === "SWAE" ? selectedSubjId : 0,
+      type: type,
+    };
 
-      try {
-        const detailsRes = await fetch(detailsUrl, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-          body: JSON.stringify(detailsPayload),
-          signal: AbortSignal.timeout(12000),
-        });
+    try {
+      const detailsRes = await fetch(detailsUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(detailsPayload),
+        signal: AbortSignal.timeout(12000),
+      });
 
-        if (detailsRes.ok) {
-          const detailsData = await detailsRes.json();
-          examReportList = detailsData.examReportList || [];
-        }
-      } catch (err) {
-        console.warn("[Exam API] Could not fetch specific exam marks:", err);
+      if (detailsRes.ok) {
+        detailsData = await detailsRes.json();
+        examReportList = detailsData.examReportList || [];
       }
+    } catch (err) {
+      console.warn("[Exam API] Could not fetch exam details:", err);
     }
 
     return NextResponse.json({
       success: true,
       data: {
-        exams: examData.examlist || [],
-        examReportList: examReportList.length > 0 ? examReportList : (examData.examReportList || []),
+        exams,
+        subjects,
+        examReportList,
         selectedExamId: selectedEmeId,
-        raw: examData,
+        selectedSubjectId: selectedSubjId,
+        type,
+        raw: detailsData,
       },
     });
   } catch (error: any) {

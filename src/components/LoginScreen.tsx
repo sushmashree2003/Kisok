@@ -108,24 +108,24 @@ export default function LoginScreen({
   const roleConfig: Record<RoleType, RoleConfigDetail> = {
     student: {
       title: "Student & Parent Login",
-      subtitle: "Secure portal for academic records, schedules, and assessments.",
-      defaultUser: "GVPS-1023",
-      userPlaceholder: "Admission No / Roll No (e.g. GVPS-1023)",
+      subtitle: "Secure academic portal for performance, schedules, and assessments.",
+      defaultUser: "",
+      userPlaceholder: "Admission No / Roll No / Username",
       roleBadge: "Student & Parent Portal",
-      accentColor: "#0284c7",
-      accentGradient: "linear-gradient(135deg, #0284c7 0%, #0369a1 50%, #059669 100%)",
-      haloColor: "rgba(2, 132, 199, 0.22)",
-      heroTag: "STUDENT & PARENT ACADEMIC PORTAL",
+      accentColor: "#ea580c",
+      accentGradient: "linear-gradient(135deg, #ea580c 0%, #c2410c 50%, #f59e0b 100%)",
+      haloColor: "rgba(234, 88, 12, 0.25)",
+      heroTag: "STUDENT ACADEMIC & LEARNING SUITE",
       heroHeadline1: "Empowering Young Minds",
       heroHeadlineHighlight: "Gateway to Academic Excellence",
       heroSubtext:
-        "Welcome to Green Valley Public School. Access your interactive learning dashboard, term test schedules, live morning attendance, homework diary, and academic marksheets.",
+        "Access your interactive learning dashboard, term examination schedules, morning attendance, fee ledger, timetable, notices and homework diary.",
       sloganTitle: "STUDENT CREED & MOTTO",
-      sloganQuote: "“Dare to Dream, Learn with Passion, and Lead with Character.”",
-      sloganMotto: "Curiosity • Integrity • Compassion • Academic Excellence",
+      sloganQuote: "“Knowledge is Power • Strive for Academic Excellence.”",
+      sloganMotto: "Discipline • Integrity • Wisdom • Academic Excellence",
       features: [
         {
-          icon: <BookOpen size={20} className="text-sky-600" />,
+          icon: <BookOpen size={20} className="text-orange-600" />,
           title: "Tests & Assessments",
           desc: "Periodic tests, term exam timetables & instant scorecards",
         },
@@ -1348,6 +1348,8 @@ export default function LoginScreen({
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
+                  autoComplete="current-password"
+                  spellCheck={false}
                   style={{
                     width: "100%",
                     height: "44px",

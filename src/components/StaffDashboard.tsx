@@ -284,12 +284,12 @@ export default function StaffDashboard({ onBackToKiosk }: DashboardProps) {
     onBackToKiosk();
   };
 
-  const staffName = session?.username || "Ramesh Kumar";
-  const schoolName = session?.initname || "Green Valley Public School";
-  const staffRole = session?.Rolename || "Faculty & Staff";
+  const staffName = session?.username;
+  const schoolName = session?.initname;
+  const staffRole = session?.Rolename;
   const staffDept = "Department of Mathematics";
   const staffRoom = "Room 204 • Faculty Block B";
-  const empId = session?.Empid || "GV-5021";
+  const empId = session?.Empid;
 
   // Filtered schedule
   const filteredSchedule = TEACHING_SCHEDULE.filter((item) => {
@@ -402,16 +402,16 @@ export default function StaffDashboard({ onBackToKiosk }: DashboardProps) {
         <div className="command-brand" onClick={handleLogout} style={{ cursor: "pointer" }}>
           <div className="command-mark" aria-hidden="true">
             <svg width="34" height="34" viewBox="0 0 48 48" fill="none">
-              <path d="M24 7c4 4 10 6 14 3 0 8-7 13-14 14C17 23 10 18 10 10c4 3 10 1 14-3Z" fill="#0d9488" />
-              <path d="M24 24V11" stroke="#0f766e" strokeWidth="2.5" strokeLinecap="round" />
-              <path d="M5 36c7-4.5 13-3.5 19 1 6-4.5 12-5.5 19-1V18c-7-4.5-13-3.5-19 1-6-4.5-12-5.5-19-1v18Z" fill="#115e59" />
+              <path d="M24 7c4 4 10 6 14 3 0 8-7 13-14 14C17 23 10 18 10 10c4 3 10 1 14-3Z" fill="#ea580c" />
+              <path d="M24 24V11" stroke="#c2410c" strokeWidth="2.5" strokeLinecap="round" />
+              <path d="M5 36c7-4.5 13-3.5 19 1 6-4.5 12-5.5 19-1V18c-7-4.5-13-3.5-19 1-6-4.5-12-5.5-19-1v18Z" fill="#9a3412" />
               <path d="M24 19v18" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
             </svg>
           </div>
           <div>
             <p className="command-kicker">GREEN VALLEY • SMART CAMPUS</p>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", flexWrap: "wrap" }}>
-              <h1 style={{ margin: 0, fontFamily: "Outfit, sans-serif", fontSize: "1.15rem", fontWeight: 800, color: "#1e293b" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", flexWrap: "nowrap" }}>
+              <h1 style={{ margin: 0, fontFamily: "Outfit, sans-serif", fontSize: "1.15rem", fontWeight: 800, color: "#1e293b", whiteSpace: "nowrap" }}>
                 {schoolName}
               </h1>
               <span
@@ -419,18 +419,20 @@ export default function StaffDashboard({ onBackToKiosk }: DashboardProps) {
                   display: "inline-flex",
                   alignItems: "center",
                   gap: "0.35rem",
-                  background: "linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%)",
-                  color: "#0f766e",
+                  background: "linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%)",
+                  color: "#c2410c",
                   fontSize: "0.74rem",
                   fontWeight: 800,
                   padding: "0.22rem 0.75rem",
                   borderRadius: "9999px",
-                  border: "1.5px solid rgba(13, 148, 136, 0.35)",
-                  boxShadow: "0 2px 8px rgba(13, 148, 136, 0.1)",
+                  border: "1.5px solid rgba(251, 146, 60, 0.4)",
+                  boxShadow: "0 2px 8px rgba(234, 88, 12, 0.08)",
                   letterSpacing: "0.02em",
+                  whiteSpace: "nowrap",
+                  flexShrink: 0,
                 }}
               >
-                <Users size={12} style={{ color: "#0d9488" }} />
+                <Users size={12} style={{ color: "#ea580c" }} />
                 PAGE 5 • FACULTY &amp; STAFF PORTAL
               </span>
             </div>
@@ -438,7 +440,7 @@ export default function StaffDashboard({ onBackToKiosk }: DashboardProps) {
         </div>
 
         {/* Profile Pill & Control Actions */}
-        <div className="dash-nav-actions">
+        <div className="dash-nav-actions" style={{ flexWrap: "nowrap" }}>
           {/* Staff Profile Pill */}
           <div
             className="dash-profile-pill"
@@ -455,13 +457,13 @@ export default function StaffDashboard({ onBackToKiosk }: DashboardProps) {
 
           {/* Live Campus Telemetry Pill */}
           <div className="command-live-status">
-            <span style={{ background: "#0d9488" }} />
+            <span style={{ background: "#16a34a" }} />
             <span>Campus online</span>
           </div>
 
           {/* Command Time Pill */}
           <div className="dash-clock-widget">
-            <Calendar size={13} style={{ color: "#0d9488" }} />
+            <Calendar size={13} style={{ color: "#ea580c" }} />
             <span>
               {currentTime.toLocaleDateString("en-US", { weekday: "short", day: "2-digit", month: "short" })} •{" "}
               <b>{currentTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true })}</b>
@@ -489,43 +491,29 @@ export default function StaffDashboard({ onBackToKiosk }: DashboardProps) {
           {/* HERO BANNER (ROLE SELECTION COMMAND THEME) */}
           <section className="student-hub-hero">
             <div className="student-hero-title-group">
-              <div className="hero-chip" style={{ display: "inline-flex", alignItems: "center", gap: "0.45rem", marginBottom: "0.35rem" }}>
-                <span
-                  style={{
-                    background: "#0d9488",
-                    color: "#ffffff",
-                    padding: "2px 8px",
-                    borderRadius: "9999px",
-                    fontSize: "0.65rem",
-                    fontWeight: 900,
-                    letterSpacing: "0.04em",
-                  }}
-                >
-                  PAGE 5
-                </span>
-                <Sparkles size={14} /> FACULTY &amp; STAFF PORTAL • LEAD WITH PURPOSE
-              </div>
               <h2>
                 Welcome Back, <span>{staffName}</span>
               </h2>
               <p>Together we shape young minds and inspire academic brilliance across campus.</p>
               <div className="student-hero-chips">
-                <span className="student-hero-chip" style={{ background: "#f0fdfa", color: "#0d9488", borderColor: "rgba(13, 148, 136, 0.3)" }}>
+                <span className="student-hero-chip">
                   <BookOpen size={12} /> {staffDept}
                 </span>
-                <span className="student-hero-chip" style={{ background: "#f0fdfa", color: "#0d9488", borderColor: "rgba(13, 148, 136, 0.3)" }}>
+                <span className="student-hero-chip">
                   <Building2 size={12} /> {staffRoom}
                 </span>
-                <span className="student-hero-chip" style={{ background: "#f0fdfa", color: "#0d9488", borderColor: "rgba(13, 148, 136, 0.3)" }}>
+                <span className="student-hero-chip">
                   <Clock size={12} /> 5 Teaching Periods Today
                 </span>
-                <span className="student-hero-chip" style={{ background: "#f0fdfa", color: "#0d9488", borderColor: "rgba(13, 148, 136, 0.3)" }}>
+                <span className="student-hero-chip">
                   <Award size={12} /> Senior Faculty • Rating ★ 4.9/5.0
                 </span>
-              </div>
-              <div className="hero-trust" style={{ marginTop: "0.55rem", fontSize: "11px" }}>
-                <ShieldCheck size={14} style={{ color: "#0d9488" }} /><span>Faculty Grade A+ Verified</span><i />
-                <Activity size={14} style={{ color: "#0d9488" }} /><span>Class Registers Live Synced</span>
+                <span className="student-hero-chip highlight">
+                  <ShieldCheck size={12} /> Faculty Grade A+ Verified
+                </span>
+                <span className="student-hero-chip live">
+                  <Activity size={12} /> Class Registers Live Synced
+                </span>
               </div>
             </div>
 
@@ -742,7 +730,7 @@ export default function StaffDashboard({ onBackToKiosk }: DashboardProps) {
 
               <div className="student-hub-card-footer">
                 <button
-                  className="student-open-screen-btn"
+                  className="student-open-screen-btn btn-warm-tint"
                   onClick={(e) => {
                     e.stopPropagation();
                     setCurrentScreen("meetings");
@@ -949,13 +937,13 @@ export default function StaffDashboard({ onBackToKiosk }: DashboardProps) {
 
               <div className="student-hub-card-footer">
                 <button
-                  className="student-open-screen-btn"
+                  className="student-open-screen-btn btn-warm-tint"
                   onClick={(e) => {
                     e.stopPropagation();
                     setIsVideoModalOpen(true);
                   }}
                 >
-                  <Play size={13} fill="#ffffff" /> Play Campus Facilities Video
+                  <Play size={13} fill="#ea580c" /> Play Campus Facilities Video
                 </button>
               </div>
             </div>
@@ -1035,7 +1023,7 @@ export default function StaffDashboard({ onBackToKiosk }: DashboardProps) {
 
               <div className="student-hub-card-footer">
                 <button
-                  className="student-open-screen-btn"
+                  className="student-open-screen-btn btn-warm-tint"
                   onClick={() => setSelectedNotice(STAFF_NOTICES[0])}
                 >
                   <Megaphone size={13} /> View All Faculty Notices
@@ -1114,7 +1102,7 @@ export default function StaffDashboard({ onBackToKiosk }: DashboardProps) {
 
               <div className="student-hub-card-footer">
                 <button
-                  className="student-open-screen-btn"
+                  className="student-open-screen-btn btn-warm-tint"
                   onClick={() => setSloganIndex((prev) => (prev + 1) % TEACHER_SLOGANS.length)}
                   title="Click to view next inspirational quote"
                 >
@@ -1127,33 +1115,33 @@ export default function StaffDashboard({ onBackToKiosk }: DashboardProps) {
           {/* COMPACT BOTTOM STRIP: FACULTY PROFILE LINK */}
           <section
             style={{
-              background: "rgba(255, 255, 255, 0.9)",
+              background: "rgba(255, 255, 255, 0.95)",
               borderRadius: "14px",
-              padding: "0.5rem 1.15rem",
-              border: "1px solid rgba(254, 215, 170, 0.65)",
+              padding: "0.45rem 1.15rem",
+              border: "1.2px solid rgba(251, 146, 60, 0.3)",
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
-              boxShadow: "0 4px 14px rgba(234, 88, 12, 0.05)",
+              boxShadow: "0 2px 10px rgba(234, 88, 12, 0.04)",
               flexShrink: 0,
             }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: "0.85rem" }}>
               <div
                 style={{
-                  width: 34,
-                  height: 34,
+                  width: 32,
+                  height: 32,
                   borderRadius: "50%",
-                  background: "#f0fdfa",
+                  background: "#fff7ed",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  color: "#0d9488",
+                  color: "#ea580c",
                   flexShrink: 0,
-                  border: "1px solid rgba(13, 148, 136, 0.3)",
+                  border: "1px solid rgba(251, 146, 60, 0.35)",
                 }}
               >
-                <GraduationCap size={18} />
+                <GraduationCap size={16} />
               </div>
               <div>
                 <span style={{ fontSize: "0.76rem", fontWeight: 800, color: "#1e293b" }}>
@@ -1166,7 +1154,7 @@ export default function StaffDashboard({ onBackToKiosk }: DashboardProps) {
                   <span>•</span>
                   <span>Classes: <strong>6A, 7B, 8A, 9B, 10A</strong></span>
                   <span>•</span>
-                  <span>Status: <strong>Active On Premise</strong></span>
+                  <span>Status: <strong style={{ color: "#16a34a" }}>Active On Premise</strong></span>
                 </div>
               </div>
             </div>
@@ -1178,10 +1166,10 @@ export default function StaffDashboard({ onBackToKiosk }: DashboardProps) {
                 alignItems: "center",
                 gap: "0.35rem",
                 padding: "0.35rem 0.85rem",
-                borderRadius: "8px",
-                border: "1px solid rgba(13, 148, 136, 0.35)",
-                background: "#f0fdfa",
-                color: "#0d9488",
+                borderRadius: "9999px",
+                border: "1.2px solid rgba(251, 146, 60, 0.4)",
+                background: "#fff7ed",
+                color: "#c2410c",
                 fontWeight: 800,
                 fontSize: "0.74rem",
                 cursor: "pointer",
@@ -1970,7 +1958,7 @@ export default function StaffDashboard({ onBackToKiosk }: DashboardProps) {
           <span>Faculty Roster Online</span>
           <span>VAPS Cloud Connected</span>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.74rem", fontWeight: 700, color: "#0d9488" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.74rem", fontWeight: 700, color: "#16a34a" }}>
           <ShieldCheck size={14} /> Safe &amp; Encrypted Kiosk
         </div>
       </footer>

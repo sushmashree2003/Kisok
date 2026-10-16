@@ -12,8 +12,8 @@ export async function POST(req: NextRequest) {
 
     const payload = {
       MI_Id: Number(MI_Id || 31),
-      asmay_id: Number(asmay_id || 195),
-      amst_id: Number(amst_id || 1204),
+      asmay_id: Number(asmay_id || 0),
+      amst_id: Number(amst_id || 0),
     };
 
     console.log("[Timetable API] Calling:", endpoint, payload);
@@ -39,14 +39,17 @@ export async function POST(req: NextRequest) {
 
     // TT DTO structure from StudentTT.cs:
     // data.gridweeks: Array of days ({ ttmD_DayName })
-    // data.getStudentTT: Array of periods & subjects ({ ttmD_DayName, TTMP_PeriodName, ISMS_SubjectName })
+    // data.periodslst: Array of periods ({ TTMP_PeriodName })
+    // data.getStudentTT: Array of periods & subjects ({ ttmD_DayName, TTMP_PeriodName, ISMS_SubjectName, EmpName })
     const gridweeks = data.gridweeks || [];
+    const periodslst = data.periodslst || [];
     const studentTT = data.getStudentTT || [];
 
     return NextResponse.json({
       success: true,
       data: {
         gridweeks,
+        periodslst,
         studentTT,
         raw: data,
       },

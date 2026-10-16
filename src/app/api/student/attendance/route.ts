@@ -18,9 +18,9 @@ export async function POST(req: NextRequest) {
       : VAPS_API_ENDPOINTS.STUDENT_ATTENDANCE;
 
     const payload = {
-      asmay_id: Number(asmay_id || 195),
+      asmay_id: Number(asmay_id || 0),
       empid: Number(empid || 0),
-      amst_id: Number(amst_id || 1204),
+      amst_id: Number(amst_id || 0),
       MI_Id: Number(MI_Id || 31),
       roleid: Number(roleid || 3),
     };
@@ -45,16 +45,21 @@ export async function POST(req: NextRequest) {
     }
 
     const data = await response.json();
-
-    // academicyearAttendancedata contains monthly attendance
-    const attendanceList = data.academicyearAttendancedata || [];
+    const rawList = data?.academicyearAttendancedata || data?.attendanceList || (Array.isArray(data) ? data : []);
+    const attendanceList = Array.isArray(rawList)
+      ? rawList
+      : Array.isArray(rawList?.$values)
+      ? rawList.$values
+      : rawList && typeof rawList === "object"
+      ? Object.values(rawList).filter((x) => typeof x === "object" && x !== null)
+      : [];
 
     return NextResponse.json({
       success: true,
       data: {
         attendanceList,
-        studentDetails: data.studetailslist || [],
-        feedetails: data.academicyearFeedata || [],
+        studentDetails: Array.isArray(data?.studetailslist) ? data.studetailslist : [],
+        feedetails: Array.isArray(data?.academicyearFeedata) ? data.academicyearFeedata : [],
         raw: data,
       },
     });
