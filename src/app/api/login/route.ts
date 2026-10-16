@@ -5,7 +5,7 @@ import { VAPS_API_ENDPOINTS } from "@/config/api";
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
+    const body = await req.json().catch(() => ({}));
     const {
       username,
       password,

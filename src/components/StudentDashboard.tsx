@@ -317,6 +317,7 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
         }
       }
     } catch (err: any) {
+      if (err.name === "AbortError") return;
       console.error("Details API error:", err);
       setErrorMessage(err.message || "Failed to load student details from server");
     } finally {
@@ -325,8 +326,9 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
   }, [session]);
 
   // 2. Fetch Fees
-  const fetchFees = useCallback(async () => {
-    if (!session) return;
+  const fetchFees = useCallback(async (currSession?: SessionInfo | null) => {
+    const s = currSession || session;
+    if (!s) return;
     try {
       setLoading(true);
       setErrorMessage(null);
@@ -334,9 +336,9 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          asmay_id: session.ASMAY_Id || 0,
-          amst_id: session.AMST_ID || 0,
-          MI_Id: session.miid || 31,
+          asmay_id: s.ASMAY_Id || 0,
+          amst_id: s.AMST_ID || 0,
+          MI_Id: s.miid || 31,
           type: "overall",
         }),
       });
@@ -356,6 +358,7 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
         );
       }
     } catch (err: any) {
+      if (err.name === "AbortError") return;
       console.error("Fees API error:", err);
       setErrorMessage(err.message || "Failed to load fee records from server");
     } finally {
@@ -364,8 +367,9 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
   }, [session]);
 
   // 3. Fetch Attendance
-  const fetchAttendance = useCallback(async () => {
-    if (!session) return;
+  const fetchAttendance = useCallback(async (currSession?: SessionInfo | null) => {
+    const s = currSession || session;
+    if (!s) return;
     try {
       setLoading(true);
       setErrorMessage(null);
@@ -373,10 +377,10 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          asmay_id: session.ASMAY_Id || 0,
-          amst_id: session.AMST_ID || 0,
-          MI_Id: session.miid || 31,
-          roleid: session.RoleId || 3,
+          asmay_id: s.ASMAY_Id || 0,
+          amst_id: s.AMST_ID || 0,
+          MI_Id: s.miid || 31,
+          roleid: s.RoleId || 3,
         }),
       });
       if (res.ok) {
@@ -396,6 +400,7 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
         );
       }
     } catch (err: any) {
+      if (err.name === "AbortError") return;
       console.error("Attendance API error:", err);
       setErrorMessage(err.message || "Failed to load attendance from server");
     } finally {
@@ -404,8 +409,9 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
   }, [session]);
 
   // 4. Fetch Events (COE)
-  const fetchEvents = useCallback(async (monthNum: number = 0) => {
-    if (!session) return;
+  const fetchEvents = useCallback(async (monthNum: number = 0, currSession?: SessionInfo | null) => {
+    const s = currSession || session;
+    if (!s) return;
     try {
       setLoading(true);
       setErrorMessage(null);
@@ -413,9 +419,9 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          asmay_id: session.ASMAY_Id || 0,
-          amst_id: session.AMST_ID || 0,
-          MI_Id: session.miid || 31,
+          asmay_id: s.ASMAY_Id || 0,
+          amst_id: s.AMST_ID || 0,
+          MI_Id: s.miid || 31,
           month: monthNum,
         }),
       });
@@ -435,6 +441,7 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
         );
       }
     } catch (err: any) {
+      if (err.name === "AbortError") return;
       console.error("Events API error:", err);
       setErrorMessage(err.message || "Failed to load events from server");
     } finally {
@@ -443,8 +450,9 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
   }, [session]);
 
   // 5. Fetch Notices
-  const fetchNotices = useCallback(async () => {
-    if (!session) return;
+  const fetchNotices = useCallback(async (currSession?: SessionInfo | null) => {
+    const s = currSession || session;
+    if (!s) return;
     try {
       setLoading(true);
       setErrorMessage(null);
@@ -452,9 +460,9 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          asmay_id: session.ASMAY_Id || 0,
-          amst_id: session.AMST_ID || 0,
-          MI_Id: session.miid || 31,
+          asmay_id: s.ASMAY_Id || 0,
+          amst_id: s.AMST_ID || 0,
+          MI_Id: s.miid || 31,
           flag: "O",
         }),
       });
@@ -473,6 +481,7 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
         );
       }
     } catch (err: any) {
+      if (err.name === "AbortError") return;
       console.error("Notices API error:", err);
       setErrorMessage(err.message || "Failed to load notices from server");
     } finally {
@@ -481,8 +490,9 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
   }, [session]);
 
   // 6. Fetch Homework
-  const fetchHomework = useCallback(async () => {
-    if (!session) return;
+  const fetchHomework = useCallback(async (currSession?: SessionInfo | null) => {
+    const s = currSession || session;
+    if (!s) return;
     try {
       setLoading(true);
       setErrorMessage(null);
@@ -490,10 +500,10 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          asmay_id: session.ASMAY_Id || 0,
-          amst_id: session.AMST_ID || 0,
-          MI_Id: session.miid || 31,
-          roleid: session.RoleId || 3,
+          asmay_id: s.ASMAY_Id || 0,
+          amst_id: s.AMST_ID || 0,
+          MI_Id: s.miid || 31,
+          roleid: s.RoleId || 3,
         }),
       });
       if (res.ok) {
@@ -512,6 +522,7 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
         );
       }
     } catch (err: any) {
+      if (err.name === "AbortError") return;
       console.error("Homework API error:", err);
       setErrorMessage(err.message || "Failed to load homework from server");
     } finally {
@@ -520,8 +531,9 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
   }, [session]);
 
   // 7. Fetch Timetable
-  const fetchTimetable = useCallback(async () => {
-    if (!session) return;
+  const fetchTimetable = useCallback(async (currSession?: SessionInfo | null) => {
+    const s = currSession || session;
+    if (!s) return;
     try {
       setLoading(true);
       setErrorMessage(null);
@@ -529,9 +541,9 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          asmay_id: session.ASMAY_Id || 0,
-          amst_id: session.AMST_ID || 0,
-          MI_Id: session.miid || 31,
+          asmay_id: s.ASMAY_Id || 0,
+          amst_id: s.AMST_ID || 0,
+          MI_Id: s.miid || 31,
         }),
       });
       if (res.ok) {
@@ -545,6 +557,7 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
         }
       }
     } catch (err: any) {
+      if (err.name === "AbortError") return;
       console.error("Timetable API error:", err);
       setErrorMessage(err.message || "Failed to load timetable from server");
     } finally {
@@ -554,8 +567,14 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
 
   // 8. Fetch Exam
   const fetchExam = useCallback(
-    async (mode = examMode, examId = selectedExamId, subjectId = selectedSubjectId) => {
-      if (!session) return;
+    async (
+      mode = examMode,
+      examId = selectedExamId,
+      subjectId = selectedSubjectId,
+      currSession?: SessionInfo | null
+    ) => {
+      const s = currSession || session;
+      if (!s) return;
       try {
         setLoading(true);
         setErrorMessage(null);
@@ -563,9 +582,9 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            asmay_id: session.ASMAY_Id || 0,
-            amst_id: session.AMST_ID || 0,
-            MI_Id: session.miid || 31,
+            asmay_id: s.ASMAY_Id || 0,
+            amst_id: s.AMST_ID || 0,
+            MI_Id: s.miid || 31,
             type: mode,
             examId: examId,
             subjectId: subjectId,
@@ -596,6 +615,7 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
           if (subjects.length > 0 && !selectedSubjectId) setSelectedSubjectId(subjects[0].id);
         }
       } catch (err: any) {
+        if (err.name === "AbortError") return;
         console.error("Exam API error:", err);
         setErrorMessage(err.message || "Failed to load exam data from server");
       } finally {
@@ -607,8 +627,14 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
 
   // 9. Fetch Over All Exam
   const fetchExamOverall = useCallback(
-    async (mode = overallMode, subId = selectedOverallSubjectId, exId = selectedOverallExamId) => {
-      if (!session) return;
+    async (
+      mode = overallMode,
+      subId = selectedOverallSubjectId,
+      exId = selectedOverallExamId,
+      currSession?: SessionInfo | null
+    ) => {
+      const s = currSession || session;
+      if (!s) return;
       try {
         setLoading(true);
         setErrorMessage(null);
@@ -616,9 +642,9 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            asmay_id: session.ASMAY_Id || 0,
-            amst_id: session.AMST_ID || 0,
-            MI_Id: session.miid || 31,
+            asmay_id: s.ASMAY_Id || 0,
+            amst_id: s.AMST_ID || 0,
+            MI_Id: s.miid || 31,
             type: mode,
             isms_id: subId,
             eme_id: exId,
@@ -642,6 +668,7 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
           if (exams.length > 0 && !selectedOverallExamId) setSelectedOverallExamId(exams[0].id);
         }
       } catch (err: any) {
+        if (err.name === "AbortError") return;
         console.error("Exam Overall API error:", err);
         setErrorMessage(err.message || "Failed to load overall exam data from server");
       } finally {
@@ -651,24 +678,39 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
     [session, overallMode, selectedOverallSubjectId, selectedOverallExamId]
   );
 
-  // On mount: load user session & trigger live API calls
+  // Guard ref to ensure initial data load triggers exactly once
+  const initialLoadDoneRef = useRef(false);
+
+  // On mount: load user session & trigger live API calls exactly ONCE
   useEffect(() => {
+    if (initialLoadDoneRef.current) return;
+    initialLoadDoneRef.current = true;
+
     const s = getUserSession();
     if (s) {
       setSession(s);
       fetchStudentDetails(s);
+      fetchAttendance(s);
+      fetchFees(s);
+      fetchNotices(s);
+      fetchHomework(s);
+      fetchTimetable(s);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Navigate to module screen and refresh data
+  const handleNavigateTo = (screen: StudentScreen) => {
+    setCurrentScreen(screen);
+    setErrorMessage(null);
+    if (screen === "dashboard") {
+      fetchStudentDetails();
       fetchAttendance();
       fetchFees();
       fetchNotices();
       fetchHomework();
       fetchTimetable();
     }
-  }, [fetchStudentDetails, fetchAttendance, fetchFees, fetchNotices, fetchHomework, fetchTimetable]);
-
-  // Navigate to module screen and refresh data
-  const handleNavigateTo = (screen: StudentScreen) => {
-    setCurrentScreen(screen);
-    setErrorMessage(null);
     if (screen === "student-details") fetchStudentDetails();
     if (screen === "fees") fetchFees();
     if (screen === "attendance") fetchAttendance();
