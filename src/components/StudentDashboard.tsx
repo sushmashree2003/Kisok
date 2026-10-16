@@ -169,15 +169,23 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
   >([]);
 
   const [timetableData, setTimetableData] = useState<{
-    gridweeks: { ttmD_DayName?: string }[];
-    periodslst: { TTMP_PeriodName?: string }[];
-    studentTT: { ttmD_DayName?: string; TTMP_PeriodName?: string; ISMS_SubjectName?: string; EmpName?: string }[];
+    gridweeks: { ttmD_DayName?: string; ttmD_DayCode?: string; order_Id?: number }[];
+    periodslst: { TTMP_PeriodName?: string; time?: string }[];
+    studentTT: { ttmD_DayName?: string; TTMP_PeriodName?: string; ISMS_SubjectName?: string; EmpName?: string; room?: string }[];
+    matrix: Array<{
+      slNo: number;
+      dayName: string;
+      dayCode: string;
+      periods: Record<string, { subject: string; teacher: string; room: string; periodNumber: number }>;
+    }>;
   }>({
     gridweeks: [],
     periodslst: [],
     studentTT: [],
+    matrix: [],
   });
   const [selectedTTDay, setSelectedTTDay] = useState<string>("");
+  const [ttViewMode, setTtViewMode] = useState<"matrix" | "cards">("matrix");
 
   const [examMode, setExamMode] = useState<"EWAS" | "SWAE">("EWAS");
   const [examsList, setExamsList] = useState<{ id: string; name: string }[]>([]);
@@ -551,7 +559,8 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
         const gridweeks = toSafeArray(result.data?.gridweeks);
         const periodslst = toSafeArray(result.data?.periodslst);
         const studentTT = toSafeArray(result.data?.studentTT);
-        setTimetableData({ gridweeks, periodslst, studentTT });
+        const matrix = toSafeArray(result.data?.matrix);
+        setTimetableData({ gridweeks, periodslst, studentTT, matrix });
         if (gridweeks.length > 0 && !selectedTTDay) {
           setSelectedTTDay(gridweeks[0].ttmD_DayName || "");
         }
@@ -753,7 +762,9 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
         botReply = `💳 Fee Analysis Ledger:\n• Pending Balance: ₹${totalFeeBalance.toLocaleString()}\n• Total Receivable: ₹${feeData.reduce((acc, f) => acc + f.receivable, 0).toLocaleString()}\n• Total Paid: ₹${feeData.reduce((acc, f) => acc + f.collection, 0).toLocaleString()}\n• Account Status: ${totalFeeBalance <= 0 ? "All Clear (Zero Outstanding) 🎉" : "Dues Pending at Accounts Desk"}`;
         suggestions = ["Open Fees tab", "Check attendance", "Show notices"];
       } else if (lower.includes("timetable") || lower.includes("class") || lower.includes("period")) {
-        botReply = `🗓️ Weekly Time-Table:\n• Total Weekly Periods: ${timetableData.studentTT.length || 6}\n• Next Scheduled Class: ${timetableData.studentTT[0]?.ISMS_SubjectName || "Core Subject"} by ${timetableData.studentTT[0]?.EmpName || "Subject Faculty"}`;
+        botReply = timetableData.studentTT.length > 0
+          ? `🗓️ Weekly Time-Table:\n• Total Weekly Periods: ${timetableData.studentTT.length}\n• Next Scheduled Class: ${timetableData.studentTT[0]?.ISMS_SubjectName || "Class"}${timetableData.studentTT[0]?.EmpName ? ` by ${timetableData.studentTT[0].EmpName}` : ""}`
+          : `🗓️ Weekly Time-Table: No published timetable periods found on the server for the current session.`;
         suggestions = ["Open Time-Table tab", "Check homework diary", "Ask something else"];
       } else if (lower.includes("homework") || lower.includes("diary")) {
         botReply = `📚 Home-work Diary:\n• Assigned Tasks: ${homeworkData.length}\n• Latest: ${homeworkData[0]?.subject ? `${homeworkData[0].subject} - ${homeworkData[0].topic} (Due: ${homeworkData[0].dueDate})` : "All daily homework updated from faculty"}`;
@@ -1352,13 +1363,13 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
                   }}
                 >
                   <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#ea580c" }} />
-                  {timetableData.studentTT.length || 6} Periods
+                  {timetableData.studentTT.length} Period{timetableData.studentTT.length === 1 ? "" : "s"}
                 </span>
               </div>
 
               <div className="student-hub-card-body">
                 <div className="student-metric-hero">
-                  <span className="student-metric-val">{timetableData.studentTT.length || 6} Periods</span>
+                  <span className="student-metric-val">{timetableData.studentTT.length} Period{timetableData.studentTT.length === 1 ? "" : "s"}</span>
                   <span className="student-metric-label">Scheduled Load</span>
                 </div>
 
@@ -1371,23 +1382,9 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
                     </div>
                   ))}
                   {timetableData.studentTT.length === 0 && (
-                    <>
-                      <div className="student-period-item">
-                        <span className="period-time-badge">08:00 AM</span>
-                        <span className="period-subject-name">Mathematics • Rm 204</span>
-                        <span className="period-room-tag">P1</span>
-                      </div>
-                      <div className="student-period-item">
-                        <span className="period-time-badge">09:00 AM</span>
-                        <span className="period-subject-name">General Science • STEM Lab</span>
-                        <span className="period-room-tag">P2</span>
-                      </div>
-                      <div className="student-period-item">
-                        <span className="period-time-badge">10:45 AM</span>
-                        <span className="period-subject-name">English Grammar • Rm 204</span>
-                        <span className="period-room-tag">P3</span>
-                      </div>
-                    </>
+                    <div style={{ padding: "0.85rem", textAlign: "center", color: "#64748b", fontSize: "0.82rem" }}>
+                      No published timetable periods for current term.
+                    </div>
                   )}
                 </div>
 
@@ -1454,7 +1451,7 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
                             Math.max(1, examMarksData.reduce((acc, m) => acc + m.maxMarks, 0))) *
                             100
                         )}%`
-                      : "Grade A+"}
+                      : "—"}
                   </span>
                   <span className="student-metric-label">Assessment Average</span>
                 </div>
@@ -1467,7 +1464,7 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
                     </div>
                     <div className="student-kpi-mini-meta">
                       <span className="student-kpi-mini-label">Evaluated</span>
-                      <strong className="student-kpi-mini-val highlight">{examMarksData.length || 6} Subjects</strong>
+                      <strong className="student-kpi-mini-val highlight">{examMarksData.length} Subjects</strong>
                     </div>
                   </div>
                   <div className="student-kpi-mini-card">
@@ -1477,7 +1474,7 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
                     <div className="student-kpi-mini-meta">
                       <span className="student-kpi-mini-label">Top Grade</span>
                       <strong className="student-kpi-mini-val">
-                        {examMarksData[0]?.grade || "A+"}
+                        {examMarksData[0]?.grade || "—"}
                       </strong>
                     </div>
                   </div>
@@ -1687,23 +1684,9 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
                     </div>
                   ))}
                   {homeworkData.length === 0 && (
-                    <>
-                      <div className="student-period-item">
-                        <span className="period-time-badge">Math</span>
-                        <span className="period-subject-name">Fractions Exercise 4.2</span>
-                        <span className="period-room-tag">Tomorrow</span>
-                      </div>
-                      <div className="student-period-item">
-                        <span className="period-time-badge">Science</span>
-                        <span className="period-subject-name">Plant Kingdom Diagrams</span>
-                        <span className="period-room-tag">Friday</span>
-                      </div>
-                      <div className="student-period-item">
-                        <span className="period-time-badge">English</span>
-                        <span className="period-subject-name">Reading Chapter 5 Comprehension</span>
-                        <span className="period-room-tag">Due 28 Oct</span>
-                      </div>
-                    </>
+                    <div style={{ padding: "0.85rem", textAlign: "center", color: "#64748b", fontSize: "0.82rem" }}>
+                      No homework assignments currently recorded on the school server.
+                    </div>
                   )}
                 </div>
 
@@ -1806,50 +1789,9 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
                     </div>
                   ))}
                   {noticesData.length === 0 && (
-                    <>
-                      <div
-                        className="student-notice-item"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedNoticeModal({
-                            title: "CBSE Term-2 Periodic Assessment Schedule",
-                            startDate: "14 Oct 2026",
-                            endDate: "30 Nov 2026",
-                            authority: "Examination Controller",
-                            details: "Term-2 assessment schedules and syllabus blueprint are available inside the portal.",
-                          });
-                        }}
-                      >
-                        <span style={{ fontSize: "0.6rem", fontWeight: 800, padding: "2px 6px", borderRadius: 6, background: "#fff7ed", color: "#ea580c", border: "1px solid rgba(254, 215, 170, 0.8)", flexShrink: 0 }}>
-                          URGENT
-                        </span>
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontSize: "0.74rem", fontWeight: 700, color: "#0f172a" }}>CBSE Term-2 Assessment Schedule</div>
-                          <span style={{ fontSize: "0.64rem", color: "#64748b" }}>Examination Controller</span>
-                        </div>
-                      </div>
-                      <div
-                        className="student-notice-item"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedNoticeModal({
-                            title: "Annual STEM & Robotics Exhibition 2026",
-                            startDate: "Today",
-                            endDate: "28 Oct 2026",
-                            authority: "Science Innovation Club",
-                            details: "Registration open for inter-house robotics models and science exhibition projects.",
-                          });
-                        }}
-                      >
-                        <span style={{ fontSize: "0.6rem", fontWeight: 800, padding: "2px 6px", borderRadius: 6, background: "#fff7ed", color: "#ea580c", border: "1px solid rgba(254, 215, 170, 0.8)", flexShrink: 0 }}>
-                          CIRCULAR
-                        </span>
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontSize: "0.74rem", fontWeight: 700, color: "#0f172a" }}>Annual STEM &amp; Robotics Exhibition</div>
-                          <span style={{ fontSize: "0.64rem", color: "#64748b" }}>Science Innovation Club</span>
-                        </div>
-                      </div>
-                    </>
+                    <div style={{ padding: "0.85rem", textAlign: "center", color: "#64748b", fontSize: "0.82rem" }}>
+                      No official notices or circulars published at this time.
+                    </div>
                   )}
                 </div>
               </div>
@@ -3229,7 +3171,7 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
               <div className="student-kpi-card">
                 <div className="student-kpi-info">
                   <span>Weekly Periods</span>
-                  <h4>{timetableData.studentTT.length || 30} Total</h4>
+                  <h4>{timetableData.studentTT.length} Total</h4>
                 </div>
                 <div className="student-kpi-icon" style={{ background: "#fff7ed", color: "#ea580c" }}>
                   <Clock size={20} />
@@ -3239,7 +3181,7 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
               <div className="student-kpi-card">
                 <div className="student-kpi-info">
                   <span>Teaching Days</span>
-                  <h4>6 Working Days</h4>
+                  <h4>{timetableData.gridweeks.length} Working Days</h4>
                 </div>
                 <div className="student-kpi-icon" style={{ background: "#f0fdfa", color: "#0d9488" }}>
                   <Calendar size={20} />
@@ -3258,8 +3200,8 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
 
               <div className="student-kpi-card">
                 <div className="student-kpi-info">
-                  <span>Daily Load</span>
-                  <h4>5-6 Periods</h4>
+                  <span>Academic Session</span>
+                  <h4>{studentDetails.academicYear || session?.ASMAY_Year || "Active Term"}</h4>
                 </div>
                 <div className="student-kpi-icon" style={{ background: "#dcfce7", color: "#16a34a" }}>
                   <ShieldCheck size={20} />
@@ -3282,8 +3224,14 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
                 }}
               >
                 <span style={{ fontSize: "0.74rem", fontWeight: 800, color: "#64748b", margin: "0 0.5rem" }}>
-                  Select Day:
+                  Highlight Day:
                 </span>
+                <button
+                  onClick={() => setSelectedTTDay("")}
+                  className={`student-screen-tab-pill ${!selectedTTDay ? "active" : ""}`}
+                >
+                  All Days
+                </button>
                 {timetableData.gridweeks.map((g, idx) => {
                   const dayName = g.ttmD_DayName || "";
                   return (
@@ -3299,40 +3247,84 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
               </div>
             )}
 
-            {/* TIMETABLE TABLE */}
-            {timetableData.studentTT.length === 0 && !loading ? (
-              renderEmptyState("No published timetable schedule returned from the backend server.")
+            {/* TIMETABLE TABLE: Exactly mirrors grd_TT DataGridView matrix from StudentTT.cs */}
+            {timetableData.studentTT.length === 0 && timetableData.gridweeks.length === 0 && !loading ? (
+              renderEmptyState("No Data Available - No published timetable records found on the school server.")
             ) : (
               <div className="student-screen-card">
                 <div className="student-screen-card-header">
                   <h4>
-                    <Clock size={18} style={{ color: "#ea580c" }} /> Class Timetable Schedule
+                    <Clock size={18} style={{ color: "#ea580c" }} /> Student Time Table ({studentDetails.academicYear || session?.ASMAY_Year || "Current Session"})
                   </h4>
                   <span style={{ fontSize: "0.78rem", fontWeight: 800, color: "#ea580c" }}>
-                    {selectedTTDay ? `Filtering: ${selectedTTDay}` : "Full Weekly Roster"}
+                    {selectedTTDay ? `Highlighting: ${selectedTTDay}` : "Master Weekly Schedule"}
                   </span>
                 </div>
                 <div style={{ overflowX: "auto" }}>
                   <table className="student-screen-table">
                     <thead>
                       <tr>
-                        <th>Day of Week</th>
-                        <th>Period Number</th>
-                        <th>Subject Name</th>
-                        <th>Assigned Faculty / Teacher</th>
+                        <th style={{ width: "50px", textAlign: "center" }}>SL.No.</th>
+                        <th style={{ minWidth: "120px" }}>DAYS</th>
+                        <th style={{ minWidth: "110px" }}>Period 01</th>
+                        <th style={{ minWidth: "110px" }}>Period 02</th>
+                        <th style={{ minWidth: "110px" }}>Period 03</th>
+                        <th style={{ minWidth: "110px" }}>Period 04</th>
+                        <th style={{ minWidth: "110px" }}>Period 05</th>
+                        <th style={{ minWidth: "110px" }}>Period 06</th>
+                        <th style={{ minWidth: "110px" }}>Period 07</th>
+                        <th style={{ minWidth: "110px" }}>Period 08</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {timetableData.studentTT
-                        .filter((item) => (selectedTTDay ? item.ttmD_DayName === selectedTTDay : true))
-                        .map((item, idx) => (
-                          <tr key={idx}>
-                            <td style={{ fontWeight: 800, color: "#ea580c" }}>{item.ttmD_DayName || "—"}</td>
-                            <td style={{ fontWeight: 700, color: "#334155" }}>{item.TTMP_PeriodName || "—"}</td>
-                            <td style={{ fontWeight: 800, color: "#0f172a" }}>{item.ISMS_SubjectName || "—"}</td>
-                            <td style={{ color: "#64748b" }}>{item.EmpName || "—"}</td>
+                      {timetableData.gridweeks.map((g, rowIdx) => {
+                        const dayName = g.ttmD_DayName || "";
+                        const isDayHighlighted = selectedTTDay === "" || selectedTTDay.toLowerCase() === dayName.toLowerCase();
+                        return (
+                          <tr
+                            key={rowIdx}
+                            style={{
+                              background: selectedTTDay && selectedTTDay.toLowerCase() === dayName.toLowerCase() ? "#fff7ed" : undefined,
+                              opacity: isDayHighlighted ? 1 : 0.5,
+                            }}
+                          >
+                            <td style={{ textAlign: "center", color: "#94a3b8", fontWeight: 700 }}>
+                              {rowIdx + 1}
+                            </td>
+                            <td style={{ fontWeight: 800, color: "#ea580c" }}>
+                              {dayName || "—"}
+                            </td>
+                            {[1, 2, 3, 4, 5, 6, 7, 8].map((periodNum) => {
+                              const match = timetableData.studentTT.find(
+                                (item) =>
+                                  item.ttmD_DayName?.trim().toLowerCase() === dayName.trim().toLowerCase() &&
+                                  (item.TTMP_PeriodName === String(periodNum) ||
+                                    item.TTMP_PeriodName === `Period ${periodNum}` ||
+                                    item.TTMP_PeriodName === `0${periodNum}` ||
+                                    item.TTMP_PeriodName === `Period 0${periodNum}`)
+                              );
+                              return (
+                                <td key={periodNum} style={{ verticalAlign: "top" }}>
+                                  {match ? (
+                                    <div>
+                                      <div style={{ fontWeight: 800, color: "#0f172a", fontSize: "0.82rem" }}>
+                                        {match.ISMS_SubjectName}
+                                      </div>
+                                      {match.EmpName && (
+                                        <div style={{ fontSize: "0.68rem", color: "#64748b", marginTop: "2px" }}>
+                                          {match.EmpName}
+                                        </div>
+                                      )}
+                                    </div>
+                                  ) : (
+                                    <span style={{ color: "#cbd5e1" }}>—</span>
+                                  )}
+                                </td>
+                              );
+                            })}
                           </tr>
-                        ))}
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
