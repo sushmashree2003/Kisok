@@ -1332,137 +1332,253 @@
    DEDICATED ALUMNI DASHBOARD STYLES
    ============================================================ */
 
-.alumni-body-grid {
+/* ============================================================
+   DEDICATED ALUMNI DASHBOARD STYLES (RESPONSIVE & UNIFIED)
+   ============================================================ */
+
+/* Main Scrollable Dashboard Container */
+.alumni-dashboard-main {
   flex: 1;
   min-height: 0;
-  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1rem clamp(1rem, 2vw, 2rem) 2.5rem;
+  max-width: 1680px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* 6-Card Primary Feature Grid */
+.alumni-feature-grid {
   display: grid;
-  grid-template-columns: 1fr clamp(240px, 20vw, 315px);
-  gap: clamp(0.35rem, 0.6vw, 0.55rem);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.15rem;
+  width: 100%;
+}
+
+@media (max-width: 1100px) {
+  .alumni-feature-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 680px) {
+  .alumni-feature-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Feature Card (Equal Height, Clean Header, Aligned Footer) */
+.alumni-feature-card {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1.2px solid rgba(251, 146, 60, 0.28);
+  box-shadow: 0 4px 18px -2px rgba(15, 23, 42, 0.04), 0 2px 6px -1px rgba(234, 88, 12, 0.04);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   overflow: hidden;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  position: relative;
+  min-height: 240px;
+}
+
+.alumni-feature-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  background: linear-gradient(90deg, #ea580c 0%, #fb923c 60%, rgba(254, 215, 170, 0.6) 100%);
+  opacity: 0.9;
+  z-index: 5;
+}
+
+.alumni-feature-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px -6px rgba(234, 88, 12, 0.14), 0 3px 8px rgba(15, 23, 42, 0.04);
+  border-color: rgba(234, 88, 12, 0.45);
+}
+
+.alumni-feature-card-header {
+  padding: 0.85rem 1.15rem 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(241, 245, 249, 0.85);
+  flex-shrink: 0;
+  gap: 0.75rem;
+}
+
+.alumni-feature-card-body {
+  flex: 1;
+  padding: 0.75rem 1.15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  justify-content: flex-start;
+}
+
+.alumni-feature-card-footer {
+  padding: 0.6rem 1.15rem 0.85rem;
+  border-top: 1px solid rgba(241, 245, 249, 0.85);
+  flex-shrink: 0;
+}
+
+/* 8 Quick-Action Cards Row / Grid (NEVER Overlaps) */
+.alumni-action-grid {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 0.75rem;
+  width: 100%;
+}
+
+@media (max-width: 1400px) {
+  .alumni-action-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .alumni-action-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .alumni-action-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.alumni-action-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 0.85rem 0.95rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 1.2px solid rgba(251, 146, 60, 0.28);
+  box-shadow: 0 2px 8px rgba(234, 88, 12, 0.04);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  min-height: 88px;
+  position: relative;
+}
+
+.alumni-action-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(234, 88, 12, 0.12);
+  border-color: rgba(234, 88, 12, 0.45);
+}
+
+.alumni-action-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.alumni-tile-icon-box {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.alumni-tile-arrow-circle {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6rem;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.alumni-action-card:hover .alumni-tile-arrow-circle {
+  transform: translateX(2px);
+}
+
+.alumni-tile-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.2;
+}
+
+.alumni-tile-sub {
+  font-size: 0.68rem;
+  color: #64748b;
+  line-height: 1.25;
+  margin-top: 2px;
+}
+
+/* Lower Stable Content Grid */
+.alumni-body-grid {
+  display: grid;
+  grid-template-columns: 1.55fr 1fr;
+  gap: 1.25rem;
+  align-items: start;
+  width: 100%;
+}
+
+@media (max-width: 1100px) {
+  .alumni-body-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .alumni-left-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: clamp(0.35rem, 0.6vw, 0.55rem);
-  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
   min-width: 0;
-  overflow: hidden;
 }
 
 .alumni-right-col {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  gap: clamp(0.25rem, 0.5vh, 0.45rem);
-  min-height: 0;
+  gap: 1.25rem;
   min-width: 0;
-  overflow: hidden;
 }
 
-/* 8 ALUMNI ACTION CARDS ROW */
-.alumni-action-grid {
-  display: grid;
-  grid-template-columns: repeat(8, 1fr);
-  gap: clamp(0.25rem, 0.4vw, 0.45rem);
-  flex-shrink: 0;
-  min-height: 0;
-}
-
-.alumni-action-card {
-  position: relative;
-  background: #ffffff;
-  border-radius: 10px;
-  padding: 0.45rem 0.5rem 0.35rem 0.5rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  border: 1px solid #eef2f6;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  min-height: clamp(60px, 7.5vh, 72px);
-}
-
-.alumni-action-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.06);
-  border-color: #cbd5e1;
-}
-
-.alumni-tile-icon-box {
-  width: clamp(22px, 2.8vh, 28px);
-  height: clamp(22px, 2.8vh, 28px);
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 0.25rem;
-  flex-shrink: 0;
-}
-
-.alumni-tile-title {
-  font-family: 'Outfit', sans-serif;
-  font-size: clamp(0.64rem, 0.72vw, 0.72rem);
-  font-weight: 700;
-  color: #0f172a;
-  line-height: 1.1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.alumni-tile-sub {
-  font-size: clamp(0.5rem, 0.56vw, 0.56rem);
-  color: #64748b;
-  line-height: 1.15;
-  margin-top: 1px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 85%;
-}
-
-.alumni-tile-arrow-circle {
-  position: absolute;
-  bottom: 5px;
-  right: 5px;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.5rem;
-}
-
-/* ALUMNI UPCOMING EVENT ITEM */
+/* Event Items */
 .alumni-event-item {
-  flex: 1;
-  min-height: 0;
   display: flex;
   align-items: center;
-  gap: 0.55rem;
-  padding: 0.35rem 0.55rem;
+  gap: 0.85rem;
+  padding: 0.75rem 0.95rem;
   background: #ffffff;
-  border-radius: 8px;
-  border: 1px solid #edf2f7;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
-  transition: all 0.15s ease;
+  border-radius: 12px;
+  border: 1px solid rgba(251, 146, 60, 0.22);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+  transition: all 0.2s ease;
 }
 
 .alumni-event-item:hover {
-  background: #f8fafc;
-  border-color: #cbd5e1;
+  background: #fffcf9;
+  border-color: rgba(234, 88, 12, 0.4);
+  transform: translateX(3px);
 }
 
 .alumni-event-date-box {
-  width: clamp(30px, 3.8vh, 38px);
-  height: clamp(32px, 4vh, 40px);
-  border-radius: 6px;
-  background: #eff6ff;
-  color: #0284c7;
+  width: 44px;
+  height: 48px;
+  border-radius: 10px;
+  background: #fff7ed;
+  color: #ea580c;
+  border: 1px solid #fed7aa;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1473,13 +1589,13 @@
 }
 
 .alumni-event-day {
-  font-size: clamp(0.82rem, 0.95vw, 0.95rem);
+  font-size: 1.05rem;
   font-weight: 800;
 }
 
 .alumni-event-month {
-  font-size: clamp(0.48rem, 0.56vw, 0.56rem);
-  font-weight: 700;
+  font-size: 0.58rem;
+  font-weight: 800;
   text-transform: uppercase;
 }
 
@@ -1489,65 +1605,45 @@
 }
 
 .alumni-event-title {
-  font-size: clamp(0.7rem, 0.78vw, 0.78rem);
+  font-size: 0.86rem;
   font-weight: 700;
   color: #0f172a;
-  line-height: 1.2;
+  line-height: 1.25;
 }
 
 .alumni-event-meta {
-  font-size: clamp(0.56rem, 0.64vw, 0.64rem);
+  font-size: 0.72rem;
   color: #64748b;
-  margin-top: 1px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.alumni-event-arrow-circle {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: #eff6ff;
-  color: #0284c7;
+  margin-top: 3px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+  gap: 6px;
+  flex-wrap: wrap;
 }
 
-/* ALUMNI LATEST UPDATES */
+/* Updates Cards */
 .alumni-update-card {
-  flex: 1;
-  min-height: 0;
   display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  padding: 0.4rem 0.55rem;
+  align-items: flex-start;
+  gap: 0.85rem;
+  padding: 0.75rem 0.95rem;
   background: #ffffff;
-  border-radius: 8px;
-  border: 1px solid #edf2f7;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
-  transition: all 0.15s ease;
+  border-radius: 12px;
+  border: 1px solid rgba(251, 146, 60, 0.22);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+  transition: all 0.2s ease;
 }
 
 .alumni-update-card:hover {
-  background: #f8fafc;
-  border-color: #cbd5e1;
-}
-
-.alumni-update-thumb {
-  width: clamp(52px, 6.5vh, 68px);
-  height: clamp(42px, 5.2vh, 56px);
-  border-radius: 6px;
-  object-fit: cover;
-  flex-shrink: 0;
+  background: #fffcf9;
+  border-color: rgba(234, 88, 12, 0.4);
+  transform: translateX(3px);
 }
 
 .alumni-update-icon-tile {
-  width: clamp(38px, 4.6vh, 46px);
-  height: clamp(38px, 4.6vh, 46px);
-  border-radius: 8px;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1560,73 +1656,62 @@
 }
 
 .alumni-update-title {
-  font-size: clamp(0.68rem, 0.76vw, 0.76rem);
+  font-size: 0.86rem;
   font-weight: 700;
   color: #0f172a;
-  line-height: 1.15;
+  line-height: 1.25;
 }
 
 .alumni-update-desc {
-  font-size: clamp(0.56rem, 0.64vw, 0.64rem);
-  color: #64748b;
-  line-height: 1.25;
-  margin: 1px 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  font-size: 0.74rem;
+  color: #475569;
+  line-height: 1.35;
+  margin: 3px 0;
 }
 
 .alumni-update-meta-row {
   display: flex;
   align-items: center;
-  gap: 0.45rem;
-  margin-top: 1px;
+  gap: 0.65rem;
+  margin-top: 3px;
 }
 
 .alumni-update-date {
-  font-size: 0.56rem;
+  font-size: 0.68rem;
   color: #94a3b8;
 }
 
 .alumni-update-tag {
   display: inline-block;
-  padding: 0.08rem 0.4rem;
+  padding: 1px 7px;
   border-radius: 9999px;
-  font-size: 0.54rem;
-  font-weight: 700;
+  font-size: 0.62rem;
+  font-weight: 800;
 }
 
-/* ALUMNI CURRENT AFFAIRS ITEMS */
+/* Current Affairs & Telemetry */
 .alumni-news-row {
   display: flex;
   align-items: center;
-  gap: 0.55rem;
-  padding: 0.25rem 0;
-  border-bottom: 1px solid #f8fafc;
+  gap: 0.75rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 10px;
+  background: #f8fafc;
+  border: 1px solid #edf2f7;
   cursor: pointer;
-  transition: opacity 0.15s ease;
+  transition: all 0.2s ease;
 }
 
 .alumni-news-row:hover {
-  opacity: 0.85;
-}
-
-.alumni-news-row:last-child {
-  border-bottom: none;
-}
-
-.alumni-news-thumb {
-  width: clamp(34px, 4vh, 44px);
-  height: clamp(30px, 3.5vh, 38px);
-  border-radius: 5px;
-  object-fit: cover;
-  flex-shrink: 0;
+  background: #ffffff;
+  border-color: rgba(234, 88, 12, 0.4);
+  transform: translateX(2px);
 }
 
 .alumni-news-icon-tile {
-  width: clamp(30px, 3.6vh, 36px);
-  height: clamp(30px, 3.6vh, 36px);
-  border-radius: 6px;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1639,19 +1724,16 @@
 }
 
 .alumni-news-title {
-  font-size: clamp(0.62rem, 0.68vw, 0.68rem);
+  font-size: 0.78rem;
   font-weight: 700;
   color: #0f172a;
-  line-height: 1.2;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 1.25;
 }
 
 .alumni-news-date {
-  font-size: 0.54rem;
+  font-size: 0.68rem;
   color: #94a3b8;
-  margin-top: 1px;
+  margin-top: 2px;
 }
 
 /* ============================================================
