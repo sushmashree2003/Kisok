@@ -9,6 +9,7 @@ import {
   Search,
   ArrowRight,
   Home,
+  Activity,
   CalendarDays,
   Sparkles,
   Send,
@@ -33,6 +34,7 @@ import {
   GraduationCap,
   TrendingUp,
   BookOpen,
+  CheckCircle2,
 } from "lucide-react";
 
 interface DashboardProps {
@@ -43,6 +45,12 @@ export default function AlumniDashboard({ onBackToKiosk }: DashboardProps) {
   const [chatInput, setChatInput] = useState("");
   const [chatResponse, setChatResponse] = useState<string | null>(null);
   const [session, setSession] = useState<SessionInfo | null>(null);
+  const [currentTime, setCurrentTime] = useState<Date>(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     const activeSession = getUserSession();
@@ -71,38 +79,52 @@ export default function AlumniDashboard({ onBackToKiosk }: DashboardProps) {
 
   return (
     <div className="dashboard-page">
-      {/* TOP NAVBAR */}
+      {/* FLOATING AMBIENT ORBS (MATCHING ROLE SELECTION SCREEN) */}
+      <div className="kiosk-orb kiosk-orb-one" />
+      <div className="kiosk-orb kiosk-orb-two" />
+
+      {/* TOP COMMAND NAVBAR (ROLE SELECTION COMMAND THEME) */}
       <header className="dash-navbar">
-        <div className="dash-logo-link" onClick={handleLogout}>
-          <div className="dash-logo-box">
+        <div className="command-brand" onClick={handleLogout} style={{ cursor: "pointer" }}>
+          <div className="command-mark" aria-hidden="true">
             <svg width="34" height="34" viewBox="0 0 48 48" fill="none">
-              <path d="M24 7C28 11 34 13 38 10C38 18 31 23 24 24C17 23 10 18 10 10C14 13 20 11 24 7Z" fill="#10b981" />
-              <path d="M24 24V11" stroke="#059669" strokeWidth="2.5" strokeLinecap="round" />
-              <path d="M5 36C12 31.5 18 32.5 24 37C30 32.5 36 31.5 43 36V18C36 13.5 30 14.5 24 19C18 14.5 12 13.5 5 18V36Z" fill="#0369a1" />
-              <path d="M24 19V37" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round" />
+              <path d="M24 7c4 4 10 6 14 3 0 8-7 13-14 14C17 23 10 18 10 10c4 3 10 1 14-3Z" fill="#d97706" />
+              <path d="M24 24V11" stroke="#b45309" strokeWidth="2.5" strokeLinecap="round" />
+              <path d="M5 36c7-4.5 13-3.5 19 1 6-4.5 12-5.5 19-1V18c-7-4.5-13-3.5-19 1-6-4.5-12-5.5-19-1v18Z" fill="#92400e" />
+              <path d="M24 19v18" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
             </svg>
           </div>
-          <div className="dash-school-text">
-            <h1>{session?.initname || "Green Valley Public School"}</h1>
-            <p>Learn • Grow • Excel</p>
+          <div>
+            <p className="command-kicker">GREEN VALLEY • SMART CAMPUS</p>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", flexWrap: "wrap" }}>
+              <h1 style={{ margin: 0, fontFamily: "Outfit, sans-serif", fontSize: "1.15rem", fontWeight: 800, color: "#1e293b" }}>
+                {session?.initname || "Green Valley Public School"}
+              </h1>
+              <span
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.35rem",
+                  background: "linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)",
+                  color: "#b45309",
+                  fontSize: "0.74rem",
+                  fontWeight: 800,
+                  padding: "0.22rem 0.75rem",
+                  borderRadius: "9999px",
+                  border: "1.5px solid rgba(217, 119, 6, 0.35)",
+                  boxShadow: "0 2px 8px rgba(217, 119, 6, 0.1)",
+                  letterSpacing: "0.02em",
+                }}
+              >
+                <Award size={12} style={{ color: "#d97706" }} />
+                PAGE 7 • ALUMNI NETWORK PORTAL
+              </span>
+            </div>
           </div>
-        </div>
-
-        <div className="dash-search-box">
-          <Search size={14} className="dash-search-icon" />
-          <input
-            type="text"
-            className="dash-search-input"
-            placeholder="Search alumni, events, chapters, jobs..."
-          />
         </div>
 
         <div className="dash-nav-actions">
-          <button className="dash-icon-btn" aria-label="Notifications">
-            <Bell size={16} />
-            <span className="dash-notification-badge">3</span>
-          </button>
-
+          {/* Alumni Profile Pill */}
           <div className="dash-profile-pill">
             <img src={session?.img || "/alumni_avatar.png"} alt="Rohan Sharma" className="dash-user-avatar" />
             <div className="dash-user-info">
@@ -113,39 +135,95 @@ export default function AlumniDashboard({ onBackToKiosk }: DashboardProps) {
             </div>
           </div>
 
-          <div className="dash-clock-widget">
-            <Calendar size={13} style={{ color: "#0284c7" }} />
-            <span>Tue, 23 Sep • 10:24 AM</span>
+          {/* Live Campus Telemetry Pill */}
+          <div className="command-live-status">
+            <span style={{ background: "#d97706" }} />
+            <span>Campus online</span>
           </div>
 
-          <button className="dash-kiosk-back-btn" onClick={handleLogout}>
-            <Home size={13} /> Kiosk Home
+          {/* Command Time Pill (Real-time live clock) */}
+          <div className="dash-clock-widget">
+            <Calendar size={13} style={{ color: "#d97706" }} />
+            <span>
+              {currentTime.toLocaleDateString("en-US", { weekday: "short", day: "2-digit", month: "short" })} •{" "}
+              <b>{currentTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true })}</b>
+            </span>
+          </div>
+
+          {/* Back to Kiosk Home */}
+          <button className="dash-kiosk-back-btn" onClick={handleLogout} title="Return to Role Selection Home">
+            <Home size={14} /> Back to Kiosk
           </button>
         </div>
       </header>
 
       {/* MAIN VIEWPORT CONTENT (STRICT NO-SCROLL) */}
       <main className="dash-main-content">
-        {/* Banner */}
-        <section className="dash-hero-banner banner-alumni">
-          <div className="dash-hero-left">
-            <h2 className="dash-hero-title" style={{ fontSize: "1.4rem" }}>
-              Once a GVian, Always a GVian
+        {/* HERO BANNER (ROLE SELECTION COMMAND THEME) */}
+        <section className="student-hub-hero" style={{ marginBottom: "0.85rem" }}>
+          <div className="student-hero-title-group">
+            <div className="hero-chip" style={{ display: "inline-flex", alignItems: "center", gap: "0.45rem", marginBottom: "0.35rem" }}>
+              <span
+                style={{
+                  background: "#d97706",
+                  color: "#ffffff",
+                  padding: "2px 8px",
+                  borderRadius: "9999px",
+                  fontSize: "0.65rem",
+                  fontWeight: 900,
+                  letterSpacing: "0.04em",
+                }}
+              >
+                PAGE 7
+              </span>
+              <Sparkles size={14} /> ALUMNI NETWORK PORTAL • STAY CONNECTED. GIVE BACK.
+            </div>
+            <h2>
+              Once a GVian, <span>Always a GVian</span>
             </h2>
-            <p className="dash-hero-desc" style={{ fontSize: "0.72rem" }}>
-              Global Alumni Legacy Network • 18 International Chapters • Mentorship, Careers & Alma Mater Giving.
-            </p>
-            <div className="dash-hero-tags">
-              <span className="dash-hero-tag">🎓 Class of 2015 (Batch XI)</span>
-              <span className="dash-hero-tag">🌐 18 Global Chapters</span>
-              <span className="dash-hero-tag">🤝 12,400+ Alumni Network</span>
-              <span className="dash-hero-tag">💼 45 Active Mentors</span>
+            <p>Global Alumni Legacy Network • 18 International Chapters • Mentorship, Careers &amp; Alma Mater Giving.</p>
+            <div className="student-hero-chips">
+              <span className="student-hero-chip" style={{ background: "#fffbeb", color: "#b45309", borderColor: "rgba(217, 119, 6, 0.3)" }}>
+                <GraduationCap size={12} /> Class of 2015 (Batch XI)
+              </span>
+              <span className="student-hero-chip" style={{ background: "#fffbeb", color: "#b45309", borderColor: "rgba(217, 119, 6, 0.3)" }}>
+                <Users size={12} /> 12,400+ Alumni Network
+              </span>
+              <span className="student-hero-chip" style={{ background: "#fffbeb", color: "#b45309", borderColor: "rgba(217, 119, 6, 0.3)" }}>
+                <Award size={12} /> 18 Global Chapters
+              </span>
+              <span className="student-hero-chip" style={{ background: "#fffbeb", color: "#b45309", borderColor: "rgba(217, 119, 6, 0.3)" }}>
+                <Briefcase size={12} /> 45 Active Mentors
+              </span>
+            </div>
+            <div className="hero-trust" style={{ marginTop: "0.55rem", fontSize: "11px" }}>
+              <ShieldCheck size={14} style={{ color: "#d97706" }} /><span>12,400+ Verified Global Alumni</span><i />
+              <Activity size={14} style={{ color: "#d97706" }} /><span>Alumni Endowment &amp; Mentorship Active</span>
             </div>
           </div>
-          <div className="dash-hero-right-badge data-badge" style={{ fontSize: "0.78rem" }}>
-            <span style={{ fontSize: "0.62rem", opacity: 0.85 }}>Alumni Community</span>
-            <b style={{ fontSize: "1.1rem", fontWeight: 800 }}>12,400+</b>
-            <span style={{ fontSize: "0.6rem", opacity: 0.85 }}>Connected Globally</span>
+          <div className="student-hero-right-meta" style={{ display: "flex", alignItems: "center", gap: "24px" }}>
+            {/* 3D ORBITAL RINGS & FLOATING 3D GLASS CARDS (MATCHING ROLE SELECTION SCREENSHOT) */}
+            <div className="hero-visual" aria-hidden="true" style={{ position: "relative", width: "230px", height: "180px", minHeight: "180px", display: "grid", placeItems: "center" }}>
+              <div className="hero-visual-ring ring-one" style={{ width: "200px", height: "200px", borderRightColor: "rgba(217, 119, 6, 0.7)" }} />
+              <div className="hero-visual-ring ring-two" style={{ width: "150px", height: "150px", borderLeftColor: "rgba(245, 158, 11, 0.6)" }} />
+              <div className="hero-visual-card" style={{ width: "115px", height: "115px", borderRadius: "28px", color: "#d97706" }}>
+                <Award size={26} style={{ color: "#d97706" }} />
+                <strong style={{ fontSize: "18px" }}>Alumni</strong>
+                <span style={{ fontSize: "9px", color: "#d97706" }}>GV Legacy</span>
+              </div>
+              <div className="hero-floating-note note-one" style={{ top: "0px", left: "-15px", padding: "6px 11px", fontSize: "10px" }}>
+                <CheckCircle2 size={13} style={{ color: "#d97706" }} /> 12,400+ Network
+              </div>
+              <div className="hero-floating-note note-two" style={{ bottom: "0px", right: "-15px", padding: "6px 11px", fontSize: "10px" }}>
+                <Award size={13} style={{ color: "#d97706" }} /> 18 Global Chapters
+              </div>
+            </div>
+
+            <div className="dash-hero-right-badge data-badge" style={{ fontSize: "0.78rem" }}>
+              <span style={{ fontSize: "0.62rem", opacity: 0.85 }}>Alumni Community</span>
+              <b style={{ fontSize: "1.1rem", fontWeight: 800 }}>12,400+</b>
+              <span style={{ fontSize: "0.6rem", opacity: 0.85 }}>Connected Globally</span>
+            </div>
           </div>
         </section>
 
@@ -564,19 +642,17 @@ export default function AlumniDashboard({ onBackToKiosk }: DashboardProps) {
         </div>
       </main>
 
-      {/* COMPACT FOOTER */}
-      <footer className="dash-footer">
-        <div>Green Valley Public School • Learn • Grow • Excel</div>
-        <div className="dash-footer-badges">
-          <span className="dash-footer-badge-item">
-            <ShieldCheck size={13} style={{ color: "#10b981" }} /> Safe
-          </span>
-          <span className="dash-footer-badge-item">
-            <Lock size={13} style={{ color: "#0284c7" }} /> Secure
-          </span>
-          <span className="dash-footer-badge-item">
-            <Cpu size={13} style={{ color: "#9333ea" }} /> Smart
-          </span>
+      {/* COMPACT COMMAND FOOTER */}
+      <footer className="command-footer" style={{ marginTop: "auto", borderTop: "1px solid rgba(254, 215, 170, 0.5)", background: "rgba(255, 255, 255, 0.88)" }}>
+        <div><span className="footer-dot" style={{ background: "#d97706" }} /> Official GVian Global Alumni Command Portal</div>
+        <div className="footer-links">
+          <span>CBSE Affiliation 1930281</span>
+          <span>NAAC Grade A++</span>
+          <span>12,400+ Alumni Worldwide</span>
+          <span>18 Global Chapters Active</span>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.74rem", fontWeight: 700, color: "#d97706" }}>
+          <ShieldCheck size={14} /> Safe &amp; Encrypted Kiosk
         </div>
       </footer>
     </div>

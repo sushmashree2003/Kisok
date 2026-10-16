@@ -40,8 +40,14 @@ import {
   Minimize,
   Home,
   Megaphone,
-  Send,
   Bot,
+  Send,
+  Briefcase,
+  Fingerprint,
+  AlertCircle,
+  CreditCard,
+  Film,
+  Layers,
 } from "lucide-react";
 
 interface DashboardProps {
@@ -305,9 +311,30 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
           </div>
           <div>
             <p className="command-kicker">GREEN VALLEY • SMART CAMPUS</p>
-            <h1 style={{ margin: 0, fontFamily: "Outfit, sans-serif", fontSize: "1.15rem", fontWeight: 800, color: "#1e293b" }}>
-              {schoolName}
-            </h1>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", flexWrap: "wrap" }}>
+              <h1 style={{ margin: 0, fontFamily: "Outfit, sans-serif", fontSize: "1.15rem", fontWeight: 800, color: "#1e293b" }}>
+                {schoolName}
+              </h1>
+              <span
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.35rem",
+                  background: "linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%)",
+                  color: "#6d28d9",
+                  fontSize: "0.74rem",
+                  fontWeight: 800,
+                  padding: "0.22rem 0.75rem",
+                  borderRadius: "9999px",
+                  border: "1.5px solid rgba(124, 58, 237, 0.35)",
+                  boxShadow: "0 2px 8px rgba(124, 58, 237, 0.1)",
+                  letterSpacing: "0.02em",
+                }}
+              >
+                <ShieldCheck size={12} style={{ color: "#7c3aed" }} />
+                PAGE 6 • ADMINISTRATOR PORTAL
+              </span>
+            </div>
           </div>
         </div>
 
@@ -363,23 +390,21 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
           {/* HERO BANNER (ROLE SELECTION COMMAND THEME) */}
           <section className="student-hub-hero">
             <div className="student-hero-title-group">
-              <div
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "0.35rem",
-                  padding: "0.2rem 0.65rem",
-                  borderRadius: "9999px",
-                  background: "#f5f3ff",
-                  border: "1px solid rgba(124, 58, 237, 0.35)",
-                  color: "#7c3aed",
-                  fontSize: "0.68rem",
-                  fontWeight: 800,
-                  letterSpacing: "0.06em",
-                  marginBottom: "0.3rem",
-                }}
-              >
-                <Sparkles size={12} /> INSTITUTIONAL GOVERNANCE • CAMPUS COMMAND
+              <div className="hero-chip" style={{ display: "inline-flex", alignItems: "center", gap: "0.45rem", marginBottom: "0.35rem" }}>
+                <span
+                  style={{
+                    background: "#7c3aed",
+                    color: "#ffffff",
+                    padding: "2px 8px",
+                    borderRadius: "9999px",
+                    fontSize: "0.65rem",
+                    fontWeight: 900,
+                    letterSpacing: "0.04em",
+                  }}
+                >
+                  PAGE 6
+                </span>
+                <Sparkles size={14} /> ADMINISTRATOR &amp; VISITOR PORTAL • CAMPUS COMMAND
               </div>
               <h2>
                 Campus Operations <span>Command Hub</span>
@@ -399,42 +424,58 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
                   <ShieldCheck size={12} /> CBSE Affiliation 1930281 • NAAC A++
                 </span>
               </div>
+              <div className="hero-trust" style={{ marginTop: "0.55rem", fontSize: "11px" }}>
+                <ShieldCheck size={14} style={{ color: "#7c3aed" }} /><span>CBSE Affiliation 1930281 • NAAC A++</span><i />
+                <Activity size={14} style={{ color: "#7c3aed" }} /><span>38/38 GPS Smart Buses Live</span>
+              </div>
             </div>
 
-            <div className="student-hero-right-meta">
-              <div className="student-vaps-connected-pill" style={{ color: "#7c3aed", borderColor: "rgba(124, 58, 237, 0.35)" }}>
-                <CheckCircle2 size={13} />
-                <span>Smart Grid Online</span>
+            {/* UNIFIED 3D STAGE CAPSULE */}
+            <div className="student-hero-capsule">
+              {/* 3D Admin Character Avatar Stage */}
+              <div className="hero-avatar-podium">
+                <div className="hero-avatar-halo" />
+                <img
+                  src="/admin_avatar.png"
+                  alt="Administrator"
+                  className="hero-avatar-3d-img"
+                />
+                <span className="hero-avatar-tag">Admin Hub</span>
               </div>
 
-              {/* AI SPACE INTERACTIVE BUTTON (WITH ROBOT AVATAR) */}
-              <button
-                className="ai-space-hero-btn"
-                onClick={() => setCurrentScreen("aispace")}
-                title="Launch GreenBot AI Space"
-                type="button"
-                style={{
-                  borderColor: "rgba(124, 58, 237, 0.35)",
-                  background: "linear-gradient(135deg, #ffffff 0%, #f5f3ff 100%)",
-                }}
-              >
-                <div className="ai-space-robot-avatar-wrap">
-                  <img
-                    src="/ai_robot.png"
-                    alt="AI Robo"
-                    className="ai-space-robot-img"
-                  />
-                  <span className="ai-space-status-dot" style={{ background: "#7c3aed" }} />
+              <div className="hero-capsule-divider" />
+
+              {/* 3D Mini Orbital Badge */}
+              <div className="hero-honor-stage">
+                <div className="hero-honor-icon-bubble">
+                  <ShieldCheck size={18} />
                 </div>
-                <div className="ai-space-btn-text">
-                  <span className="ai-space-btn-label" style={{ color: "#7c3aed" }}>EXECUTIVE AI</span>
-                  <span className="ai-space-btn-title">Ask GreenBot →</span>
+                <div className="hero-honor-text">
+                  <span className="hero-honor-title">Control</span>
+                  <span className="hero-honor-badge">Smart Campus</span>
+                </div>
+              </div>
+
+              <div className="hero-capsule-divider" />
+
+              {/* AI Space Launch Button */}
+              <button
+                type="button"
+                onClick={() => setCurrentScreen("aispace")}
+                className="hero-ai-capsule-btn"
+                title="Launch Admin AI Command Space"
+              >
+                <div className="hero-ai-robo-wrap">
+                  <img src="/ai_robot.png" alt="GreenBot" className="hero-ai-robo-img" />
+                  <span className="hero-ai-pulse-dot" />
+                </div>
+                <div style={{ textAlign: "center" }}>
+                  <div className="hero-ai-kicker">
+                    <Sparkles size={9} style={{ display: "inline", verticalAlign: "middle", marginRight: 2 }} /> EXECUTIVE AI
+                  </div>
+                  <span className="hero-ai-action">Ask GreenBot →</span>
                 </div>
               </button>
-
-              <span style={{ fontSize: "0.65rem", color: "#64748b", fontWeight: 600 }}>
-                Academic Year {academicYear} • Term 2
-              </span>
             </div>
           </section>
 
@@ -443,13 +484,13 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
             {/* CONTAINER 1: 🛡️ CAMPUS ATTENDANCE TELEMETRY */}
             <div
               className="student-hub-card"
-              style={{ "--card-accent": "#0284c7" } as React.CSSProperties}
               onClick={() => setCurrentScreen("attendance")}
+              title="Click to open Attendance Telemetry Screen"
             >
               <div className="student-hub-card-header">
                 <div className="student-card-title-group">
-                  <div className="student-card-icon-box" style={{ background: "#e0f2fe", color: "#0284c7" }}>
-                    <Users size={18} />
+                  <div className="student-card-icon-box">
+                    <Users size={19} />
                   </div>
                   <div className="student-card-headings">
                     <h3>Attendance Telemetry</h3>
@@ -458,38 +499,79 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
                 </div>
                 <span
                   style={{
-                    background: "#e0f2fe",
-                    color: "#0284c7",
-                    fontSize: "0.65rem",
+                    background: "#fff7ed",
+                    color: "#ea580c",
+                    border: "1px solid rgba(254, 215, 170, 0.8)",
+                    fontSize: "0.68rem",
                     fontWeight: 800,
-                    padding: "0.15rem 0.5rem",
+                    padding: "0.2rem 0.65rem",
                     borderRadius: "9999px",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "5px",
                   }}
                 >
+                  <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#16a34a" }} />
                   6,240 Total
                 </span>
               </div>
 
               <div className="student-hub-card-body">
                 <div className="student-metric-hero">
-                  <span className="student-metric-val" style={{ color: "#0284c7" }}>
-                    96.8%
-                  </span>
+                  <span className="student-metric-val">96.8%</span>
                   <span className="student-metric-label">Overall Campus Turnout</span>
                 </div>
 
-                <div className="student-card-pills-list">
-                  <div className="student-card-subitem">
-                    <span style={{ fontWeight: 700, color: "#16a34a" }}>Learners: 6,040 Present</span>
-                    <span style={{ color: "#64748b" }}>200 Absent</span>
+                {/* 3D Progress Bar */}
+                <div style={{ height: "7px", width: "100%", background: "#ffedd5", borderRadius: "9999px", overflow: "hidden" }}>
+                  <div
+                    style={{
+                      height: "100%",
+                      width: "96.8%",
+                      background: "linear-gradient(90deg, #ea580c 0%, #f59e0b 100%)",
+                      borderRadius: "9999px",
+                      boxShadow: "0 2px 6px rgba(234, 88, 12, 0.35)",
+                    }}
+                  />
+                </div>
+
+                {/* 4-Tile Duo Grid Widget */}
+                <div className="student-kpi-duo-grid">
+                  <div className="student-kpi-mini-card">
+                    <div className="student-kpi-mini-icon">
+                      <GraduationCap size={14} />
+                    </div>
+                    <div className="student-kpi-mini-meta">
+                      <span className="student-kpi-mini-label">Learners Present</span>
+                      <strong className="student-kpi-mini-val">6,040 / 6,240</strong>
+                    </div>
                   </div>
-                  <div className="student-card-subitem">
-                    <span style={{ fontWeight: 700, color: "#0284c7" }}>Faculty: 82 / 86 On Duty</span>
-                    <span style={{ color: "#64748b" }}>4 on Leave</span>
+                  <div className="student-kpi-mini-card highlight">
+                    <div className="student-kpi-mini-icon highlight">
+                      <Briefcase size={14} />
+                    </div>
+                    <div className="student-kpi-mini-meta">
+                      <span className="student-kpi-mini-label">Faculty On Duty</span>
+                      <strong className="student-kpi-mini-val highlight">82 / 86 Active</strong>
+                    </div>
                   </div>
-                  <div className="student-card-subitem">
-                    <span style={{ fontWeight: 700, color: "#7c3aed" }}>Biometrics: 4,820 Swipes</span>
-                    <span style={{ color: "#64748b" }}>100% Verified</span>
+                  <div className="student-kpi-mini-card">
+                    <div className="student-kpi-mini-icon">
+                      <Fingerprint size={14} />
+                    </div>
+                    <div className="student-kpi-mini-meta">
+                      <span className="student-kpi-mini-label">Biometric Swipes</span>
+                      <strong className="student-kpi-mini-val">4,820 Verified</strong>
+                    </div>
+                  </div>
+                  <div className="student-kpi-mini-card">
+                    <div className="student-kpi-mini-icon">
+                      <ShieldCheck size={14} />
+                    </div>
+                    <div className="student-kpi-mini-meta">
+                      <span className="student-kpi-mini-label">Turnstiles Gate</span>
+                      <strong className="student-kpi-mini-val highlight">100% Synced</strong>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -497,13 +579,12 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
               <div className="student-hub-card-footer">
                 <button
                   className="student-open-screen-btn"
-                  style={{ background: "#0284c7", color: "#ffffff" }}
                   onClick={(e) => {
                     e.stopPropagation();
                     setCurrentScreen("attendance");
                   }}
                 >
-                  <Activity size={13} /> Open Attendance Telemetry Command →
+                  <Activity size={13} /> Open Attendance Telemetry Screen <ArrowRight size={13} />
                 </button>
               </div>
             </div>
@@ -511,53 +592,94 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
             {/* CONTAINER 2: 💳 FEE COLLECTIONS & FINANCIAL RECONCILIATION */}
             <div
               className="student-hub-card"
-              style={{ "--card-accent": "#059669" } as React.CSSProperties}
               onClick={() => setCurrentScreen("finance")}
+              title="Click to open Financial Ledger Screen"
             >
               <div className="student-hub-card-header">
                 <div className="student-card-title-group">
-                  <div className="student-card-icon-box" style={{ background: "#dcfce7", color: "#059669" }}>
-                    <IndianRupee size={18} />
+                  <div className="student-card-icon-box">
+                    <IndianRupee size={19} />
                   </div>
                   <div className="student-card-headings">
-                    <h3>Financial & Fee Ledger</h3>
-                    <span>Term Collections & Dues</span>
+                    <h3>Financial &amp; Fee Ledger</h3>
+                    <span>Term Collections &amp; Dues</span>
                   </div>
                 </div>
                 <span
                   style={{
-                    background: "#dcfce7",
-                    color: "#059669",
-                    fontSize: "0.65rem",
+                    background: "#fff7ed",
+                    color: "#ea580c",
+                    border: "1px solid rgba(254, 215, 170, 0.8)",
+                    fontSize: "0.68rem",
                     fontWeight: 800,
-                    padding: "0.15rem 0.5rem",
+                    padding: "0.2rem 0.65rem",
                     borderRadius: "9999px",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "5px",
                   }}
                 >
+                  <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#16a34a" }} />
                   88.1% Collected
                 </span>
               </div>
 
               <div className="student-hub-card-body">
                 <div className="student-metric-hero">
-                  <span className="student-metric-val" style={{ color: "#059669" }}>
-                    ₹ 62.4 L
-                  </span>
-                  <span className="student-metric-label">Reconciled to Date</span>
+                  <span className="student-metric-val">₹ 62.4 L</span>
+                  <span className="student-metric-label">Reconciled to Date (88.1%)</span>
                 </div>
 
-                <div className="student-card-pills-list">
-                  <div className="student-card-subitem">
-                    <span style={{ fontWeight: 700, color: "#059669" }}>Collected: ₹ 62,40,000</span>
-                    <span style={{ color: "#64748b" }}>88.1% Target</span>
+                {/* 3D Progress Bar */}
+                <div style={{ height: "7px", width: "100%", background: "#ffedd5", borderRadius: "9999px", overflow: "hidden" }}>
+                  <div
+                    style={{
+                      height: "100%",
+                      width: "88.1%",
+                      background: "linear-gradient(90deg, #ea580c 0%, #f59e0b 100%)",
+                      borderRadius: "9999px",
+                      boxShadow: "0 2px 6px rgba(234, 88, 12, 0.35)",
+                    }}
+                  />
+                </div>
+
+                {/* 4-Tile Duo Grid Widget */}
+                <div className="student-kpi-duo-grid">
+                  <div className="student-kpi-mini-card highlight">
+                    <div className="student-kpi-mini-icon highlight">
+                      <CheckCircle2 size={14} />
+                    </div>
+                    <div className="student-kpi-mini-meta">
+                      <span className="student-kpi-mini-label">Total Realized</span>
+                      <strong className="student-kpi-mini-val highlight">₹ 62,40,000</strong>
+                    </div>
                   </div>
-                  <div className="student-card-subitem">
-                    <span style={{ fontWeight: 700, color: "#dc2626" }}>Pending Dues: ₹ 8,42,500</span>
-                    <span style={{ color: "#64748b" }}>11.9% Remaining</span>
+                  <div className="student-kpi-mini-card">
+                    <div className="student-kpi-mini-icon">
+                      <Clock size={14} />
+                    </div>
+                    <div className="student-kpi-mini-meta">
+                      <span className="student-kpi-mini-label">Pending Dues</span>
+                      <strong className="student-kpi-mini-val">₹ 8,42,500</strong>
+                    </div>
                   </div>
-                  <div className="student-card-subitem">
-                    <span style={{ fontWeight: 700, color: "#0284c7" }}>Online Receipts: 74%</span>
-                    <span style={{ color: "#64748b" }}>UPI / Netbanking</span>
+                  <div className="student-kpi-mini-card">
+                    <div className="student-kpi-mini-icon">
+                      <CreditCard size={14} />
+                    </div>
+                    <div className="student-kpi-mini-meta">
+                      <span className="student-kpi-mini-label">Digital / UPI</span>
+                      <strong className="student-kpi-mini-val">74% Real-time</strong>
+                    </div>
+                  </div>
+                  <div className="student-kpi-mini-card">
+                    <div className="student-kpi-mini-icon">
+                      <TrendingUp size={14} />
+                    </div>
+                    <div className="student-kpi-mini-meta">
+                      <span className="student-kpi-mini-label">Fiscal Audit</span>
+                      <strong className="student-kpi-mini-val highlight">Reconciled 100%</strong>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -565,13 +687,12 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
               <div className="student-hub-card-footer">
                 <button
                   className="student-open-screen-btn"
-                  style={{ background: "#059669", color: "#ffffff" }}
                   onClick={(e) => {
                     e.stopPropagation();
                     setCurrentScreen("finance");
                   }}
                 >
-                  <TrendingUp size={13} /> Open Accounts & Fee Ledger →
+                  <TrendingUp size={13} /> Open Accounts &amp; Fee Ledger <ArrowRight size={13} />
                 </button>
               </div>
             </div>
@@ -579,53 +700,94 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
             {/* CONTAINER 3: 🎓 ADMISSIONS PIPELINE & DESK */}
             <div
               className="student-hub-card"
-              style={{ "--card-accent": "#7c3aed" } as React.CSSProperties}
               onClick={() => setCurrentScreen("admissions")}
+              title="Click to open Admissions Screen"
             >
               <div className="student-hub-card-header">
                 <div className="student-card-title-group">
-                  <div className="student-card-icon-box" style={{ background: "#f5f3ff", color: "#7c3aed" }}>
-                    <GraduationCap size={18} />
+                  <div className="student-card-icon-box">
+                    <GraduationCap size={19} />
                   </div>
                   <div className="student-card-headings">
                     <h3>Admissions Pipeline</h3>
-                    <span>AY 2026-27 Applications</span>
+                    <span>AY 2026-27 Desk</span>
                   </div>
                 </div>
                 <span
                   style={{
-                    background: "#f5f3ff",
-                    color: "#7c3aed",
-                    fontSize: "0.65rem",
+                    background: "#fff7ed",
+                    color: "#ea580c",
+                    border: "1px solid rgba(254, 215, 170, 0.8)",
+                    fontSize: "0.68rem",
                     fontWeight: 800,
-                    padding: "0.15rem 0.5rem",
+                    padding: "0.2rem 0.65rem",
                     borderRadius: "9999px",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "5px",
                   }}
                 >
+                  <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#ea580c" }} />
                   340 Inquiries
                 </span>
               </div>
 
               <div className="student-hub-card-body">
                 <div className="student-metric-hero">
-                  <span className="student-metric-val" style={{ color: "#7c3aed" }}>
-                    340 Forms
-                  </span>
+                  <span className="student-metric-val">340 Forms</span>
                   <span className="student-metric-label">Applications Received</span>
                 </div>
 
-                <div className="student-card-pills-list">
-                  <div className="student-card-subitem">
-                    <span style={{ fontWeight: 700, color: "#16a34a" }}>Confirmed: 145 Students</span>
-                    <span style={{ color: "#64748b" }}>Enrolled</span>
+                {/* 3D Progress Bar */}
+                <div style={{ height: "7px", width: "100%", background: "#ffedd5", borderRadius: "9999px", overflow: "hidden" }}>
+                  <div
+                    style={{
+                      height: "100%",
+                      width: "72%",
+                      background: "linear-gradient(90deg, #ea580c 0%, #f59e0b 100%)",
+                      borderRadius: "9999px",
+                      boxShadow: "0 2px 6px rgba(234, 88, 12, 0.35)",
+                    }}
+                  />
+                </div>
+
+                {/* 4-Tile Duo Grid Widget */}
+                <div className="student-kpi-duo-grid">
+                  <div className="student-kpi-mini-card highlight">
+                    <div className="student-kpi-mini-icon highlight">
+                      <UserCheck size={14} />
+                    </div>
+                    <div className="student-kpi-mini-meta">
+                      <span className="student-kpi-mini-label">Confirmed</span>
+                      <strong className="student-kpi-mini-val highlight">145 Enrolled</strong>
+                    </div>
                   </div>
-                  <div className="student-card-subitem">
-                    <span style={{ fontWeight: 700, color: "#0284c7" }}>Interviews: 210 Cleared</span>
-                    <span style={{ color: "#64748b" }}>Shortlisted</span>
+                  <div className="student-kpi-mini-card">
+                    <div className="student-kpi-mini-icon">
+                      <CheckCircle2 size={14} />
+                    </div>
+                    <div className="student-kpi-mini-meta">
+                      <span className="student-kpi-mini-label">Cleared Interviews</span>
+                      <strong className="student-kpi-mini-val">210 Shortlisted</strong>
+                    </div>
                   </div>
-                  <div className="student-card-subitem">
-                    <span style={{ fontWeight: 700, color: "#ea580c" }}>Available Seats: 35</span>
-                    <span style={{ color: "#64748b" }}>Classes 6 to 9</span>
+                  <div className="student-kpi-mini-card">
+                    <div className="student-kpi-mini-icon">
+                      <Layers size={14} />
+                    </div>
+                    <div className="student-kpi-mini-meta">
+                      <span className="student-kpi-mini-label">Open Capacity</span>
+                      <strong className="student-kpi-mini-val">35 Remaining</strong>
+                    </div>
+                  </div>
+                  <div className="student-kpi-mini-card">
+                    <div className="student-kpi-mini-icon">
+                      <Award size={14} />
+                    </div>
+                    <div className="student-kpi-mini-meta">
+                      <span className="student-kpi-mini-label">Target Grades</span>
+                      <strong className="student-kpi-mini-val highlight">Classes 6 to 9</strong>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -633,13 +795,12 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
               <div className="student-hub-card-footer">
                 <button
                   className="student-open-screen-btn"
-                  style={{ background: "#7c3aed", color: "#ffffff" }}
                   onClick={(e) => {
                     e.stopPropagation();
                     setCurrentScreen("admissions");
                   }}
                 >
-                  <Users size={13} /> Open Admissions Pipeline & Desk →
+                  <Users size={13} /> Open Admissions Pipeline &amp; Desk <ArrowRight size={13} />
                 </button>
               </div>
             </div>
@@ -647,12 +808,13 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
             {/* CONTAINER 4: 🎥 CAMPUS INFRASTRUCTURE VIDEO SHOWCASE */}
             <div
               className="student-hub-card"
-              style={{ "--card-accent": "#ea580c" } as React.CSSProperties}
+              onClick={() => setIsVideoModalOpen(true)}
+              title="Click to play campus drone showcase"
             >
               <div className="student-hub-card-header">
                 <div className="student-card-title-group">
-                  <div className="student-card-icon-box" style={{ background: "#fff7ed", color: "#ea580c" }}>
-                    <Play size={18} fill="#ea580c" />
+                  <div className="student-card-icon-box">
+                    <Film size={19} />
                   </div>
                   <div className="student-card-headings">
                     <h3>Infrastructure Aerial Tour</h3>
@@ -663,18 +825,22 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
                   style={{
                     background: "#fff7ed",
                     color: "#ea580c",
-                    fontSize: "0.65rem",
-                    fontWeight: 700,
-                    padding: "0.15rem 0.45rem",
+                    border: "1px solid rgba(254, 215, 170, 0.8)",
+                    fontSize: "0.68rem",
+                    fontWeight: 800,
+                    padding: "0.2rem 0.65rem",
                     borderRadius: "9999px",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "4px",
                   }}
                 >
-                  Aerial Showcase
+                  <Play size={10} fill="#ea580c" /> Watch HD
                 </span>
               </div>
 
-              <div className="student-hub-card-body" style={{ padding: "0.45rem 0.65rem" }}>
-                <div className="student-video-box" onClick={() => setIsVideoModalOpen(true)}>
+              <div className="student-hub-card-body" style={{ padding: "0.35rem 0.65rem" }}>
+                <div className="student-video-box">
                   <img
                     src="https://images.unsplash.com/photo-1541829070764-84a7d30dd3f3?auto=format&fit=crop&w=700&q=80"
                     alt="Campus Infrastructure Showcase"
@@ -684,12 +850,12 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                       <span
                         style={{
-                          background: "rgba(0,0,0,0.65)",
+                          background: "rgba(0, 0, 0, 0.65)",
                           color: "#ffffff",
-                          fontSize: "0.62rem",
+                          fontSize: "0.65rem",
                           fontWeight: 700,
-                          padding: "2px 6px",
-                          borderRadius: 4,
+                          padding: "2px 7px",
+                          borderRadius: 6,
                           backdropFilter: "blur(4px)",
                         }}
                       >
@@ -699,26 +865,26 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
                         style={{
                           background: "#ea580c",
                           color: "#ffffff",
-                          fontSize: "0.6rem",
+                          fontSize: "0.62rem",
                           fontWeight: 800,
-                          padding: "1px 5px",
-                          borderRadius: 4,
+                          padding: "2px 6px",
+                          borderRadius: 6,
                         }}
                       >
                         DRONE TOUR
                       </span>
                     </div>
 
-                    <div className="student-video-play-btn" style={{ background: "#7c3aed" }}>
+                    <div className="student-video-play-btn">
                       <Play size={18} fill="#ffffff" style={{ marginLeft: "2px" }} />
                     </div>
 
                     <div style={{ color: "#ffffff" }}>
-                      <div style={{ fontSize: "0.78rem", fontWeight: 800, textShadow: "0 1px 3px rgba(0,0,0,0.8)" }}>
-                        Campus Smart Grid & Academic Blocks
+                      <div style={{ fontSize: "0.82rem", fontWeight: 800, textShadow: "0 1px 3px rgba(0,0,0,0.8)" }}>
+                        Campus Smart Grid &amp; Academic Wings
                       </div>
-                      <div style={{ fontSize: "0.65rem", color: "#cbd5e1", textShadow: "0 1px 2px rgba(0,0,0,0.8)" }}>
-                        Aerial perspective of academic wings, solar array & sports fields
+                      <div style={{ fontSize: "0.68rem", color: "#fbd5b5", textShadow: "0 1px 2px rgba(0,0,0,0.8)" }}>
+                        Aerial view of science labs, solar array &amp; athletic fields
                       </div>
                     </div>
                   </div>
@@ -728,7 +894,6 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
               <div className="student-hub-card-footer">
                 <button
                   className="student-open-screen-btn"
-                  style={{ background: "#ea580c", color: "#ffffff" }}
                   onClick={(e) => {
                     e.stopPropagation();
                     setIsVideoModalOpen(true);
@@ -742,25 +907,25 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
             {/* CONTAINER 5: 🔔 OFFICIAL CIRCULARS & DIRECTIVES */}
             <div
               className="student-hub-card"
-              style={{ "--card-accent": "#2563eb" } as React.CSSProperties}
             >
               <div className="student-hub-card-header">
                 <div className="student-card-title-group">
-                  <div className="student-card-icon-box" style={{ background: "#dbeafe", color: "#2563eb" }}>
-                    <Bell size={18} />
+                  <div className="student-card-icon-box">
+                    <Bell size={19} />
                   </div>
                   <div className="student-card-headings">
                     <h3>Institutional Directives</h3>
-                    <span>Board Decisions & Circulars</span>
+                    <span>Board Decisions &amp; Circulars</span>
                   </div>
                 </div>
                 <span
                   style={{
-                    background: "#dbeafe",
-                    color: "#2563eb",
-                    fontSize: "0.65rem",
-                    fontWeight: 700,
-                    padding: "0.15rem 0.45rem",
+                    background: "#fff7ed",
+                    color: "#ea580c",
+                    border: "1px solid rgba(254, 215, 170, 0.8)",
+                    fontSize: "0.68rem",
+                    fontWeight: 800,
+                    padding: "0.2rem 0.65rem",
                     borderRadius: "9999px",
                   }}
                 >
@@ -768,7 +933,7 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
                 </span>
               </div>
 
-              <div className="student-hub-card-body" style={{ padding: "0.45rem 0.65rem" }}>
+              <div className="student-hub-card-body" style={{ padding: "0.35rem 0.85rem" }}>
                 <div className="student-notices-list">
                   {ADMIN_NOTICES.map((notice) => (
                     <div
@@ -779,12 +944,13 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
                     >
                       <span
                         style={{
-                          fontSize: "0.58rem",
+                          fontSize: "0.6rem",
                           fontWeight: 800,
-                          padding: "1px 5px",
-                          borderRadius: 4,
-                          background: notice.tagBg,
-                          color: notice.tagColor,
+                          padding: "2px 6px",
+                          borderRadius: 6,
+                          background: "#fff7ed",
+                          color: "#ea580c",
+                          border: "1px solid rgba(254, 215, 170, 0.8)",
                           flexShrink: 0,
                         }}
                       >
@@ -793,7 +959,7 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div
                           style={{
-                            fontSize: "0.7rem",
+                            fontSize: "0.74rem",
                             fontWeight: 700,
                             color: "#0f172a",
                             whiteSpace: "nowrap",
@@ -803,9 +969,9 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
                         >
                           {notice.title}
                         </div>
-                        <span style={{ fontSize: "0.6rem", color: "#64748b" }}>{notice.authority}</span>
+                        <span style={{ fontSize: "0.64rem", color: "#64748b" }}>{notice.authority}</span>
                       </div>
-                      <span style={{ fontSize: "0.6rem", color: "#94a3b8", flexShrink: 0 }}>{notice.time}</span>
+                      <span style={{ fontSize: "0.64rem", color: "#94a3b8", flexShrink: 0 }}>{notice.time}</span>
                     </div>
                   ))}
                 </div>
@@ -814,7 +980,6 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
               <div className="student-hub-card-footer">
                 <button
                   className="student-open-screen-btn"
-                  style={{ background: "#2563eb", color: "#ffffff" }}
                   onClick={() => setSelectedNotice(ADMIN_NOTICES[0])}
                 >
                   <Megaphone size={13} /> View All Administrative Directives
@@ -825,25 +990,25 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
             {/* CONTAINER 6: ✨ GOVERNANCE CREED & LEADERSHIP WISDOM */}
             <div
               className="student-hub-card"
-              style={{ "--card-accent": "#c026d3" } as React.CSSProperties}
             >
               <div className="student-hub-card-header">
                 <div className="student-card-title-group">
-                  <div className="student-card-icon-box" style={{ background: "#fdf4ff", color: "#c026d3" }}>
-                    <Sparkles size={18} />
+                  <div className="student-card-icon-box">
+                    <Sparkles size={19} />
                   </div>
                   <div className="student-card-headings">
-                    <h3>Governance Creed & Vision</h3>
+                    <h3>Governance Creed &amp; Vision</h3>
                     <span>Institutional Leadership Thoughts</span>
                   </div>
                 </div>
                 <span
                   style={{
-                    background: "#fdf4ff",
-                    color: "#c026d3",
-                    fontSize: "0.65rem",
-                    fontWeight: 700,
-                    padding: "0.15rem 0.45rem",
+                    background: "#fff7ed",
+                    color: "#ea580c",
+                    border: "1px solid rgba(254, 215, 170, 0.8)",
+                    fontSize: "0.68rem",
+                    fontWeight: 800,
+                    padding: "0.2rem 0.65rem",
                     borderRadius: "9999px",
                   }}
                 >
@@ -851,7 +1016,7 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
                 </span>
               </div>
 
-              <div className="student-hub-card-body" style={{ padding: "0.45rem 0.65rem" }}>
+              <div className="student-hub-card-body" style={{ padding: "0.35rem 0.85rem" }}>
                 <div className="student-slogan-wrap">
                   <Quote
                     size={48}
@@ -859,7 +1024,7 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
                       position: "absolute",
                       right: -5,
                       bottom: -8,
-                      color: "rgba(192, 38, 211, 0.12)",
+                      color: "rgba(234, 88, 12, 0.12)",
                       pointerEvents: "none",
                     }}
                   />
@@ -870,15 +1035,23 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
                     <span>— {ADMIN_SLOGANS[sloganIndex].author}</span>
                     <span
                       style={{
-                        background: "rgba(192, 38, 211, 0.12)",
-                        color: "#a21caf",
-                        padding: "1px 6px",
-                        borderRadius: 4,
-                        fontSize: "0.62rem",
+                        background: "#fff7ed",
+                        color: "#ea580c",
+                        border: "1px solid rgba(254, 215, 170, 0.7)",
+                        padding: "2px 8px",
+                        borderRadius: "9999px",
+                        fontSize: "0.66rem",
+                        fontWeight: 800,
                       }}
                     >
                       {ADMIN_SLOGANS[sloganIndex].badge}
                     </span>
+                  </div>
+                  <div className="student-slogan-values-strip">
+                    <span className="student-slogan-value-pill">Excellence</span>
+                    <span className="student-slogan-value-pill">Integrity</span>
+                    <span className="student-slogan-value-pill">Innovation</span>
+                    <span className="student-slogan-value-pill">Stewardship</span>
                   </div>
                 </div>
               </div>
@@ -886,7 +1059,6 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
               <div className="student-hub-card-footer">
                 <button
                   className="student-open-screen-btn"
-                  style={{ background: "#a21caf", color: "#ffffff" }}
                   onClick={() => setSloganIndex((prev) => (prev + 1) % ADMIN_SLOGANS.length)}
                   title="Click to view next leadership quote"
                 >
@@ -1729,6 +1901,20 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
           </div>
         </section>
       )}
+
+      {/* COMPACT COMMAND FOOTER */}
+      <footer className="command-footer" style={{ marginTop: "auto", borderTop: "1px solid rgba(254, 215, 170, 0.5)", background: "rgba(255, 255, 255, 0.88)" }}>
+        <div><span className="footer-dot" style={{ background: "#7c3aed" }} /> Official Institutional Command &amp; Operations Portal</div>
+        <div className="footer-links">
+          <span>CBSE Affiliation 1930281</span>
+          <span>NAAC Grade A++</span>
+          <span>38 Smart Buses Live GPS</span>
+          <span>Campus Surveillance 100% Operational</span>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.74rem", fontWeight: 700, color: "#7c3aed" }}>
+          <ShieldCheck size={14} /> Safe &amp; Encrypted Kiosk
+        </div>
+      </footer>
 
       {/* ========================================================
           VIDEO TOUR MODAL PLAYER

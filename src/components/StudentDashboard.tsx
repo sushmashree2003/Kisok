@@ -85,8 +85,8 @@ const NOTICES = [
   {
     id: 1,
     tag: "URGENT",
-    tagColor: "#dc2626",
-    tagBg: "#fee2e2",
+    tagColor: "#ea580c",
+    tagBg: "#fff7ed",
     title: "Class 5 Periodic Assessment Term-2 Schedule",
     time: "1h ago",
     date: "14 Oct 2026",
@@ -96,8 +96,8 @@ const NOTICES = [
   {
     id: 2,
     tag: "CIRCULAR",
-    tagColor: "#2563eb",
-    tagBg: "#dbeafe",
+    tagColor: "#ea580c",
+    tagBg: "#fff7ed",
     title: "Annual Science & STEM Robotics Exhibition 2026",
     time: "Today",
     date: "14 Oct 2026",
@@ -107,8 +107,8 @@ const NOTICES = [
   {
     id: 3,
     tag: "NOTICE",
-    tagColor: "#16a34a",
-    tagBg: "#dcfce7",
+    tagColor: "#ea580c",
+    tagBg: "#fff7ed",
     title: "Inter-House Sports Meet & Athletics Trial",
     time: "Yesterday",
     date: "13 Oct 2026",
@@ -118,8 +118,8 @@ const NOTICES = [
   {
     id: 4,
     tag: "INFO",
-    tagColor: "#d97706",
-    tagBg: "#fef3c7",
+    tagColor: "#ea580c",
+    tagBg: "#fff7ed",
     title: "Winter Uniform & Campus Timings Circular",
     time: "2d ago",
     date: "12 Oct 2026",
@@ -509,7 +509,28 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
           </div>
           <div className="dash-school-text">
             <p className="command-kicker" style={{ margin: 0 }}>GREEN VALLEY • SMART CAMPUS</p>
-            <h1>{schoolName}</h1>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", flexWrap: "wrap" }}>
+              <h1 style={{ margin: 0 }}>{schoolName}</h1>
+              <span
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.35rem",
+                  background: "linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%)",
+                  color: "#c2410c",
+                  fontSize: "0.74rem",
+                  fontWeight: 800,
+                  padding: "0.22rem 0.75rem",
+                  borderRadius: "9999px",
+                  border: "1.5px solid rgba(234, 88, 12, 0.35)",
+                  boxShadow: "0 2px 8px rgba(234, 88, 12, 0.1)",
+                  letterSpacing: "0.02em",
+                }}
+              >
+                <GraduationCap size={12} style={{ color: "#ea580c" }} />
+                PAGE 4 • STUDENT &amp; PARENT PORTAL
+              </span>
+            </div>
           </div>
         </div>
 
@@ -587,75 +608,111 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
       {/* VIEW 1: MAIN STUDENT HUB (ROLESELECTIONSCREEN COMMAND CENTER THEME) */}
       {currentScreen === "dashboard" && (
         <main className="student-portal-hub">
-          {/* COMMAND HERO BANNER */}
+          {/* COMPACT KIOSK COMMAND HERO BANNER (115px Height) */}
           <section className="student-hub-hero">
-            <div className="student-hero-title-group">
-              <div className="hero-chip" style={{ marginBottom: "0.35rem" }}>
-                <Sparkles size={13} /> ONE CAMPUS. ACADEMIC HUB.
+            <div className="student-hero-title-group" style={{ display: "flex", flexDirection: "column", gap: "3px", minWidth: 0, flex: 1 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+                <span
+                  style={{
+                    background: "#ea580c",
+                    color: "#ffffff",
+                    padding: "2px 8px",
+                    borderRadius: "9999px",
+                    fontSize: "0.62rem",
+                    fontWeight: 900,
+                    letterSpacing: "0.04em",
+                  }}
+                >
+                  PAGE 4
+                </span>
+                <span style={{ fontSize: "0.72rem", fontWeight: 800, color: "#ea580c", display: "inline-flex", alignItems: "center", gap: "4px" }}>
+                  <Sparkles size={12} /> STUDENT &amp; PARENT KIOSK PORTAL
+                </span>
+                <span style={{ color: "#cbd5e1" }}>•</span>
+                <span className="student-vaps-connected-pill" style={{ padding: "1px 8px", fontSize: "0.66rem" }}>
+                  <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#16a34a" }} />
+                  VAPS Synced
+                </span>
               </div>
-              <h2>
-                {greeting}, <span>{studentName}!</span>
+
+              <h2 style={{ margin: "2px 0 0 0", fontFamily: "Outfit, sans-serif", fontSize: "clamp(1.2rem, 1.7vw, 1.6rem)", fontWeight: 900, color: "#0f172a", lineHeight: 1.15 }}>
+                {greeting}, <span style={{ background: "linear-gradient(105deg, #ea580c 0%, #f59e0b 60%, #ea580c 100%)", WebkitBackgroundClip: "text", color: "transparent" }}>{studentName}!</span>
               </h2>
-              <p>
-                Academic Year {academicYear} • Official student portal for real-time attendance, weekly timetable, and academic marks.
-              </p>
-              <div className="student-hero-chips">
-                <span className="student-hero-chip">
-                  <CheckCircle2 size={12} style={{ color: "#ea580c" }} /> {studentClass}
+
+              <div className="student-hero-chips" style={{ marginTop: "2px", gap: "6px" }}>
+                <span className="student-hero-chip" style={{ padding: "2px 8px", fontSize: "0.7rem" }}>
+                  <GraduationCap size={12} style={{ color: "#ea580c" }} /> {studentClass} • Roll {studentRoll}
                 </span>
-                <span className="student-hero-chip">
-                  <User size={12} style={{ color: "#ea580c" }} /> Roll: {studentRoll} • Adm: {studentAdmNo}
+                <span className="student-hero-chip" style={{ padding: "2px 8px", fontSize: "0.7rem" }}>
+                  <CheckCircle2 size={12} style={{ color: "#ea580c" }} /> Attendance: <strong>{overallAttendancePct}%</strong>
                 </span>
-                <span className="student-hero-chip" style={{ color: "#16a34a", borderColor: "rgba(22, 163, 74, 0.35)", background: "#f0fdf4" }}>
-                  <Percent size={12} style={{ color: "#16a34a" }} /> Live Attendance: {overallAttendancePct}%
+                <span className="student-hero-chip" style={{ padding: "2px 8px", fontSize: "0.7rem" }}>
+                  <Award size={12} style={{ color: "#ea580c" }} /> Term 1: <strong>Grade A+</strong>
                 </span>
-                <span className="student-hero-chip" style={{ color: "#7c3aed", borderColor: "rgba(124, 58, 237, 0.35)", background: "#f5f3ff" }}>
-                  <Award size={12} style={{ color: "#7c3aed" }} /> Latest Exam: Grade A+
-                </span>
-              </div>
-              <div className="hero-trust" style={{ marginTop: "0.55rem", fontSize: "11px" }}>
-                <ShieldCheck size={14} style={{ color: "#ea580c" }} /><span>Secure kiosk session</span><i />
-                <Activity size={14} style={{ color: "#ea580c" }} /><span>Live VAPS connected</span>
               </div>
             </div>
 
-            <div className="student-hero-right-meta">
-              <span className="student-vaps-connected-pill">
-                <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#16a34a" }} />
-                VAPS Cloud Synced
-              </span>
-              <button
-                onClick={() => setCurrentScreen("aispace")}
-                className="ai-space-hero-btn"
-                title="Launch GreenBot AI Learning Space"
-              >
-                <div className="ai-space-robot-avatar-wrap">
-                  <img src="/ai_robot.png" alt="GreenBot" className="ai-space-robot-img" />
-                  <span className="ai-space-status-dot" />
+            {/* UNIFIED 3D STAGE CAPSULE */}
+            <div className="student-hero-capsule">
+              {/* 3D Student Character Avatar Stage */}
+              <div className="hero-avatar-podium">
+                <div className="hero-avatar-halo" />
+                <img
+                  src={session?.img || "/student_avatar.png"}
+                  alt={studentName}
+                  className="hero-avatar-3d-img"
+                />
+                <span className="hero-avatar-tag">Class 5-B</span>
+              </div>
+
+              <div className="hero-capsule-divider" />
+
+              {/* 3D Mini Orbital Badge */}
+              <div className="hero-honor-stage">
+                <div className="hero-honor-icon-bubble">
+                  <Award size={18} />
                 </div>
-                <div className="ai-space-btn-text">
-                  <div className="ai-space-btn-label">
-                    <Sparkles size={11} /> AI SPACE
+                <div className="hero-honor-text">
+                  <span className="hero-honor-title">Grade 5</span>
+                  <span className="hero-honor-badge">Term 2 Active</span>
+                </div>
+              </div>
+
+              <div className="hero-capsule-divider" />
+
+              {/* AI Space Launch Button */}
+              <button
+                type="button"
+                onClick={() => setCurrentScreen("aispace")}
+                className="hero-ai-capsule-btn"
+                title="Launch GreenBot AI Space"
+              >
+                <div className="hero-ai-robo-wrap">
+                  <img src="/ai_robot.png" alt="GreenBot" className="hero-ai-robo-img" />
+                  <span className="hero-ai-pulse-dot" />
+                </div>
+                <div style={{ textAlign: "center" }}>
+                  <div className="hero-ai-kicker">
+                    <Sparkles size={9} style={{ display: "inline", verticalAlign: "middle", marginRight: 2 }} /> AI SPACE
                   </div>
-                  <span className="ai-space-btn-title">Ask GreenBot →</span>
+                  <span className="hero-ai-action">Ask GreenBot →</span>
                 </div>
               </button>
             </div>
           </section>
 
-          {/* BALANCED 6 COMPACT CONTAINERS (ROLE-TILE THEME) */}
+          {/* BALANCED 6 COMPACT CONTAINERS (UNIFIED 2-TO-3 WARM COLOR PALETTE) */}
           <section className="student-hub-grid">
             {/* CONTAINER 1: 📊 ATTENDANCE TRACKER (WORKING MODULE) */}
             <div
               className="student-hub-card"
-              style={{ "--card-accent": "#16a34a" } as React.CSSProperties}
               onClick={() => setCurrentScreen("attendance")}
               title="Click to open Full Attendance Screen"
             >
               <div className="student-hub-card-header">
                 <div className="student-card-title-group">
-                  <div className="student-card-icon-box" style={{ background: "#dcfce7", color: "#16a34a" }}>
-                    <CheckCircle2 size={18} />
+                  <div className="student-card-icon-box">
+                    <CheckCircle2 size={19} />
                   </div>
                   <div className="student-card-headings">
                     <h3>Attendance Tracker</h3>
@@ -664,39 +721,78 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
                 </div>
                 <span
                   style={{
-                    background: "#dcfce7",
-                    color: "#15803d",
-                    fontSize: "0.65rem",
-                    fontWeight: 700,
-                    padding: "0.15rem 0.45rem",
+                    background: "#fff7ed",
+                    color: "#ea580c",
+                    border: "1px solid rgba(254, 215, 170, 0.8)",
+                    fontSize: "0.68rem",
+                    fontWeight: 800,
+                    padding: "0.2rem 0.65rem",
                     borderRadius: "9999px",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "5px",
                   }}
                 >
-                  ● Active
+                  <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#16a34a" }} />
+                  Active
                 </span>
               </div>
 
               <div className="student-hub-card-body">
                 <div className="student-metric-hero">
-                  <span className="student-metric-val" style={{ color: "#16a34a" }}>
-                    {overallAttendancePct}%
-                  </span>
+                  <span className="student-metric-val">{overallAttendancePct}%</span>
                   <span className="student-metric-label">Cumulative Present</span>
                 </div>
 
                 {/* Progress bar */}
-                <div style={{ height: "6px", width: "100%", background: "#e2e8f0", borderRadius: "9999px", overflow: "hidden" }}>
-                  <div style={{ height: "100%", width: `${overallAttendancePct}%`, background: "#16a34a", borderRadius: "9999px" }} />
+                <div style={{ height: "7px", width: "100%", background: "#ffedd5", borderRadius: "9999px", overflow: "hidden" }}>
+                  <div
+                    style={{
+                      height: "100%",
+                      width: `${overallAttendancePct}%`,
+                      background: "linear-gradient(90deg, #ea580c 0%, #f59e0b 100%)",
+                      borderRadius: "9999px",
+                      boxShadow: "0 2px 6px rgba(234, 88, 12, 0.35)",
+                    }}
+                  />
                 </div>
 
-                <div className="student-card-pills-list">
-                  <div className="student-card-subitem">
-                    <span style={{ fontWeight: 600 }}>Total Sessions Held:</span>
-                    <strong style={{ color: "#0f172a" }}>{totalHeld || 115} Sessions</strong>
+                <div className="student-kpi-duo-grid">
+                  <div className="student-kpi-mini-card">
+                    <div className="student-kpi-mini-icon">
+                      <Layers size={14} />
+                    </div>
+                    <div className="student-kpi-mini-meta">
+                      <span className="student-kpi-mini-label">Total Classes</span>
+                      <strong className="student-kpi-mini-val">{totalHeld || 115} Sessions</strong>
+                    </div>
                   </div>
-                  <div className="student-card-subitem">
-                    <span style={{ fontWeight: 600 }}>Days Present:</span>
-                    <strong style={{ color: "#16a34a" }}>{totalPresent || 111} Days</strong>
+                  <div className="student-kpi-mini-card highlight">
+                    <div className="student-kpi-mini-icon highlight">
+                      <CheckCircle2 size={14} />
+                    </div>
+                    <div className="student-kpi-mini-meta">
+                      <span className="student-kpi-mini-label">Days Present</span>
+                      <strong className="student-kpi-mini-val highlight">{totalPresent || 111} Days</strong>
+                    </div>
+                  </div>
+                  <div className="student-kpi-mini-card">
+                    <div className="student-kpi-mini-icon">
+                      <Clock size={14} />
+                    </div>
+                    <div className="student-kpi-mini-meta">
+                      <span className="student-kpi-mini-label">Sessions Absent</span>
+                      <strong className="student-kpi-mini-val">{totalAbsent || 4} Days</strong>
+                    </div>
+                  </div>
+                  <div className="student-kpi-mini-card">
+                    <div className="student-kpi-mini-icon">
+                      <ShieldCheck size={14} />
+                    </div>
+                    <div className="student-kpi-mini-meta">
+                      <span className="student-kpi-mini-label">CBSE Minimum</span>
+                      <strong className="student-kpi-mini-val highlight">&gt;75% Cleared</strong>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -704,7 +800,6 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
               <div className="student-hub-card-footer">
                 <button
                   className="student-open-screen-btn"
-                  style={{ background: "#16a34a", color: "#ffffff" }}
                   onClick={(e) => {
                     e.stopPropagation();
                     setCurrentScreen("attendance");
@@ -718,14 +813,13 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
             {/* CONTAINER 2: 📅 CLASS TIMETABLE (WORKING MODULE) */}
             <div
               className="student-hub-card"
-              style={{ "--card-accent": "#0284c7" } as React.CSSProperties}
               onClick={() => setCurrentScreen("timetable")}
               title="Click to open Full Timetable Screen"
             >
               <div className="student-hub-card-header">
                 <div className="student-card-title-group">
-                  <div className="student-card-icon-box" style={{ background: "#dbeafe", color: "#1d4ed8" }}>
-                    <CalendarDays size={18} />
+                  <div className="student-card-icon-box">
+                    <CalendarDays size={19} />
                   </div>
                   <div className="student-card-headings">
                     <h3>Class Timetable</h3>
@@ -734,46 +828,56 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
                 </div>
                 <span
                   style={{
-                    background: "#dbeafe",
-                    color: "#1d4ed8",
-                    fontSize: "0.65rem",
-                    fontWeight: 700,
-                    padding: "0.15rem 0.45rem",
+                    background: "#fff7ed",
+                    color: "#ea580c",
+                    border: "1px solid rgba(254, 215, 170, 0.8)",
+                    fontSize: "0.68rem",
+                    fontWeight: 800,
+                    padding: "0.2rem 0.65rem",
                     borderRadius: "9999px",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "5px",
                   }}
                 >
-                  ● Live Sync
+                  <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#ea580c" }} />
+                  Live Sync
                 </span>
               </div>
 
               <div className="student-hub-card-body">
                 <div className="student-metric-hero">
-                  <span className="student-metric-val" style={{ color: "#1d4ed8" }}>
-                    {timetableData.days.length || 5} Days
-                  </span>
-                  <span className="student-metric-label">Weekly Schedule</span>
+                  <span className="student-metric-val">{timetableData.days.length || 5} Days</span>
+                  <span className="student-metric-label">Mon – Fri Routine</span>
                 </div>
 
-                <div className="student-card-pills-list">
-                  <div className="student-card-subitem" style={{ background: "#eff6ff", borderColor: "#bfdbfe" }}>
-                    <span style={{ fontWeight: 700, color: "#1e40af" }}>Period 1:</span>
-                    <span style={{ fontWeight: 600 }}>Mathematics • Rm 102</span>
+                <div className="student-timetable-preview-list">
+                  <div className="student-period-item">
+                    <span className="period-time-badge">08:30 AM</span>
+                    <span className="period-subject-name">Mathematics</span>
+                    <span className="period-room-tag">Rm 102</span>
                   </div>
-                  <div className="student-card-subitem">
-                    <span style={{ fontWeight: 600 }}>Period 2:</span>
-                    <span style={{ fontWeight: 600 }}>English Literature</span>
+                  <div className="student-period-item">
+                    <span className="period-time-badge">09:20 AM</span>
+                    <span className="period-subject-name">English Literature</span>
+                    <span className="period-room-tag">Rm 104</span>
                   </div>
-                  <div className="student-card-subitem">
-                    <span style={{ fontWeight: 600 }}>Period 3:</span>
-                    <span style={{ fontWeight: 600 }}>General Science Lab</span>
+                  <div className="student-period-item">
+                    <span className="period-time-badge">10:15 AM</span>
+                    <span className="period-subject-name">General Science</span>
+                    <span className="period-room-tag">Lab 3</span>
                   </div>
+                </div>
+
+                <div className="student-sub-status-strip">
+                  <Clock size={12} />
+                  <span>Routine: 6 Periods Daily • Next: Period 4 Science Lab</span>
                 </div>
               </div>
 
               <div className="student-hub-card-footer">
                 <button
                   className="student-open-screen-btn"
-                  style={{ background: "#0284c7", color: "#ffffff" }}
                   onClick={(e) => {
                     e.stopPropagation();
                     setCurrentScreen("timetable");
@@ -787,14 +891,13 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
             {/* CONTAINER 3: 📝 EXAMS & REPORT CARD (WORKING MODULE) */}
             <div
               className="student-hub-card"
-              style={{ "--card-accent": "#ea580c" } as React.CSSProperties}
               onClick={() => setCurrentScreen("exam")}
               title="Click to open Full Exam & Results Screen"
             >
               <div className="student-hub-card-header">
                 <div className="student-card-title-group">
-                  <div className="student-card-icon-box" style={{ background: "#ffedd5", color: "#ea580c" }}>
-                    <Award size={18} />
+                  <div className="student-card-icon-box">
+                    <Award size={19} />
                   </div>
                   <div className="student-card-headings">
                     <h3>Exams & Results</h3>
@@ -803,41 +906,80 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
                 </div>
                 <span
                   style={{
-                    background: "#ffedd5",
-                    color: "#c2410c",
-                    fontSize: "0.65rem",
-                    fontWeight: 700,
-                    padding: "0.15rem 0.45rem",
+                    background: "#fff7ed",
+                    color: "#ea580c",
+                    border: "1px solid rgba(254, 215, 170, 0.8)",
+                    fontSize: "0.68rem",
+                    fontWeight: 800,
+                    padding: "0.2rem 0.65rem",
                     borderRadius: "9999px",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "5px",
                   }}
                 >
-                  ● Evaluated
+                  <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#ea580c" }} />
+                  Evaluated
                 </span>
               </div>
 
               <div className="student-hub-card-body">
                 <div className="student-metric-hero">
-                  <span className="student-metric-val" style={{ color: "#ea580c" }}>
-                    {overallExamPct}%
-                  </span>
+                  <span className="student-metric-val">{overallExamPct}%</span>
                   <span className="student-metric-label">Grade A+ (Distinction)</span>
                 </div>
 
                 {/* Progress bar */}
-                <div style={{ height: "6px", width: "100%", background: "#e2e8f0", borderRadius: "9999px", overflow: "hidden" }}>
-                  <div style={{ height: "100%", width: `${overallExamPct}%`, background: "#ea580c", borderRadius: "9999px" }} />
+                <div style={{ height: "7px", width: "100%", background: "#ffedd5", borderRadius: "9999px", overflow: "hidden" }}>
+                  <div
+                    style={{
+                      height: "100%",
+                      width: `${overallExamPct}%`,
+                      background: "linear-gradient(90deg, #ea580c 0%, #f59e0b 100%)",
+                      borderRadius: "9999px",
+                      boxShadow: "0 2px 6px rgba(234, 88, 12, 0.35)",
+                    }}
+                  />
                 </div>
 
-                <div className="student-card-pills-list">
-                  <div className="student-card-subitem">
-                    <span style={{ fontWeight: 600 }}>Active Assessment:</span>
-                    <strong style={{ color: "#0f172a" }}>Periodic Assessment 1</strong>
+                <div className="student-kpi-duo-grid">
+                  <div className="student-kpi-mini-card">
+                    <div className="student-kpi-mini-icon">
+                      <Sparkles size={14} />
+                    </div>
+                    <div className="student-kpi-mini-meta">
+                      <span className="student-kpi-mini-label">Active Assessment</span>
+                      <strong className="student-kpi-mini-val">Periodic Assessment 1</strong>
+                    </div>
                   </div>
-                  <div className="student-card-subitem">
-                    <span style={{ fontWeight: 600 }}>Total Marks Obtained:</span>
-                    <strong style={{ color: "#ea580c" }}>
-                      {totalObtainedMarks} / {totalMaxMarks}
-                    </strong>
+                  <div className="student-kpi-mini-card highlight">
+                    <div className="student-kpi-mini-icon highlight">
+                      <Award size={14} />
+                    </div>
+                    <div className="student-kpi-mini-meta">
+                      <span className="student-kpi-mini-label">Marks Scored</span>
+                      <strong className="student-kpi-mini-val highlight">
+                        {totalObtainedMarks || 467} / {totalMaxMarks || 500}
+                      </strong>
+                    </div>
+                  </div>
+                  <div className="student-kpi-mini-card">
+                    <div className="student-kpi-mini-icon">
+                      <CheckCircle2 size={14} />
+                    </div>
+                    <div className="student-kpi-mini-meta">
+                      <span className="student-kpi-mini-label">Top Subject</span>
+                      <strong className="student-kpi-mini-val">Robotics (98/100)</strong>
+                    </div>
+                  </div>
+                  <div className="student-kpi-mini-card">
+                    <div className="student-kpi-mini-icon">
+                      <GraduationCap size={14} />
+                    </div>
+                    <div className="student-kpi-mini-meta">
+                      <span className="student-kpi-mini-label">Class Standing</span>
+                      <strong className="student-kpi-mini-val highlight">Top 5% Rank</strong>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -845,7 +987,6 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
               <div className="student-hub-card-footer">
                 <button
                   className="student-open-screen-btn"
-                  style={{ background: "#ea580c", color: "#ffffff" }}
                   onClick={(e) => {
                     e.stopPropagation();
                     setCurrentScreen("exam");
@@ -859,14 +1000,13 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
             {/* CONTAINER 4: 🎬 CAMPUS LIFE VIDEO & VIRTUAL TOUR */}
             <div
               className="student-hub-card"
-              style={{ "--card-accent": "#dc2626" } as React.CSSProperties}
               onClick={() => setIsVideoModalOpen(true)}
               title="Click to play campus tour video"
             >
               <div className="student-hub-card-header">
                 <div className="student-card-title-group">
-                  <div className="student-card-icon-box" style={{ background: "#fee2e2", color: "#dc2626" }}>
-                    <Film size={18} />
+                  <div className="student-card-icon-box">
+                    <Film size={19} />
                   </div>
                   <div className="student-card-headings">
                     <h3>Campus Life & Video Tour</h3>
@@ -875,19 +1015,23 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
                 </div>
                 <span
                   style={{
-                    background: "#fee2e2",
-                    color: "#dc2626",
-                    fontSize: "0.65rem",
-                    fontWeight: 700,
-                    padding: "0.15rem 0.45rem",
+                    background: "#fff7ed",
+                    color: "#ea580c",
+                    border: "1px solid rgba(254, 215, 170, 0.8)",
+                    fontSize: "0.68rem",
+                    fontWeight: 800,
+                    padding: "0.2rem 0.65rem",
                     borderRadius: "9999px",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "4px",
                   }}
                 >
-                  ▶ Watch HD
+                  <Play size={10} fill="#ea580c" /> Watch HD
                 </span>
               </div>
 
-              <div className="student-hub-card-body" style={{ padding: "0.45rem" }}>
+              <div className="student-hub-card-body" style={{ padding: "0.35rem 0.65rem" }}>
                 <div className="student-video-box">
                   <img
                     src="/campus_banner.jpg"
@@ -903,10 +1047,10 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
                         style={{
                           background: "rgba(0, 0, 0, 0.65)",
                           color: "#ffffff",
-                          fontSize: "0.62rem",
+                          fontSize: "0.65rem",
                           fontWeight: 700,
-                          padding: "2px 6px",
-                          borderRadius: 4,
+                          padding: "2px 7px",
+                          borderRadius: 6,
                           backdropFilter: "blur(4px)",
                         }}
                       >
@@ -914,27 +1058,27 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
                       </span>
                       <span
                         style={{
-                          background: "#dc2626",
+                          background: "#ea580c",
                           color: "#ffffff",
-                          fontSize: "0.6rem",
+                          fontSize: "0.62rem",
                           fontWeight: 800,
-                          padding: "1px 5px",
-                          borderRadius: 4,
+                          padding: "2px 6px",
+                          borderRadius: 6,
                         }}
                       >
-                        VIDEO
+                        HD VIDEO
                       </span>
                     </div>
 
-                    <div className="student-video-play-btn" style={{ background: "#ea580c" }}>
+                    <div className="student-video-play-btn">
                       <Play size={18} fill="#ffffff" style={{ marginLeft: "2px" }} />
                     </div>
 
                     <div style={{ color: "#ffffff" }}>
-                      <div style={{ fontSize: "0.78rem", fontWeight: 800, textShadow: "0 1px 3px rgba(0,0,0,0.8)" }}>
+                      <div style={{ fontSize: "0.82rem", fontWeight: 800, textShadow: "0 1px 3px rgba(0,0,0,0.8)" }}>
                         Green Valley Smart Campus Tour
                       </div>
-                      <div style={{ fontSize: "0.65rem", color: "#cbd5e1", textShadow: "0 1px 2px rgba(0,0,0,0.8)" }}>
+                      <div style={{ fontSize: "0.68rem", color: "#fbd5b5", textShadow: "0 1px 2px rgba(0,0,0,0.8)" }}>
                         Explore science labs, robotics studio & sports arena
                       </div>
                     </div>
@@ -945,7 +1089,6 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
               <div className="student-hub-card-footer">
                 <button
                   className="student-open-screen-btn"
-                  style={{ background: "#dc2626", color: "#ffffff" }}
                   onClick={(e) => {
                     e.stopPropagation();
                     setIsVideoModalOpen(true);
@@ -959,12 +1102,11 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
             {/* CONTAINER 5: 🔔 OFFICIAL NOTIFICATIONS & CIRCULARS */}
             <div
               className="student-hub-card"
-              style={{ "--card-accent": "#7c3aed" } as React.CSSProperties}
             >
               <div className="student-hub-card-header">
                 <div className="student-card-title-group">
-                  <div className="student-card-icon-box" style={{ background: "#ede9fe", color: "#7c3aed" }}>
-                    <Bell size={18} />
+                  <div className="student-card-icon-box">
+                    <Bell size={19} />
                   </div>
                   <div className="student-card-headings">
                     <h3>School Notifications</h3>
@@ -973,11 +1115,12 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
                 </div>
                 <span
                   style={{
-                    background: "#ede9fe",
-                    color: "#7c3aed",
-                    fontSize: "0.65rem",
-                    fontWeight: 700,
-                    padding: "0.15rem 0.45rem",
+                    background: "#fff7ed",
+                    color: "#ea580c",
+                    border: "1px solid rgba(254, 215, 170, 0.8)",
+                    fontSize: "0.68rem",
+                    fontWeight: 800,
+                    padding: "0.2rem 0.65rem",
                     borderRadius: "9999px",
                   }}
                 >
@@ -985,7 +1128,7 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
                 </span>
               </div>
 
-              <div className="student-hub-card-body" style={{ padding: "0.45rem 0.65rem" }}>
+              <div className="student-hub-card-body" style={{ padding: "0.35rem 0.85rem" }}>
                 <div className="student-notices-list">
                   {NOTICES.map((notice) => (
                     <div
@@ -996,12 +1139,13 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
                     >
                       <span
                         style={{
-                          fontSize: "0.58rem",
+                          fontSize: "0.6rem",
                           fontWeight: 800,
-                          padding: "1px 5px",
-                          borderRadius: 4,
-                          background: notice.tagBg,
-                          color: notice.tagColor,
+                          padding: "2px 6px",
+                          borderRadius: 6,
+                          background: "#fff7ed",
+                          color: "#ea580c",
+                          border: "1px solid rgba(254, 215, 170, 0.8)",
                           flexShrink: 0,
                         }}
                       >
@@ -1010,7 +1154,7 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div
                           style={{
-                            fontSize: "0.7rem",
+                            fontSize: "0.74rem",
                             fontWeight: 700,
                             color: "#0f172a",
                             whiteSpace: "nowrap",
@@ -1020,9 +1164,9 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
                         >
                           {notice.title}
                         </div>
-                        <span style={{ fontSize: "0.6rem", color: "#64748b" }}>{notice.authority}</span>
+                        <span style={{ fontSize: "0.64rem", color: "#64748b" }}>{notice.authority}</span>
                       </div>
-                      <span style={{ fontSize: "0.6rem", color: "#94a3b8", flexShrink: 0 }}>{notice.time}</span>
+                      <span style={{ fontSize: "0.64rem", color: "#94a3b8", flexShrink: 0 }}>{notice.time}</span>
                     </div>
                   ))}
                 </div>
@@ -1031,7 +1175,6 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
               <div className="student-hub-card-footer">
                 <button
                   className="student-open-screen-btn"
-                  style={{ background: "#7c3aed", color: "#ffffff" }}
                   onClick={() => setSelectedNotice(NOTICES[0])}
                 >
                   <Megaphone size={13} /> View All Circulars & Notices
@@ -1042,12 +1185,11 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
             {/* CONTAINER 6: ✨ DAILY SLOGANS & STUDENT INSPIRATION */}
             <div
               className="student-hub-card"
-              style={{ "--card-accent": "#c026d3" } as React.CSSProperties}
             >
               <div className="student-hub-card-header">
                 <div className="student-card-title-group">
-                  <div className="student-card-icon-box" style={{ background: "#fdf4ff", color: "#c026d3" }}>
-                    <Sparkles size={18} />
+                  <div className="student-card-icon-box">
+                    <Sparkles size={19} />
                   </div>
                   <div className="student-card-headings">
                     <h3>Daily Slogan & Wisdom</h3>
@@ -1056,11 +1198,12 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
                 </div>
                 <span
                   style={{
-                    background: "#fdf4ff",
-                    color: "#c026d3",
-                    fontSize: "0.65rem",
-                    fontWeight: 700,
-                    padding: "0.15rem 0.45rem",
+                    background: "#fff7ed",
+                    color: "#ea580c",
+                    border: "1px solid rgba(254, 215, 170, 0.8)",
+                    fontSize: "0.68rem",
+                    fontWeight: 800,
+                    padding: "0.2rem 0.65rem",
                     borderRadius: "9999px",
                   }}
                 >
@@ -1068,7 +1211,7 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
                 </span>
               </div>
 
-              <div className="student-hub-card-body" style={{ padding: "0.45rem 0.65rem" }}>
+              <div className="student-hub-card-body" style={{ padding: "0.35rem 0.85rem" }}>
                 <div className="student-slogan-wrap">
                   <Quote
                     size={48}
@@ -1076,7 +1219,7 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
                       position: "absolute",
                       right: -5,
                       bottom: -8,
-                      color: "rgba(192, 38, 211, 0.12)",
+                      color: "rgba(234, 88, 12, 0.12)",
                       pointerEvents: "none",
                     }}
                   />
@@ -1087,15 +1230,23 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
                     <span>— {SLOGANS[sloganIndex].author}</span>
                     <span
                       style={{
-                        background: "rgba(192, 38, 211, 0.12)",
-                        color: "#a21caf",
-                        padding: "1px 6px",
-                        borderRadius: 4,
-                        fontSize: "0.62rem",
+                        background: "#fff7ed",
+                        color: "#ea580c",
+                        border: "1px solid rgba(254, 215, 170, 0.7)",
+                        padding: "2px 8px",
+                        borderRadius: "9999px",
+                        fontSize: "0.66rem",
+                        fontWeight: 800,
                       }}
                     >
                       {SLOGANS[sloganIndex].badge}
                     </span>
+                  </div>
+                  <div className="student-slogan-values-strip">
+                    <span className="student-slogan-value-pill">Excellence</span>
+                    <span className="student-slogan-value-pill">Curiosity</span>
+                    <span className="student-slogan-value-pill">Kindness</span>
+                    <span className="student-slogan-value-pill">Perseverance</span>
                   </div>
                 </div>
               </div>
@@ -1103,7 +1254,6 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
               <div className="student-hub-card-footer">
                 <button
                   className="student-open-screen-btn"
-                  style={{ background: "#a21caf", color: "#ffffff" }}
                   onClick={() => setSloganIndex((prev) => (prev + 1) % SLOGANS.length)}
                   title="Click to view next inspirational thought"
                 >
@@ -1111,74 +1261,6 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
                 </button>
               </div>
             </div>
-          </section>
-
-          {/* COMPACT BOTTOM STRIP: STUDENT ID & CREDENTIALS VERIFICATION */}
-          <section
-            style={{
-              background: "rgba(255, 255, 255, 0.9)",
-              borderRadius: "14px",
-              padding: "0.5rem 1.15rem",
-              border: "1px solid rgba(254, 215, 170, 0.65)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              boxShadow: "0 4px 14px rgba(234, 88, 12, 0.05)",
-              flexShrink: 0,
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "center", gap: "0.85rem" }}>
-              <div
-                style={{
-                  width: 34,
-                  height: 34,
-                  borderRadius: "50%",
-                  background: "#fff7ed",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "#ea580c",
-                  flexShrink: 0,
-                  border: "1px solid rgba(251, 146, 60, 0.3)",
-                }}
-              >
-                <GraduationCap size={18} />
-              </div>
-              <div>
-                <span style={{ fontSize: "0.76rem", fontWeight: 800, color: "#1e293b" }}>
-                  Official Student Academic Profile: {studentName}
-                </span>
-                <div style={{ fontSize: "0.68rem", color: "#64748b", display: "flex", gap: "0.6rem", marginTop: "1px" }}>
-                  <span>Class: <strong>{studentClass}</strong></span>
-                  <span>•</span>
-                  <span>Admission No: <strong>{studentAdmNo}</strong></span>
-                  <span>•</span>
-                  <span>System ID: <strong>{session?.AMST_ID || 1204}</strong></span>
-                  <span>•</span>
-                  <span>Academic Year: <strong>{academicYear}</strong></span>
-                </div>
-              </div>
-            </div>
-
-            <button
-              onClick={() => setCurrentScreen("profile")}
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "0.35rem",
-                padding: "0.35rem 0.85rem",
-                borderRadius: "8px",
-                border: "1px solid rgba(251, 146, 60, 0.35)",
-                background: "#fff7ed",
-                color: "#ea580c",
-                fontWeight: 800,
-                fontSize: "0.74rem",
-                cursor: "pointer",
-                transition: "all 0.15s ease",
-              }}
-            >
-              <User size={13} /> View Complete Profile Screen →
-            </button>
           </section>
         </main>
       )}
@@ -1199,7 +1281,7 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
             </button>
 
             <div className="student-screen-title-area">
-              <div className="student-screen-icon-bubble" style={{ background: "#dcfce7", color: "#16a34a" }}>
+              <div className="student-screen-icon-bubble" style={{ background: "#fff7ed", color: "#ea580c" }}>
                 <CheckCircle2 size={20} />
               </div>
               <div>
@@ -1231,9 +1313,9 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
               <div className="student-kpi-card">
                 <div className="student-kpi-info">
                   <span>Overall Attendance</span>
-                  <h4 style={{ color: "#16a34a" }}>{overallAttendancePct}%</h4>
+                  <h4 style={{ color: "#ea580c" }}>{overallAttendancePct}%</h4>
                 </div>
-                <div className="student-kpi-icon" style={{ background: "#dcfce7", color: "#16a34a" }}>
+                <div className="student-kpi-icon" style={{ background: "#fff7ed", color: "#ea580c" }}>
                   <Percent size={20} />
                 </div>
               </div>
@@ -1243,7 +1325,7 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
                   <span>Total Working Classes</span>
                   <h4>{totalHeld} Sessions</h4>
                 </div>
-                <div className="student-kpi-icon" style={{ background: "#dbeafe", color: "#1d4ed8" }}>
+                <div className="student-kpi-icon" style={{ background: "#fff7ed", color: "#ea580c" }}>
                   <Layers size={20} />
                 </div>
               </div>
@@ -1251,9 +1333,9 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
               <div className="student-kpi-card">
                 <div className="student-kpi-info">
                   <span>Classes Attended</span>
-                  <h4 style={{ color: "#15803d" }}>{totalPresent} Days</h4>
+                  <h4 style={{ color: "#ea580c" }}>{totalPresent} Days</h4>
                 </div>
-                <div className="student-kpi-icon" style={{ background: "#f0fdf4", color: "#15803d" }}>
+                <div className="student-kpi-icon" style={{ background: "#fff7ed", color: "#ea580c" }}>
                   <Check size={20} />
                 </div>
               </div>
@@ -1261,9 +1343,9 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
               <div className="student-kpi-card">
                 <div className="student-kpi-info">
                   <span>Classes Absent</span>
-                  <h4 style={{ color: totalAbsent > 5 ? "#dc2626" : "#b45309" }}>{totalAbsent} Days</h4>
+                  <h4 style={{ color: totalAbsent > 5 ? "#dc2626" : "#ea580c" }}>{totalAbsent} Days</h4>
                 </div>
-                <div className="student-kpi-icon" style={{ background: "#fef3c7", color: "#b45309" }}>
+                <div className="student-kpi-icon" style={{ background: "#fff7ed", color: "#ea580c" }}>
                   <Clock size={20} />
                 </div>
               </div>
@@ -1418,7 +1500,7 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
             </button>
 
             <div className="student-screen-title-area">
-              <div className="student-screen-icon-bubble" style={{ background: "#dbeafe", color: "#1d4ed8" }}>
+              <div className="student-screen-icon-bubble" style={{ background: "#fff7ed", color: "#ea580c" }}>
                 <CalendarDays size={20} />
               </div>
               <div>
@@ -1649,7 +1731,7 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
                     {totalObtainedMarks} <span style={{ fontSize: "0.9rem", color: "#64748b" }}>/ {totalMaxMarks}</span>
                   </h4>
                 </div>
-                <div className="student-kpi-icon" style={{ background: "#dbeafe", color: "#1d4ed8" }}>
+                <div className="student-kpi-icon" style={{ background: "#fff7ed", color: "#ea580c" }}>
                   <Award size={20} />
                 </div>
               </div>
@@ -1657,9 +1739,9 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
               <div className="student-kpi-card">
                 <div className="student-kpi-info">
                   <span>Academic Grade</span>
-                  <h4 style={{ color: "#16a34a" }}>Grade A+</h4>
+                  <h4 style={{ color: "#ea580c" }}>Grade A+</h4>
                 </div>
-                <div className="student-kpi-icon" style={{ background: "#dcfce7", color: "#16a34a" }}>
+                <div className="student-kpi-icon" style={{ background: "#fff7ed", color: "#ea580c" }}>
                   <CheckCircle2 size={20} />
                 </div>
               </div>
@@ -1667,9 +1749,9 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
               <div className="student-kpi-card">
                 <div className="student-kpi-info">
                   <span>Result Standing</span>
-                  <h4 style={{ color: "#15803d" }}>PASS • Distinction</h4>
+                  <h4 style={{ color: "#ea580c" }}>PASS • Distinction</h4>
                 </div>
-                <div className="student-kpi-icon" style={{ background: "#f0fdf4", color: "#15803d" }}>
+                <div className="student-kpi-icon" style={{ background: "#fff7ed", color: "#ea580c" }}>
                   <ShieldCheck size={20} />
                 </div>
               </div>
@@ -1794,7 +1876,7 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
             </button>
 
             <div className="student-screen-title-area">
-              <div className="student-screen-icon-bubble" style={{ background: "#ede9fe", color: "#7c3aed" }}>
+              <div className="student-screen-icon-bubble" style={{ background: "#fff7ed", color: "#ea580c" }}>
                 <User size={20} />
               </div>
               <div>
@@ -1892,17 +1974,17 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
                     Academic Performance Summary
                   </h4>
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "0.75rem", textAlign: "center" }}>
-                    <div style={{ background: "#f0fdf4", border: "1px solid #bbf7d0", padding: "0.85rem", borderRadius: "12px" }}>
-                      <span style={{ fontSize: "0.7rem", color: "#166534", fontWeight: 800 }}>ATTENDANCE RATE</span>
-                      <div style={{ fontSize: "1.4rem", fontWeight: 800, color: "#15803d" }}>{overallAttendancePct}%</div>
+                    <div style={{ background: "#fff7ed", border: "1px solid rgba(254, 215, 170, 0.8)", padding: "0.85rem", borderRadius: "12px" }}>
+                      <span style={{ fontSize: "0.7rem", color: "#ea580c", fontWeight: 800 }}>ATTENDANCE RATE</span>
+                      <div style={{ fontSize: "1.4rem", fontWeight: 800, color: "#0f172a" }}>{overallAttendancePct}%</div>
                     </div>
-                    <div style={{ background: "#eff6ff", border: "1px solid #bfdbfe", padding: "0.85rem", borderRadius: "12px" }}>
-                      <span style={{ fontSize: "0.7rem", color: "#1e40af", fontWeight: 800 }}>EXAM PERCENTAGE</span>
-                      <div style={{ fontSize: "1.4rem", fontWeight: 800, color: "#2563eb" }}>{overallExamPct}%</div>
+                    <div style={{ background: "#fff7ed", border: "1px solid rgba(254, 215, 170, 0.8)", padding: "0.85rem", borderRadius: "12px" }}>
+                      <span style={{ fontSize: "0.7rem", color: "#ea580c", fontWeight: 800 }}>EXAM PERCENTAGE</span>
+                      <div style={{ fontSize: "1.4rem", fontWeight: 800, color: "#0f172a" }}>{overallExamPct}%</div>
                     </div>
-                    <div style={{ background: "#faf5ff", border: "1px solid #e9d5ff", padding: "0.85rem", borderRadius: "12px" }}>
-                      <span style={{ fontSize: "0.7rem", color: "#6b21a8", fontWeight: 800 }}>OVERALL GRADE</span>
-                      <div style={{ fontSize: "1.4rem", fontWeight: 800, color: "#7e22ce" }}>Grade A+</div>
+                    <div style={{ background: "#fff7ed", border: "1px solid rgba(254, 215, 170, 0.8)", padding: "0.85rem", borderRadius: "12px" }}>
+                      <span style={{ fontSize: "0.7rem", color: "#ea580c", fontWeight: 800 }}>OVERALL GRADE</span>
+                      <div style={{ fontSize: "1.4rem", fontWeight: 800, color: "#ea580c" }}>Grade A+</div>
                     </div>
                   </div>
                 </div>

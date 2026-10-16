@@ -32,6 +32,9 @@ import {
   Tv,
   Activity,
   CheckCircle2,
+  Bus,
+  FileText,
+  CreditCard,
   School,
   Building2,
 } from "lucide-react";
@@ -154,195 +157,118 @@ export default function CampusInfoPortal({
 
   return (
     <>
-      <main className="hp-wrapper" onClick={handlePortalClick}>
-        {/* Floating visual hint for kiosk users */}
-        <div className="hp-click-overlay-hint">
-          <Sparkles size={14} className="text-yellow-400" />
-          <span>Campus Information Portal • Tap anywhere on screen to enter Role Selection Portal</span>
-        </div>
+      <main className="kiosk-command-center hp-wrapper" onClick={handlePortalClick}>
+        <div className="kiosk-orb kiosk-orb-one" />
+        <div className="kiosk-orb kiosk-orb-two" />
+
+
 
         <div className="hp-container">
-          {/* 1. TOP HEADER */}
-          <header className="hp-header">
-            <div className="hp-branding">
-              <div className="hp-logo-box">
-                <svg
-                  width="44"
-                  height="44"
-                  viewBox="0 0 48 48"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M24 7C28 11 34 13 38 10C38 18 31 23 24 24C17 23 10 18 10 10C14 13 20 11 24 7Z"
-                    fill="#10b981"
-                  />
-                  <path
-                    d="M24 24V11"
-                    stroke="#059669"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                  />
-                  <path
-                    d="M5 36C12 31.5 18 32.5 24 37C30 32.5 36 31.5 43 36V18C36 13.5 30 14.5 24 19C18 14.5 12 13.5 5 18V36Z"
-                    fill="#0369a1"
-                  />
-                  <path
-                    d="M24 19V37"
-                    stroke="#ffffff"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                  />
+          {/* UNIFIED COMMAND CENTER HEADER & TELEMETRY */}
+          <header className="hp-unified-header">
+            {/* LEFT: School Branding & Portal Identity (One Clean Brand & Portal Title) */}
+            <div className="hp-header-branding">
+              <div className="command-mark" aria-hidden="true">
+                <svg width="22" height="22" viewBox="0 0 48 48" fill="none">
+                  <path d="M24 7c4 4 10 6 14 3 0 8-7 13-14 14C17 23 10 18 10 10c4 3 10 1 14-3Z" fill="#f97316" />
+                  <path d="M24 24V11" stroke="#ea580c" strokeWidth="2.5" strokeLinecap="round" />
+                  <path d="M5 36c7-4.5 13-3.5 19 1 6-4.5 12-5.5 19-1V18c-7-4.5-13-3.5-19 1-6-4.5-12-5.5-19-1v18Z" fill="#c2410c" />
+                  <path d="M24 19v18" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
                 </svg>
               </div>
-              <div>
-                <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", flexWrap: "wrap" }}>
+
+              <div className="hp-header-info">
+                <div className="hp-header-title-row">
                   <h1 className="hp-brand-name">Green Valley Public School</h1>
-                  <span
-                    style={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: "0.35rem",
-                      background: "linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)",
-                      color: "#0369a1",
-                      fontSize: "0.74rem",
-                      fontWeight: 800,
-                      padding: "0.22rem 0.75rem",
-                      borderRadius: "9999px",
-                      border: "1.5px solid rgba(2, 132, 199, 0.35)",
-                      boxShadow: "0 2px 8px rgba(2, 132, 199, 0.12)",
-                      letterSpacing: "0.02em",
-                    }}
-                  >
-                    <Building2 size={12} style={{ color: "#0284c7" }} />
-                    CAMPUS INFORMATION PORTAL
+                  <span className="hp-portal-pill">
+                    <Building2 size={12} />
+                    Campus Information Portal
                   </span>
                 </div>
-                <p className="hp-brand-motto">Campus Information &amp; Digital Display Kiosk • Learn • Grow • Excel</p>
+                <div className="hp-header-sub">
+                  <ShieldCheck size={11} />
+                  <span>CBSE Affiliated Sr. Secondary (1930281)</span>
+                  <i />
+                  <Activity size={11} />
+                  <span>Live Smart Campus Telemetry</span>
+                  <i />
+                  <span>Est. 1999</span>
+                </div>
               </div>
             </div>
 
-            <div style={{ display: "flex", alignItems: "center", gap: "0.65rem" }}>
-              <div className="hp-header-datetime">
-                <Calendar size={18} className="text-sky-600" />
-                <span>
-                  {currentTime ? formatDate(currentTime) : "Tue, 23 Sep 2025"}
-                </span>
-                <span className="text-slate-300">|</span>
-                <span className="font-extrabold text-slate-800">
-                  {currentTime ? formatTime(currentTime) : "10:24 AM"}
-                </span>
+            {/* CENTER: Key School Telemetry Stats Pills */}
+            <div className="hp-header-stats">
+              <div className="hp-stat-pill">
+                <div className="hp-stat-icon bg-emerald-600">
+                  <GraduationCap size={13} />
+                </div>
+                <div>
+                  <div className="hp-stat-num">25+ Yrs</div>
+                  <div className="hp-stat-desc">Legacy</div>
+                </div>
+              </div>
+
+              <div className="hp-stat-pill">
+                <div className="hp-stat-icon bg-purple-600">
+                  <Users size={13} />
+                </div>
+                <div>
+                  <div className="hp-stat-num">6,200+</div>
+                  <div className="hp-stat-desc">Students</div>
+                </div>
+              </div>
+
+              <div className="hp-stat-pill">
+                <div className="hp-stat-icon bg-amber-600">
+                  <Award size={13} />
+                </div>
+                <div>
+                  <div className="hp-stat-num">180+</div>
+                  <div className="hp-stat-desc">Faculty</div>
+                </div>
+              </div>
+
+              <div className="hp-stat-pill">
+                <div className="hp-stat-icon bg-sky-600">
+                  <Trophy size={13} />
+                </div>
+                <div>
+                  <div className="hp-stat-num">100%</div>
+                  <div className="hp-stat-desc">Board Pass</div>
+                </div>
+              </div>
+
+              <div className="hp-stat-pill">
+                <div className="hp-stat-icon bg-indigo-600">
+                  <Cpu size={13} />
+                </div>
+                <div>
+                  <div className="hp-stat-num">45</div>
+                  <div className="hp-stat-desc">Smart Labs</div>
+                </div>
+              </div>
+            </div>
+
+            {/* RIGHT: Live Actions & Telemetry Clock */}
+            <div className="command-actions">
+              <div className="command-live-status"><span /> Campus online</div>
+              <div className="command-time">
+                <Calendar size={15} />
+                <span>{currentTime ? formatDate(currentTime) : "Tue, 23 Sep 2025"}</span>
+                <b>{currentTime ? formatTime(currentTime) : "10:24 AM"}</b>
               </div>
 
               <button
-                className="hp-fullscreen-btn"
+                className="command-fullscreen"
                 onClick={toggleFullscreen}
                 title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen Mode"}
               >
-                {isFullscreen ? <Minimize size={16} /> : <Maximize size={16} />}
-                <span>{isFullscreen ? "Exit Fullscreen" : "Full Screen"}</span>
+                {isFullscreen ? <Minimize size={15} /> : <Maximize size={15} />}
+                <span>{isFullscreen ? "Exit" : "Full screen"}</span>
               </button>
             </div>
           </header>
-
-          {/* 2. HERO BANNER - DATA DRIVEN (NO IMAGE) */}
-          <div className="hp-hero-card hp-hero-card-data">
-            <div className="hp-hero-content">
-              <div className="hp-hero-top-badge">
-                <span
-                  style={{
-                    background: "#0284c7",
-                    color: "#ffffff",
-                    padding: "2px 8px",
-                    borderRadius: "9999px",
-                    fontSize: "0.65rem",
-                    fontWeight: 900,
-                    letterSpacing: "0.04em",
-                    marginRight: "0.25rem",
-                  }}
-                >
-                  PAGE 1
-                </span>
-                <ShieldCheck size={14} className="text-emerald-400" />
-                <span>CAMPUS INFORMATION PORTAL • CBSE Affiliated Sr. Secondary School • Affiliation No: 1930281</span>
-              </div>
-              <h2 className="hp-hero-title">Campus Information &amp; Digital Kiosk Hub</h2>
-              <p className="hp-hero-subtext">
-                Green Valley Public School • Empowering Minds, Inspiring Character &amp; Building Leaders Since 1999
-              </p>
-
-              <div className="hp-hero-stats">
-                <div className="hp-stat-pill">
-                  <div className="hp-stat-icon bg-emerald-600">
-                    <GraduationCap size={15} />
-                  </div>
-                  <div>
-                    <div className="hp-stat-num">25+ Years</div>
-                    <div className="hp-stat-desc">Academic Legacy</div>
-                  </div>
-                </div>
-
-                <div className="hp-stat-pill">
-                  <div className="hp-stat-icon bg-purple-600">
-                    <Users size={15} />
-                  </div>
-                  <div>
-                    <div className="hp-stat-num">6,200+</div>
-                    <div className="hp-stat-desc">Enrolled Students</div>
-                  </div>
-                </div>
-
-                <div className="hp-stat-pill">
-                  <div className="hp-stat-icon bg-amber-600">
-                    <Award size={15} />
-                  </div>
-                  <div>
-                    <div className="hp-stat-num">180+ Faculty</div>
-                    <div className="hp-stat-desc">1:18 Teacher Ratio</div>
-                  </div>
-                </div>
-
-                <div className="hp-stat-pill">
-                  <div className="hp-stat-icon bg-sky-600">
-                    <Trophy size={15} />
-                  </div>
-                  <div>
-                    <div className="hp-stat-num">100% Pass</div>
-                    <div className="hp-stat-desc">CBSE Board Exam</div>
-                  </div>
-                </div>
-
-                <div className="hp-stat-pill">
-                  <div className="hp-stat-icon bg-indigo-600">
-                    <Cpu size={15} />
-                  </div>
-                  <div>
-                    <div className="hp-stat-num">45 Smart Labs</div>
-                    <div className="hp-stat-desc">IoT & STEM Ready</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="hp-hero-right-data">
-              <div className="hp-hero-kpi-row">
-                <div className="hp-kpi-item">
-                  <span className="hp-kpi-val text-emerald-400">98.4%</span>
-                  <span className="hp-kpi-lbl">Top Board Score</span>
-                </div>
-                <div className="hp-kpi-divider"></div>
-                <div className="hp-kpi-item">
-                  <span className="hp-kpi-val text-amber-300">Grade A++</span>
-                  <span className="hp-kpi-lbl">Quality Accredited</span>
-                </div>
-                <div className="hp-kpi-divider"></div>
-                <div className="hp-kpi-item">
-                  <span className="hp-kpi-val text-sky-300">100+</span>
-                  <span className="hp-kpi-lbl">State Trophies</span>
-                </div>
-              </div>
-            </div>
-          </div>
 
           {/* 3. EDUCATION NEWS TICKER */}
           <div className="hp-news-bar">
@@ -737,50 +663,128 @@ export default function CampusInfoPortal({
                     </div>
                   </div>
                 </div>
-
-                {/* Summary Footer Strip */}
-                <div className="hp-highlight-footer-strip">
-                  <Camera size={13} className="text-teal-600" />
-                  <span>450+ Photo Moments Captured • Digital Campus Archives</span>
-                </div>
+              </div>
+              {/* Summary Footer Strip */}
+              <div className="hp-highlight-footer-strip">
+                <Camera size={13} className="text-teal-600" />
+                <span>450+ Photo Moments Captured • Digital Campus Archives</span>
               </div>
             </div>
 
-            {/* CARD 4: ROLE LOGIN (COMPLETELY FILLED & BALANCED) */}
+            {/* CARD 4: SMART CAMPUS KIOSK PORTAL (FILLED WITH SCHOOL SERVICES & LIVE TELEMETRY) */}
             <div className="hp-card hp-login-card">
               <div className="hp-login-top">
-                <div className="hp-login-icon-box">
-                  <User size={22} />
+                <div style={{ display: "flex", alignItems: "center", gap: "0.45rem" }}>
+                  <div className="hp-login-icon-box">
+                    <School size={16} />
+                  </div>
+                  <div>
+                    <h3 className="hp-card-heading" style={{ fontSize: "0.85rem", margin: 0 }}>Smart Campus Portal</h3>
+                    <p style={{ margin: "1px 0 0", fontSize: "0.58rem", color: "#64748b", fontWeight: 700 }}>Terminal #01 • Main Kiosk</p>
+                  </div>
                 </div>
-                <span className="hp-login-chip">Touch Kiosk Portal</span>
+                <span className="hp-login-chip">
+                  <span className="footer-dot" style={{ width: "5px", height: "5px", display: "inline-block", background: "#16a34a" }} /> Active
+                </span>
               </div>
 
               <div className="hp-login-center-body">
-                <h3 className="hp-login-heading">Smart Campus Portal</h3>
-                <p className="hp-login-subtext">
-                  Sign in to access real-time academic marks, morning attendance, digital diary & fee telemetry.
-                </p>
-
-                <div className="hp-login-roles-preview">
-                  <span className="hp-role-pill">🎓 Student & Parent</span>
-                  <span className="hp-role-pill">👨‍🏫 Faculty & Staff</span>
-                  <span className="hp-role-pill">🤝 GVian Alumni</span>
-                  <span className="hp-role-pill">🏛️ Guest & Visitor</span>
+                {/* 3D CHARACTER AVATAR STAGE WITH WELCOME MESSAGE */}
+                <div className="hp-student-stage">
+                  <img
+                    src="/student_avatar.png"
+                    alt="3D Student"
+                    className="hp-student-img"
+                  />
+                  <div className="hp-student-speech-box">
+                    <span className="hp-student-speech-title">👋 Welcome to GVPS!</span>
+                    <span className="hp-student-speech-desc">Tap below or use RFID card to access portal.</span>
+                  </div>
+                  <div className="hp-student-stage-badge">
+                    3D Kiosk
+                  </div>
                 </div>
 
-                {/* Live Portal Features List */}
-                <div className="hp-login-features-list">
-                  <div className="hp-login-feat-item">
-                    <CheckCircle2 size={13} className="text-sky-600" />
-                    <span>Instant 1-Touch Kiosk Sign In</span>
+                {/* TODAY'S SCHOOL LIVE TELEMETRY COUNTERS */}
+                <div className="hp-school-kiosk-stats">
+                  <div className="hp-kiosk-stat-item">
+                    <span className="hp-kiosk-stat-num text-emerald-600">98.6%</span>
+                    <span className="hp-kiosk-stat-label">Attendance Today</span>
                   </div>
-                  <div className="hp-login-feat-item">
-                    <CheckCircle2 size={13} className="text-emerald-600" />
-                    <span>Exam Results & Report Cards</span>
+                  <div className="hp-kiosk-stat-item">
+                    <span className="hp-kiosk-stat-num text-sky-600">18 / 18</span>
+                    <span className="hp-kiosk-stat-label">Buses on Route</span>
                   </div>
-                  <div className="hp-login-feat-item">
-                    <CheckCircle2 size={13} className="text-amber-600" />
-                    <span>Digital Receipts & Diary Notes</span>
+                  <div className="hp-kiosk-stat-item">
+                    <span className="hp-kiosk-stat-num text-amber-600">Period 3</span>
+                    <span className="hp-kiosk-stat-label">Class Schedule</span>
+                  </div>
+                </div>
+
+                {/* 4 INSTANT SCHOOL SELF-SERVICE KIOSK TILES */}
+                <div className="hp-school-services-grid">
+                  <div className="hp-school-serv-item" onClick={onEnterRoleSelection}>
+                    <div className="hp-school-serv-icon bg-sky-50 text-sky-600">
+                      <FileText size={13} />
+                    </div>
+                    <div>
+                      <strong className="hp-school-serv-title">Exam Marks &amp; Cards</strong>
+                      <span className="hp-school-serv-desc">Print Term Report</span>
+                    </div>
+                  </div>
+
+                  <div className="hp-school-serv-item" onClick={onEnterRoleSelection}>
+                    <div className="hp-school-serv-icon bg-emerald-50 text-emerald-600">
+                      <CreditCard size={13} />
+                    </div>
+                    <div>
+                      <strong className="hp-school-serv-title">Fee &amp; Dues Payment</strong>
+                      <span className="hp-school-serv-desc">Instant UPI Receipt</span>
+                    </div>
+                  </div>
+
+                  <div className="hp-school-serv-item" onClick={onEnterRoleSelection}>
+                    <div className="hp-school-serv-icon bg-purple-50 text-purple-600">
+                      <BookOpen size={13} />
+                    </div>
+                    <div>
+                      <strong className="hp-school-serv-title">Digital Diary &amp; HW</strong>
+                      <span className="hp-school-serv-desc">Daily Teacher Notes</span>
+                    </div>
+                  </div>
+
+                  <div className="hp-school-serv-item" onClick={onEnterRoleSelection}>
+                    <div className="hp-school-serv-icon bg-amber-50 text-amber-600">
+                      <Bus size={13} />
+                    </div>
+                    <div>
+                      <strong className="hp-school-serv-title">School Bus Telemetry</strong>
+                      <span className="hp-school-serv-desc">Live Stop ETA</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* WHO CAN SIGN IN: ROLE PILLS */}
+                <div className="hp-login-roles-preview">
+                  <span className="hp-role-pill">🎓 Student &amp; Parent</span>
+                  <span className="hp-role-pill">👨‍🏫 Faculty &amp; Staff</span>
+                  <span className="hp-role-pill">🤝 GVian Alumni</span>
+                  <span className="hp-role-pill">🏛️ Guest &amp; Visitor</span>
+                </div>
+
+                {/* QUICK 1-TOUCH SIGN IN BADGES */}
+                <div className="hp-kiosk-quick-strip">
+                  <div className="hp-kiosk-quick-badge">
+                    <CheckCircle2 size={11} className="text-emerald-600" />
+                    <span>Smart RFID Card Tap</span>
+                  </div>
+                  <div className="hp-kiosk-quick-badge">
+                    <CheckCircle2 size={11} className="text-sky-600" />
+                    <span>Admission ID &amp; PIN</span>
+                  </div>
+                  <div className="hp-kiosk-quick-badge">
+                    <CheckCircle2 size={11} className="text-amber-600" />
+                    <span>Mobile OTP</span>
                   </div>
                 </div>
               </div>
@@ -794,7 +798,7 @@ export default function CampusInfoPortal({
                   <ArrowRight size={16} />
                 </button>
                 <span className="hp-login-security-tag">
-                  <ShieldCheck size={12} /> 256-Bit SSL Encrypted Kiosk
+                  <ShieldCheck size={12} /> 256-Bit SSL Encrypted Kiosk Terminal
                 </span>
               </div>
             </div>
@@ -976,35 +980,18 @@ export default function CampusInfoPortal({
             </div>
           </div>
 
-          {/* 6. FOOTER STRIP */}
-          <footer className="hp-footer">
-            <div className="hp-footer-left">
-              <div className="hp-footer-item text-emerald-700">
-                <span className="font-bold">✓</span> Safe & Secure Campus
-              </div>
-              <div className="hp-footer-item text-sky-700">
-                <Users size={14} /> Experienced Faculty
-              </div>
-              <div className="hp-footer-item text-teal-700">
-                <Leaf size={14} /> Holistic Development
-              </div>
+          {/* 6. COMMAND FOOTER */}
+          <footer className="command-footer">
+            <div><span className="footer-dot" /> Campus Information Portal • Tap anywhere on screen to enter Role Selection Portal</div>
+            <div className="footer-links">
+              <span>CBSE Affiliation 1930281</span>
+              <span>NAAC Grade A++</span>
+              <span>Campus: 6,200 Students</span>
+              <span>Digital Campus Kiosk</span>
             </div>
-
-            <div className="hp-footer-center">
-              Together for a Brighter Tomorrow 🍃
-            </div>
-
-            <div className="hp-footer-right">
-              <span>Academics</span>
-              <span>|</span>
-              <span>Sports</span>
-              <span>|</span>
-              <span>Arts</span>
-              <span>|</span>
-              <span>Values</span>
-              <span>|</span>
-              <span>Life Skills</span>
-            </div>
+            <button className="assistant-button" onClick={(e) => { e.stopPropagation(); setBotModalOpen(true); }}>
+              <span className="assistant-pulse" /> Need help? <b>Ask GreenBot</b>
+            </button>
           </footer>
         </div>
       </main>
