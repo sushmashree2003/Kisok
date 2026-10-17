@@ -1,42 +1,32 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { getUserSession } from "@/lib/session";
 import {
   Calendar,
   GraduationCap,
   Users,
-  Leaf,
   ArrowRight,
-  BookOpen,
-  Settings,
-  Star,
-  Heart,
   Trophy,
   Camera,
-  Play,
   MapPin,
-  Quote,
   Megaphone,
-  ChevronRight,
-  User,
   X,
-  Send,
-  ArrowLeft,
-  Sparkles,
   Maximize,
   Minimize,
-  Clock,
-  Award,
-  ShieldCheck,
-  Cpu,
-  Tv,
-  Activity,
-  CheckCircle2,
-  Bus,
-  FileText,
-  CreditCard,
-  School,
   Building2,
+  ChevronRight,
+  Play,
+  Leaf,
+  ShieldCheck,
+  Activity,
+  FlaskConical,
+  Sparkles,
+  Award,
+  QrCode,
+  BookOpen,
+  Cpu,
 } from "lucide-react";
 
 export interface CampusInfoPortalProps {
@@ -52,21 +42,25 @@ export default function CampusInfoPortal({
   toggleFullscreen: externalToggleFullscreen,
   currentTime: externalCurrentTime,
 }: CampusInfoPortalProps) {
+  const router = useRouter();
   const [internalTime, setInternalTime] = useState<Date | null>(null);
   const [internalIsFullscreen, setInternalIsFullscreen] = useState(false);
-  const [botModalOpen, setBotModalOpen] = useState(false);
-  const [botChatInput, setBotChatInput] = useState("");
-  const [botChatMessages, setBotChatMessages] = useState<
-    Array<{ sender: "user" | "bot"; text: string }>
-  >([
-    {
-      sender: "bot",
-      text: "Hello! Welcome to Green Valley Public School. Click anywhere or select your role to proceed to your portal.",
-    },
-  ]);
+  const [virtualTourOpen, setVirtualTourOpen] = useState(false);
+  const [galleryModalOpen, setGalleryModalOpen] = useState(false);
+  const [selectedGalleryImg, setSelectedGalleryImg] = useState<{ src: string; title: string } | null>(null);
+  const [achievementsModalOpen, setAchievementsModalOpen] = useState(false);
+  const [eventsModalOpen, setEventsModalOpen] = useState(false);
+  const [schoolName, setSchoolName] = useState<string>("Madhuvan Vatika - MVPS");
 
   useEffect(() => {
-    document.title = "Campus Information Portal | Green Valley Public School";
+    const session = getUserSession();
+    if (session?.initname && session.initname !== "Green Valley Public School") {
+      setSchoolName(session.initname);
+      document.title = `${session.initname} • Smart Campus Kiosk`;
+    } else {
+      document.title = "Madhuvan Vatika - MVPS • Smart Campus Kiosk";
+    }
+
     setInternalTime(new Date());
     const timer = setInterval(() => setInternalTime(new Date()), 1000);
 
@@ -114,962 +108,590 @@ export default function CampusInfoPortal({
     });
   };
 
-  const handleSendBotMessage = (text: string) => {
-    if (!text.trim()) return;
-    const userMsg = text.trim();
-    setBotChatMessages((prev) => [...prev, { sender: "user", text: userMsg }]);
-    setBotChatInput("");
-
-    setTimeout(() => {
-      let reply =
-        "Please click anywhere on the page or tap 'Enter Role Selection Portal' to view the role cards (Student, Staff, Visitor, Alumni).";
-      if (userMsg.toLowerCase().includes("admission")) {
-        reply =
-          "Admissions for Academic Year 2026-27 are currently open for Classes Nursery to 9. Contact admissions desk at ext. 104.";
-      } else if (
-        userMsg.toLowerCase().includes("fee") ||
-        userMsg.toLowerCase().includes("fees")
-      ) {
-        reply =
-          "Term fee details and online payment can be accessed directly from the Student/Parent Dashboard or Visitor Portal.";
-      } else if (
-        userMsg.toLowerCase().includes("time") ||
-        userMsg.toLowerCase().includes("hour")
-      ) {
-        reply =
-          "School hours are 08:00 AM to 03:00 PM (Monday to Friday) and 08:00 AM to 12:30 PM on alternate Saturdays.";
-      }
-      setBotChatMessages((prev) => [...prev, { sender: "bot", text: reply }]);
-    }, 600);
-  };
-
   return (
-    <>
-      <main className="kiosk-command-center hp-wrapper">
-        <div className="kiosk-orb kiosk-orb-one" />
-        <div className="kiosk-orb kiosk-orb-two" />
+    <div className="mv-kiosk-wrapper">
+      {/* =========================================================================
+         1. FLOATING GLASS COMMAND HEADER
+         ========================================================================= */}
+      <header className="mv-header-bar">
+        {/* Brand Group */}
+        <div className="mv-brand-group">
+          <svg className="mv-brand-crest" viewBox="0 0 48 48" fill="none">
+            <path
+              d="M24 7C28 11 34 13 38 10C38 18 31 23 24 24C17 23 10 18 10 10C14 13 20 11 24 7Z"
+              fill="#ea580c"
+            />
+            <path
+              d="M24 24V11"
+              stroke="#c2410c"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+            />
+            <path
+              d="M5 36C12 31.5 18 32.5 24 37C30 32.5 36 31.5 43 36V18C36 13.5 30 14.5 24 19C18 14.5 12 13.5 5 18V36Z"
+              fill="#0e2a47"
+            />
+            <path
+              d="M24 19V37"
+              stroke="#ffffff"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+            />
+          </svg>
+          <div className="mv-brand-titles">
+            <h1 className="mv-brand-name">{schoolName}</h1>
+            <div className="mv-brand-sub">
+              <span>Learn • Grow • Excel</span>
+              <span>•</span>
+              <span>CBSE Affiliated Sr. Sec. (1930281)</span>
+            </div>
+          </div>
+        </div>
 
+        {/* Center News Marquee Capsule */}
+        <div className="mv-news-capsule">
+          <div className="mv-news-badge">
+            <Megaphone size={12} />
+            <span>Campus Live</span>
+          </div>
+          <div className="mv-news-scroller">
+            <div className="mv-news-track">
+              <span className="mv-news-sep">|</span>
+              <span>Madhuvan Vatika scholars achieve 100% first-class CBSE Board distinction</span>
+              <span className="mv-news-sep">|</span>
+              <span>Admissions Open for Academic Session 2026-27 • Nursery to Grade XII</span>
+              <span className="mv-news-sep">|</span>
+              <span>Annual Sports Day Track &amp; Field Finals scheduled for 28th September</span>
+              <span className="mv-news-sep">|</span>
+              <span>State STEM Robotics Expo: MVPS Innovation team wins District First Place</span>
+            </div>
+          </div>
+        </div>
 
+        {/* Right Status & Clock */}
+        <div className="mv-header-tools">
+          <div className="mv-live-pill">
+            <span className="mv-pulse-dot" />
+            <span>Kiosk Online</span>
+          </div>
 
-        <div className="hp-container">
-          {/* UNIFIED COMMAND CENTER HEADER & TELEMETRY */}
-          <header className="hp-unified-header">
-            {/* LEFT: School Branding & Portal Identity (One Clean Brand & Portal Title) */}
-            <div className="hp-header-branding">
-              <div className="command-mark" aria-hidden="true">
-                <svg width="22" height="22" viewBox="0 0 48 48" fill="none">
-                  <path d="M24 7c4 4 10 6 14 3 0 8-7 13-14 14C17 23 10 18 10 10c4 3 10 1 14-3Z" fill="#f97316" />
-                  <path d="M24 24V11" stroke="#ea580c" strokeWidth="2.5" strokeLinecap="round" />
-                  <path d="M5 36c7-4.5 13-3.5 19 1 6-4.5 12-5.5 19-1V18c-7-4.5-13-3.5-19 1-6-4.5-12-5.5-19-1v18Z" fill="#c2410c" />
-                  <path d="M24 19v18" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
-                </svg>
+          <div className="mv-clock-pill">
+            <Calendar size={13} style={{ color: "#ea580c" }} />
+            <span>{currentTime ? formatDate(currentTime) : "Sat, 17 Oct 2026"} • </span>
+            <b>{currentTime ? formatTime(currentTime) : "05:20 PM"}</b>
+          </div>
+
+          <button
+            className="mv-fs-trigger"
+            onClick={toggleFullscreen}
+            title={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
+          >
+            {isFullscreen ? <Minimize size={14} /> : <Maximize size={14} />}
+          </button>
+        </div>
+      </header>
+
+      {/* =========================================================================
+         2. MAIN ASYMMETRICAL BENTO GRID
+         ========================================================================= */}
+      <main className="mv-bento-grid">
+        {/* =====================================================================
+           ZONE A (LEFT): CINEMATIC SHOWCASE & DIRECT TOUCH ROLES
+           ===================================================================== */}
+        <div className="mv-col-left">
+          {/* Card A1: Hero Cinematic Showcase */}
+          <div className="mv-hero-showcase">
+            <div className="mv-hero-sc-overlay" />
+            <div className="mv-hero-sc-content">
+              <div>
+                <span className="mv-hero-cursive-kicker">Welcome to</span>
+                <h2 className="mv-hero-main-title">{schoolName}</h2>
+                <p className="mv-hero-desc">
+                  Empowering young minds with world-class scholastic rigor, ethical leadership,
+                  and futuristic STEM innovation.
+                </p>
               </div>
 
-              <div className="hp-header-info">
-                <div className="hp-header-title-row">
-                  <h1 className="hp-brand-name">Green Valley Public School</h1>
-                  <span className="hp-portal-pill">
-                    <Building2 size={12} />
-                    Campus Information Portal
-                  </span>
+              {/* 4 Distinction Stat Badges */}
+              <div className="mv-hero-pills-row">
+                <div className="mv-hero-stat-chip">
+                  <div className="mv-hero-chip-icon">
+                    <Trophy size={14} />
+                  </div>
+                  <div className="mv-hero-chip-text">
+                    <b>100% Pass</b>
+                    <span>CBSE Board Distinction</span>
+                  </div>
                 </div>
-                <div className="hp-header-sub">
-                  <ShieldCheck size={11} />
-                  <span>CBSE Affiliated Sr. Secondary (1930281)</span>
-                  <i />
-                  <Activity size={11} />
-                  <span>Live Smart Campus Telemetry</span>
-                  <i />
-                  <span>Est. 1999</span>
+
+                <div className="mv-hero-stat-chip">
+                  <div className="mv-hero-chip-icon">
+                    <GraduationCap size={14} />
+                  </div>
+                  <div className="mv-hero-chip-text">
+                    <b>25+ Years</b>
+                    <span>Academic Excellence</span>
+                  </div>
                 </div>
+
+                <div className="mv-hero-stat-chip">
+                  <div className="mv-hero-chip-icon">
+                    <Users size={14} />
+                  </div>
+                  <div className="mv-hero-chip-text">
+                    <b>6,000+</b>
+                    <span>Happy Scholars</span>
+                  </div>
+                </div>
+
+                <div className="mv-hero-stat-chip">
+                  <div className="mv-hero-chip-icon">
+                    <Cpu size={14} />
+                  </div>
+                  <div className="mv-hero-chip-text">
+                    <b>45+ Labs</b>
+                    <span>Robotics &amp; AI Smart Hubs</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Bottom Actions */}
+              <div className="mv-hero-bottom-actions">
+                <button
+                  className="mv-tour-glow-btn"
+                  onClick={() => setVirtualTourOpen(true)}
+                >
+                  <Play size={11} fill="#ea580c" />
+                  <span>Explore 360° Campus</span>
+                </button>
+                <span className="mv-creed-author">— Madhuvan Vatika Legacy</span>
               </div>
             </div>
+          </div>
 
-            {/* CENTER: Key School Telemetry Stats Pills */}
-            <div className="hp-header-stats">
-              <div className="hp-stat-pill">
-                <div className="hp-stat-icon bg-emerald-600">
-                  <GraduationCap size={13} />
-                </div>
-                <div>
-                  <div className="hp-stat-num">25+ Yrs</div>
-                  <div className="hp-stat-desc">Legacy</div>
-                </div>
-              </div>
-
-              <div className="hp-stat-pill">
-                <div className="hp-stat-icon bg-purple-600">
-                  <Users size={13} />
-                </div>
-                <div>
-                  <div className="hp-stat-num">6,200+</div>
-                  <div className="hp-stat-desc">Students</div>
-                </div>
-              </div>
-
-              <div className="hp-stat-pill">
-                <div className="hp-stat-icon bg-amber-600">
-                  <Award size={13} />
-                </div>
-                <div>
-                  <div className="hp-stat-num">180+</div>
-                  <div className="hp-stat-desc">Faculty</div>
-                </div>
-              </div>
-
-              <div className="hp-stat-pill">
-                <div className="hp-stat-icon bg-sky-600">
-                  <Trophy size={13} />
-                </div>
-                <div>
-                  <div className="hp-stat-num">100%</div>
-                  <div className="hp-stat-desc">Board Pass</div>
-                </div>
-              </div>
-
-              <div className="hp-stat-pill">
-                <div className="hp-stat-icon bg-indigo-600">
-                  <Cpu size={13} />
-                </div>
-                <div>
-                  <div className="hp-stat-num">45</div>
-                  <div className="hp-stat-desc">Smart Labs</div>
-                </div>
-              </div>
+          {/* Card A2: Touch-To-Enter Role Hub */}
+          <div className="mv-role-hub-card">
+            <div className="mv-hub-header">
+              <h3 className="mv-hub-title">
+                <ShieldCheck size={16} style={{ color: "#ea580c" }} />
+                <span>Self-Service Gateway</span>
+              </h3>
+              <span className="mv-hub-kicker">Touch To Sign In</span>
             </div>
 
-            {/* RIGHT: Live Actions & Telemetry Clock */}
-            <div className="command-actions">
-              <div className="command-live-status"><span /> Campus online</div>
-              <div className="command-time">
-                <Calendar size={15} />
-                <span>{currentTime ? formatDate(currentTime) : "Tue, 23 Sep 2025"}</span>
-                <b>{currentTime ? formatTime(currentTime) : "10:24 AM"}</b>
-              </div>
-
-              <button
-                className="command-fullscreen"
-                onClick={toggleFullscreen}
-                title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen Mode"}
+            <div className="mv-roles-grid">
+              <div
+                className="mv-role-pill-btn"
+                onClick={() => router.push("/login?role=student")}
+                title="Open Student & Parent Portal"
               >
-                {isFullscreen ? <Minimize size={15} /> : <Maximize size={15} />}
-                <span>{isFullscreen ? "Exit" : "Full screen"}</span>
+                <div className="mv-role-icon student">
+                  <GraduationCap size={18} />
+                </div>
+                <div className="mv-role-text">
+                  <b>Student &amp; Parent</b>
+                  <span>Reports, Fees &amp; HW</span>
+                </div>
+              </div>
+
+              <div
+                className="mv-role-pill-btn"
+                onClick={() => router.push("/login?role=staff")}
+                title="Open Staff Portal"
+              >
+                <div className="mv-role-icon staff">
+                  <Users size={18} />
+                </div>
+                <div className="mv-role-text">
+                  <b>Faculty &amp; Staff</b>
+                  <span>Timetable &amp; Leaves</span>
+                </div>
+              </div>
+
+              <div
+                className="mv-role-pill-btn"
+                onClick={() => router.push("/visitor")}
+                title="Open Visitor Desk"
+              >
+                <div className="mv-role-icon visitor">
+                  <QrCode size={18} />
+                </div>
+                <div className="mv-role-text">
+                  <b>Visitor &amp; Guest</b>
+                  <span>Digital Pass &amp; Maps</span>
+                </div>
+              </div>
+
+              <div
+                className="mv-role-pill-btn"
+                onClick={() => router.push("/alumni")}
+                title="Open Alumni Network"
+              >
+                <div className="mv-role-icon alumni">
+                  <Award size={18} />
+                </div>
+                <div className="mv-role-text">
+                  <b>Alumni Network</b>
+                  <span>Reunions &amp; Mentoring</span>
+                </div>
+              </div>
+            </div>
+
+            <button
+              className="mv-primary-login-btn"
+              onClick={onEnterRoleSelection}
+              title="Open Full Portal Roster"
+            >
+              <span>Tap to Open All Portals</span>
+              <ArrowRight size={17} />
+            </button>
+          </div>
+        </div>
+
+        {/* =====================================================================
+           ZONE B (CENTER): HONORS SPOTLIGHT & RECENT MOMENTS GALLERY
+           ===================================================================== */}
+        <div className="mv-col-center">
+          {/* Card B1: Honors & Awards Showcase */}
+          <div className="mv-achieve-spotlight-card">
+            <div className="mv-section-header">
+              <div className="mv-section-title-wrap">
+                <Trophy size={16} style={{ color: "#ea580c" }} />
+                <h3 className="mv-section-title">Hall of Fame &amp; Awards</h3>
+              </div>
+              <button
+                className="mv-view-all-btn"
+                onClick={() => setAchievementsModalOpen(true)}
+              >
+                <span>View All</span>
+                <ArrowRight size={13} />
               </button>
             </div>
-          </header>
 
-          {/* 3. EDUCATION NEWS TICKER */}
-          <div className="hp-news-bar">
-            <div className="hp-news-badge">
-              <Megaphone size={14} />
-              <span>Education News</span>
-            </div>
-            <div className="hp-news-scroll-wrap">
-              <div className="hp-news-scroll-content">
-                <span>
-                  <b>CBSE:</b> CBSE announces 2026 board exam pattern with more competency-based questions
-                </span>
-                <span>|</span>
-                <span>
-                  <b>NEP 2020:</b> Focus on AI and coding from middle school
-                </span>
-                <span>|</span>
-                <span>
-                  <b>State Govt:</b> Karnataka govt. expands free bus service for students
-                </span>
-                <span>|</span>
-                <span>
-                  <b>Education Index:</b> India ranks higher in global education index 2025
-                </span>
-              </div>
-            </div>
-            <ChevronRight size={18} className="hp-news-arrow" />
-          </div>
-
-          {/* 4. MIDDLE 4-COLUMN GRID */}
-          <div className="hp-middle-grid">
-            {/* CARD 1: OUR ACHIEVEMENTS */}
-            <div className="hp-card">
-              <div className="hp-card-title-row">
-                <div className="hp-card-heading">
-                  <div className="hp-card-icon-pill bg-amber-50 text-amber-600">
-                    <Trophy size={15} />
-                  </div>
-                  <span>Our Achievements</span>
-                  <span className="hp-header-badge gold">5 Recent</span>
-                </div>
-                <span className="hp-view-all">
-                  View All <ArrowRight size={12} />
-                </span>
-              </div>
-
-              <div className="hp-achievements-list">
-                {/* Item 1 */}
-                <div className="hp-achieve-card hp-data-card">
-                  <div className="hp-achieve-databox gold">
-                    <span className="hp-databox-rank">1st</span>
-                    <span className="hp-databox-score">98/100</span>
-                  </div>
-                  <div className="hp-achieve-content">
-                    <div className="hp-achieve-header">
-                      <span className="hp-achieve-tag gold">District Champion</span>
-                      <span className="hp-achieve-date">Aug 2025</span>
-                    </div>
-                    <h4 className="hp-achieve-title">Inter-School Mathematics Quiz</h4>
-                    <p className="hp-achieve-desc">
-                      Team of 4 • 42 Schools Competed • Final Round 100% Accuracy
-                    </p>
+            <div className="mv-achieve-cards-row">
+              {/* Achievement 1 */}
+              <div className="mv-achieve-card">
+                <div className="mv-achieve-img-box">
+                  <img src="/achievement_math.jpg" alt="Mathematics Quiz" />
+                  <div className="mv-achieve-rank-pill">
+                    <span>★ 1st Rank</span>
                   </div>
                 </div>
-
-                {/* Item 2 */}
-                <div className="hp-achieve-card hp-data-card">
-                  <div className="hp-achieve-databox amber">
-                    <span className="hp-databox-rank">MVP</span>
-                    <span className="hp-databox-score">4w & 84r</span>
-                  </div>
-                  <div className="hp-achieve-content">
-                    <div className="hp-achieve-header">
-                      <span className="hp-achieve-tag amber">Best Player Award</span>
-                      <span className="hp-achieve-date">Sep 2025</span>
-                    </div>
-                    <h4 className="hp-achieve-title">Inter-School Cricket Tournament</h4>
-                    <p className="hp-achieve-desc">
-                      Under-16 Finals Winner • 84 runs off 42 balls & 3 wickets
-                    </p>
-                  </div>
-                </div>
-
-                {/* Item 3 */}
-                <div className="hp-achieve-card hp-data-card">
-                  <div className="hp-achieve-databox slate">
-                    <span className="hp-databox-rank">2nd</span>
-                    <span className="hp-databox-score">96.5%</span>
-                  </div>
-                  <div className="hp-achieve-content">
-                    <div className="hp-achieve-header">
-                      <span className="hp-achieve-tag slate">2nd Place Silver</span>
-                      <span className="hp-achieve-date">Aug 2025</span>
-                    </div>
-                    <h4 className="hp-achieve-title">State Science & Innovation Fair</h4>
-                    <p className="hp-achieve-desc">
-                      Eco-Smart Solar Grid Model • 68 Projects Evaluated
-                    </p>
-                  </div>
-                </div>
-
-                {/* Item 4 */}
-                <div className="hp-achieve-card hp-data-card">
-                  <div className="hp-achieve-databox purple">
-                    <span className="hp-databox-rank">1st</span>
-                    <span className="hp-databox-score">100/100</span>
-                  </div>
-                  <div className="hp-achieve-content">
-                    <div className="hp-achieve-header">
-                      <span className="hp-achieve-tag purple">National Olympiad</span>
-                      <span className="hp-achieve-date">Sep 2025</span>
-                    </div>
-                    <h4 className="hp-achieve-title">All-India Cyber & Coding Olympiad</h4>
-                    <p className="hp-achieve-desc">
-                      Gold Medalist • All-India Rank 1 • Junior AI Innovation Award
-                    </p>
-                  </div>
-                </div>
-
-                {/* Item 5 */}
-                <div className="hp-achieve-card hp-data-card">
-                  <div className="hp-achieve-databox emerald">
-                    <span className="hp-databox-rank">Win</span>
-                    <span className="hp-databox-score">12 Gold</span>
-                  </div>
-                  <div className="hp-achieve-content">
-                    <div className="hp-achieve-header">
-                      <span className="hp-achieve-tag emerald">CBSE Cluster VII</span>
-                      <span className="hp-achieve-date">Aug 2025</span>
-                    </div>
-                    <h4 className="hp-achieve-title">CBSE South Zone Athletics Meet</h4>
-                    <p className="hp-achieve-desc">
-                      Overall Championship Trophy • 12 Gold, 8 Silver Medals
-                    </p>
-                  </div>
+                <div className="mv-achieve-meta">
+                  <h4 className="mv-achieve-title">Mathematics Quiz</h4>
+                  <span className="mv-achieve-level">Inter-School Olympiad</span>
+                  <span className="mv-achieve-winner">Aarav Sharma • 100/100</span>
                 </div>
               </div>
 
-              {/* Achievements Summary Footer Strip */}
-              <div className="hp-achieve-footer-strip">
-                <Award size={13} className="text-amber-600" />
-                <span>100+ State Trophies • 100% Board Pass Rate • Grade A++</span>
-              </div>
-            </div>
-
-            {/* CARD 2: UPCOMING EVENTS */}
-            <div className="hp-card">
-              <div className="hp-card-title-row">
-                <div className="hp-card-heading">
-                  <div className="hp-card-icon-pill bg-sky-50 text-sky-600">
-                    <Calendar size={15} />
-                  </div>
-                  <span>Upcoming Events</span>
-                  <span className="hp-header-badge sky">5 Upcoming</span>
-                </div>
-                <span className="hp-view-all">
-                  Calendar <ArrowRight size={12} />
-                </span>
-              </div>
-
-              <div className="hp-events-list">
-                {/* Event 1 */}
-                <div className="hp-event-card">
-                  <div className="hp-event-date-box bg-emerald-50 text-emerald-700 border-emerald-200">
-                    <span className="hp-event-day">25</span>
-                    <span className="hp-event-month">Sep</span>
-                  </div>
-                  <div className="hp-event-details">
-                    <div className="hp-event-meta-row">
-                      <span className="hp-event-tag cat-emerald">Academics</span>
-                      <span className="hp-event-time">
-                        <Clock size={10} /> 10:00 AM – 12:00 PM
-                      </span>
-                    </div>
-                    <h4 className="hp-event-title">Parent Teacher Meeting</h4>
-                    <p className="hp-event-venue">
-                      <MapPin size={10} /> Main Auditorium • All Classes
-                    </p>
+              {/* Achievement 2 */}
+              <div className="mv-achieve-card">
+                <div className="mv-achieve-img-box">
+                  <img src="/achievement_cricket.jpg" alt="Cricket Champions" />
+                  <div className="mv-achieve-rank-pill">
+                    <span>★ Best Player</span>
                   </div>
                 </div>
-
-                {/* Event 2 */}
-                <div className="hp-event-card">
-                  <div className="hp-event-date-box bg-amber-50 text-amber-700 border-amber-200">
-                    <span className="hp-event-day">28</span>
-                    <span className="hp-event-month">Sep</span>
-                  </div>
-                  <div className="hp-event-details">
-                    <div className="hp-event-meta-row">
-                      <span className="hp-event-tag cat-amber">Sports</span>
-                      <span className="hp-event-time">
-                        <Clock size={10} /> 04:00 PM – 06:00 PM
-                      </span>
-                    </div>
-                    <h4 className="hp-event-title">Annual Sports Day Practice</h4>
-                    <p className="hp-event-venue">
-                      <MapPin size={10} /> Campus Playground • Track & Field
-                    </p>
-                  </div>
-                </div>
-
-                {/* Event 3 */}
-                <div className="hp-event-card">
-                  <div className="hp-event-date-box bg-sky-50 text-sky-700 border-sky-200">
-                    <span className="hp-event-day">02</span>
-                    <span className="hp-event-month">Oct</span>
-                  </div>
-                  <div className="hp-event-details">
-                    <div className="hp-event-meta-row">
-                      <span className="hp-event-tag cat-sky">Science</span>
-                      <span className="hp-event-time">
-                        <Clock size={10} /> 09:30 AM – 03:30 PM
-                      </span>
-                    </div>
-                    <h4 className="hp-event-title">District Science Expo 2026</h4>
-                    <p className="hp-event-venue">
-                      <MapPin size={10} /> Discovery Block Labs • Open Access
-                    </p>
-                  </div>
-                </div>
-
-                {/* Event 4 */}
-                <div className="hp-event-card">
-                  <div className="hp-event-date-box bg-pink-50 text-pink-700 border-pink-200">
-                    <span className="hp-event-day">10</span>
-                    <span className="hp-event-month">Oct</span>
-                  </div>
-                  <div className="hp-event-details">
-                    <div className="hp-event-meta-row">
-                      <span className="hp-event-tag cat-pink">Festival</span>
-                      <span className="hp-event-time">
-                        <Clock size={10} /> 09:00 AM – 01:00 PM
-                      </span>
-                    </div>
-                    <h4 className="hp-event-title">Children&apos;s Day Celebration</h4>
-                    <p className="hp-event-venue">
-                      <MapPin size={10} /> School Auditorium • Cultural Stage
-                    </p>
-                  </div>
-                </div>
-
-                {/* Event 5 */}
-                <div className="hp-event-card">
-                  <div className="hp-event-date-box bg-indigo-50 text-indigo-700 border-indigo-200">
-                    <span className="hp-event-day">18</span>
-                    <span className="hp-event-month">Oct</span>
-                  </div>
-                  <div className="hp-event-details">
-                    <div className="hp-event-meta-row">
-                      <span className="hp-event-tag cat-indigo">Cultural</span>
-                      <span className="hp-event-time">
-                        <Clock size={10} /> 02:00 PM – 05:00 PM
-                      </span>
-                    </div>
-                    <h4 className="hp-event-title">Inter-House Debate & Elocution</h4>
-                    <p className="hp-event-venue">
-                      <MapPin size={10} /> Senior Activity Hall • Live Broadcast
-                    </p>
-                  </div>
+                <div className="mv-achieve-meta">
+                  <h4 className="mv-achieve-title">Cricket Tournament</h4>
+                  <span className="mv-achieve-level">Under-16 Finals Champions</span>
+                  <span className="mv-achieve-winner">Rohan Varma • 84r &amp; 4w</span>
                 </div>
               </div>
 
-              {/* Events Summary Footer Strip */}
-              <div className="hp-event-footer-strip">
-                <Calendar size={13} className="text-sky-600" />
-                <span>Academic Term II Active • 14 Scheduled Campus Events</span>
-              </div>
-            </div>
-
-            {/* CARD 3: RECENT HIGHLIGHTS */}
-            <div className="hp-card">
-              <div className="hp-card-title-row">
-                <div className="hp-card-heading">
-                  <div className="hp-card-icon-pill bg-teal-50 text-teal-600">
-                    <Camera size={15} />
-                  </div>
-                  <span>Recent Highlights</span>
-                  <span className="hp-header-badge teal">5 Highlights</span>
-                </div>
-                <span className="hp-view-all">
-                  Gallery <ArrowRight size={12} />
-                </span>
-              </div>
-
-              <div className="hp-highlights-list">
-                {/* Highlight 1 */}
-                <div className="hp-highlight-card hp-data-card">
-                  <div className="hp-highlight-databox teal">
-                    <span className="hp-databox-num">500+</span>
-                    <span className="hp-databox-label">Audience</span>
-                  </div>
-                  <div className="hp-highlight-content">
-                    <div className="hp-highlight-header">
-                      <h4 className="hp-highlight-title">Annual Cultural Gala</h4>
-                      <span className="hp-highlight-badge teal">Gala</span>
-                    </div>
-                    <p className="hp-highlight-desc">
-                      48 Stage Performances • 6 Inter-House Dramas • Grand Symphony
-                    </p>
-                    <div className="hp-highlight-meta">
-                      <span>Sep 2025</span>
-                      <span>•</span>
-                      <span>Main Auditorium</span>
-                    </div>
+              {/* Achievement 3 */}
+              <div className="mv-achieve-card">
+                <div className="mv-achieve-img-box">
+                  <img src="/achievement_science.jpg" alt="Science Expo" />
+                  <div className="mv-achieve-rank-pill" style={{ background: "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)" }}>
+                    <span>2 2nd Place</span>
                   </div>
                 </div>
-
-                {/* Highlight 2 */}
-                <div className="hp-highlight-card hp-data-card">
-                  <div className="hp-highlight-databox amber">
-                    <span className="hp-databox-num">1,200</span>
-                    <span className="hp-databox-label">Athletes</span>
-                  </div>
-                  <div className="hp-highlight-content">
-                    <div className="hp-highlight-header">
-                      <h4 className="hp-highlight-title">Inter-House Sports Parade</h4>
-                      <span className="hp-highlight-badge amber">Athletics</span>
-                    </div>
-                    <p className="hp-highlight-desc">
-                      32 Championship Events • 4 Houses • Ruby House Overall Trophy
-                    </p>
-                    <div className="hp-highlight-meta">
-                      <span>Aug 2025</span>
-                      <span>•</span>
-                      <span>Athletic Stadium</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Highlight 3 */}
-                <div className="hp-highlight-card hp-data-card">
-                  <div className="hp-highlight-databox sky">
-                    <span className="hp-databox-num">45+</span>
-                    <span className="hp-databox-label">Projects</span>
-                  </div>
-                  <div className="hp-highlight-content">
-                    <div className="hp-highlight-header">
-                      <h4 className="hp-highlight-title">Robotics & Science Expo</h4>
-                      <span className="hp-highlight-badge sky">Innovation</span>
-                    </div>
-                    <p className="hp-highlight-desc">
-                      AI, IoT & Drone Demonstrations • 1,100 Community Visitors
-                    </p>
-                    <div className="hp-highlight-meta">
-                      <span>Aug 2025</span>
-                      <span>•</span>
-                      <span>STEM Labs Block</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Highlight 4 */}
-                <div className="hp-highlight-card hp-data-card">
-                  <div className="hp-highlight-databox purple">
-                    <span className="hp-databox-num">85</span>
-                    <span className="hp-databox-label">Honor</span>
-                  </div>
-                  <div className="hp-highlight-content">
-                    <div className="hp-highlight-header">
-                      <h4 className="hp-highlight-title">Teachers Day Felicitation</h4>
-                      <span className="hp-highlight-badge purple">Honors</span>
-                    </div>
-                    <p className="hp-highlight-desc">
-                      12 Distinguished Teaching Citations • Full Faculty Recognition
-                    </p>
-                    <div className="hp-highlight-meta">
-                      <span>Sep 2025</span>
-                      <span>•</span>
-                      <span>Staff Council</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Highlight 5 */}
-                <div className="hp-highlight-card hp-data-card">
-                  <div className="hp-highlight-databox emerald">
-                    <span className="hp-databox-num">24</span>
-                    <span className="hp-databox-label">Teams</span>
-                  </div>
-                  <div className="hp-highlight-content">
-                    <div className="hp-highlight-header">
-                      <h4 className="hp-highlight-title">Inter-School Model UN Summit</h4>
-                      <span className="hp-highlight-badge emerald">Diplomacy</span>
-                    </div>
-                    <p className="hp-highlight-desc">
-                      UNEP & Security Council Debates • 6 Best Delegate Awards
-                    </p>
-                    <div className="hp-highlight-meta">
-                      <span>Oct 2025</span>
-                      <span>•</span>
-                      <span>Conference Pavilion</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              {/* Summary Footer Strip */}
-              <div className="hp-highlight-footer-strip">
-                <Camera size={13} className="text-teal-600" />
-                <span>450+ Photo Moments Captured • Digital Campus Archives</span>
-              </div>
-            </div>
-
-            {/* CARD 4: SMART CAMPUS KIOSK PORTAL (FILLED WITH SCHOOL SERVICES & LIVE TELEMETRY) */}
-            <div className="hp-card hp-login-card">
-              <div className="hp-login-top">
-                <div style={{ display: "flex", alignItems: "center", gap: "0.45rem" }}>
-                  <div className="hp-login-icon-box">
-                    <School size={16} />
-                  </div>
-                  <div>
-                    <h3 className="hp-card-heading" style={{ fontSize: "0.85rem", margin: 0 }}>Smart Campus Portal</h3>
-                    <p style={{ margin: "1px 0 0", fontSize: "0.58rem", color: "#64748b", fontWeight: 700 }}>Terminal #01 • Main Kiosk</p>
-                  </div>
-                </div>
-                <span className="hp-login-chip">
-                  <span className="footer-dot" style={{ width: "5px", height: "5px", display: "inline-block", background: "#16a34a" }} /> Active
-                </span>
-              </div>
-
-              <div className="hp-login-center-body">
-                {/* 3D CHARACTER AVATAR STAGE WITH WELCOME MESSAGE */}
-                <div className="hp-student-stage">
-                  <img
-                    src="/student_avatar.png"
-                    alt="3D Student"
-                    className="hp-student-img"
-                  />
-                  <div className="hp-student-speech-box">
-                    <span className="hp-student-speech-title">👋 Welcome to GVPS!</span>
-                    <span className="hp-student-speech-desc">Tap below or use RFID card to access portal.</span>
-                  </div>
-                  <div className="hp-student-stage-badge">
-                    3D Kiosk
-                  </div>
-                </div>
-
-                {/* IMPORTANT KIOSK NOTICE BANNER */}
-                <div className="hp-kiosk-note-banner">
-                  <div className="hp-kiosk-note-icon">
-                    <Megaphone size={14} />
-                  </div>
-                  <div className="hp-kiosk-note-body">
-                    <div className="hp-kiosk-note-header">
-                      <span className="hp-kiosk-note-badge">Campus Notice</span>
-                      <span className="hp-kiosk-note-status">● Active Self-Service</span>
-                    </div>
-                    <p className="hp-kiosk-note-desc">
-                      Tap any service tile below for instant report cards, UPI fee payments, homework notes &amp; live bus tracking.
-                    </p>
-                  </div>
-                </div>
-
-                {/* 4 INSTANT SCHOOL SELF-SERVICE KIOSK TILES */}
-                <div className="hp-school-services-grid">
-                  <div className="hp-school-serv-item">
-                    <div className="hp-school-serv-top">
-                      <div className="hp-school-serv-icon bg-sky-50 text-sky-600">
-                        <FileText size={15} />
-                      </div>
-                      <span className="hp-serv-chip sky">Print Ready</span>
-                    </div>
-                    <div className="hp-school-serv-text">
-                      <strong className="hp-school-serv-title">Exam Marks &amp; Cards</strong>
-                      <span className="hp-school-serv-desc">Print Term Report Card</span>
-                    </div>
-                    <span className="hp-serv-action-hint">Self-Service Kiosk</span>
-                  </div>
-
-                  <div className="hp-school-serv-item">
-                    <div className="hp-school-serv-top">
-                      <div className="hp-school-serv-icon bg-emerald-50 text-emerald-600">
-                        <CreditCard size={15} />
-                      </div>
-                      <span className="hp-serv-chip emerald">Instant UPI</span>
-                    </div>
-                    <div className="hp-school-serv-text">
-                      <strong className="hp-school-serv-title">Fee &amp; Dues Payment</strong>
-                      <span className="hp-school-serv-desc">Instant Receipt &amp; Dues</span>
-                    </div>
-                    <span className="hp-serv-action-hint">Self-Service Kiosk</span>
-                  </div>
-
-                  <div className="hp-school-serv-item">
-                    <div className="hp-school-serv-top">
-                      <div className="hp-school-serv-icon bg-purple-50 text-purple-600">
-                        <BookOpen size={15} />
-                      </div>
-                      <span className="hp-serv-chip purple">Daily Notes</span>
-                    </div>
-                    <div className="hp-school-serv-text">
-                      <strong className="hp-school-serv-title">Digital Diary &amp; HW</strong>
-                      <span className="hp-school-serv-desc">Daily Teacher Circulars</span>
-                    </div>
-                    <span className="hp-serv-action-hint">Self-Service Kiosk</span>
-                  </div>
-
-                  <div className="hp-school-serv-item">
-                    <div className="hp-school-serv-top">
-                      <div className="hp-school-serv-icon bg-amber-50 text-amber-600">
-                        <Bus size={15} />
-                      </div>
-                      <span className="hp-serv-chip amber">Live GPS</span>
-                    </div>
-                    <div className="hp-school-serv-text">
-                      <strong className="hp-school-serv-title">School Bus Telemetry</strong>
-                      <span className="hp-school-serv-desc">Live Route Stop ETA</span>
-                    </div>
-                    <span className="hp-serv-action-hint">Self-Service Kiosk</span>
-                  </div>
-                </div>
-
-                {/* WHO CAN SIGN IN: ROLE PILLS */}
-                <div className="hp-login-roles-preview">
-                  <span className="hp-role-pill">🎓 Student &amp; Parent</span>
-                  <span className="hp-role-pill">👨‍🏫 Faculty &amp; Staff</span>
-                  <span className="hp-role-pill">🤝 GVian Alumni</span>
-                  <span className="hp-role-pill">🏛️ Guest &amp; Visitor</span>
-                </div>
-
-                {/* QUICK 1-TOUCH SIGN IN BADGES */}
-                <div className="hp-kiosk-quick-strip">
-                  <div className="hp-kiosk-quick-badge">
-                    <CheckCircle2 size={11} className="text-emerald-600" />
-                    <span>Smart RFID Card Tap</span>
-                  </div>
-                  <div className="hp-kiosk-quick-badge">
-                    <CheckCircle2 size={11} className="text-sky-600" />
-                    <span>Admission ID &amp; PIN</span>
-                  </div>
-                  <div className="hp-kiosk-quick-badge">
-                    <CheckCircle2 size={11} className="text-amber-600" />
-                    <span>Mobile OTP</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="hp-login-action-wrap">
-                <button
-                  className="hp-login-btn"
-                  onClick={onEnterRoleSelection}
-                >
-                  <span>Enter Role Selection Portal</span>
-                  <ArrowRight size={16} />
-                </button>
-                <span className="hp-login-security-tag">
-                  <ShieldCheck size={12} /> 256-Bit SSL Encrypted Kiosk Terminal
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* 5. BOTTOM GRID (CAMPUS FACILITIES & VISION) */}
-          <div className="hp-bottom-grid">
-            {/* EXPLORE OUR CAMPUS */}
-            <div className="hp-campus-card">
-              <div className="hp-campus-tour-bar">
-                <div className="hp-campus-info">
-                  <div className="hp-pin-icon">
-                    <MapPin size={18} />
-                  </div>
-                  <div>
-                    <h3 className="hp-campus-title">Campus Facilities & Infrastructure</h3>
-                    <p className="hp-campus-desc">
-                      World-class academic facilities, high-tech computer & science labs, digital library and sports arenas.
-                    </p>
-                  </div>
-                </div>
-                <button className="hp-virtual-btn">
-                  <Play size={12} fill="#ffffff" />
-                  <span>Start Virtual Tour</span>
-                </button>
-              </div>
-
-              {/* 6 Structured Dashboard Cards */}
-              <div className="hp-campus-facilities-grid">
-                <div className="hp-facility-card hp-facility-datacard">
-                  <div className="hp-fac-top-bar">
-                    <div className="hp-fac-icon-pill bg-sky-50 text-sky-700">
-                      <Tv size={16} />
-                    </div>
-                    <span className="hp-fac-status active">● Active</span>
-                  </div>
-                  <div className="hp-facility-body">
-                    <div className="hp-fac-primary-metric">45 Rooms</div>
-                    <h4 className="hp-facility-name">Smart Classrooms</h4>
-                    <p className="hp-facility-spec">
-                      4K Interactive Displays • Climate Controlled • Ergonomic Desks • Acoustic Sound
-                    </p>
-                    <div className="hp-facility-tags-row">
-                      <span className="hp-facility-tag">100% Connected</span>
-                      <span className="hp-facility-subtag">Smart Audio</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="hp-facility-card hp-facility-datacard">
-                  <div className="hp-fac-top-bar">
-                    <div className="hp-fac-icon-pill bg-purple-50 text-purple-700">
-                      <Cpu size={16} />
-                    </div>
-                    <span className="hp-fac-status active">● Active</span>
-                  </div>
-                  <div className="hp-facility-body">
-                    <div className="hp-fac-primary-metric">60+ Stations</div>
-                    <h4 className="hp-facility-name">Science & AI Labs</h4>
-                    <p className="hp-facility-spec">
-                      IoT Starter Kits • Wet Physics & Chemistry • Robotics Benches • Drones
-                    </p>
-                    <div className="hp-facility-tags-row">
-                      <span className="hp-facility-tag">STEM Enabled</span>
-                      <span className="hp-facility-subtag">AI Ready</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="hp-facility-card hp-facility-datacard">
-                  <div className="hp-fac-top-bar">
-                    <div className="hp-fac-icon-pill bg-amber-50 text-amber-700">
-                      <BookOpen size={16} />
-                    </div>
-                    <span className="hp-fac-status open">● Open</span>
-                  </div>
-                  <div className="hp-facility-body">
-                    <div className="hp-fac-primary-metric">15,000+ Vol.</div>
-                    <h4 className="hp-facility-name">Digital Library</h4>
-                    <p className="hp-facility-spec">
-                      RFID Self-Checkout • 50 Kindle Terminals • National E-Journals • Quiet Study
-                    </p>
-                    <div className="hp-facility-tags-row">
-                      <span className="hp-facility-tag">RFID Automated</span>
-                      <span className="hp-facility-subtag">Kindle Hub</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="hp-facility-card hp-facility-datacard">
-                  <div className="hp-fac-top-bar">
-                    <div className="hp-fac-icon-pill bg-emerald-50 text-emerald-700">
-                      <Activity size={16} />
-                    </div>
-                    <span className="hp-fac-status active">● Active</span>
-                  </div>
-                  <div className="hp-facility-body">
-                    <div className="hp-fac-primary-metric">4 Turf Courts</div>
-                    <h4 className="hp-facility-name">Sports Complex</h4>
-                    <p className="hp-facility-spec">
-                      Synthetic Athletic Track • 4 Cricket Nets • Multi Gym • Floodlit Courts
-                    </p>
-                    <div className="hp-facility-tags-row">
-                      <span className="hp-facility-tag">Olympic Standard</span>
-                      <span className="hp-facility-subtag">Floodlit</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="hp-facility-card hp-facility-datacard">
-                  <div className="hp-fac-top-bar">
-                    <div className="hp-fac-icon-pill bg-indigo-50 text-indigo-700">
-                      <Users size={16} />
-                    </div>
-                    <span className="hp-fac-status ready">● Ready</span>
-                  </div>
-                  <div className="hp-facility-body">
-                    <div className="hp-fac-primary-metric">850 Seats</div>
-                    <h4 className="hp-facility-name">Grand Auditorium</h4>
-                    <p className="hp-facility-spec">
-                      Dolby Surround Sound • 4K Laser Projection • Green Rooms • Acoustic Stage
-                    </p>
-                    <div className="hp-facility-tags-row">
-                      <span className="hp-facility-tag">Dolby 7.1 Sound</span>
-                      <span className="hp-facility-subtag">4K Laser</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="hp-facility-card hp-facility-datacard">
-                  <div className="hp-fac-top-bar">
-                    <div className="hp-fac-icon-pill bg-teal-50 text-teal-700">
-                      <Leaf size={16} />
-                    </div>
-                    <span className="hp-fac-status open">● Open</span>
-                  </div>
-                  <div className="hp-facility-body">
-                    <div className="hp-fac-primary-metric">2.5 Acres</div>
-                    <h4 className="hp-facility-name">Green Playgrounds</h4>
-                    <p className="hp-facility-spec">
-                      400m Athletic Track • Solar Floodlights • Eco Rain Harvesting • Grass Turf
-                    </p>
-                    <div className="hp-facility-tags-row">
-                      <span className="hp-facility-tag">Eco-Campus</span>
-                      <span className="hp-facility-subtag">400m Track</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* CAMPUS VISION & INSPIRATIONAL MISSION CARD */}
-            <div className="hp-quote-card">
-              <Quote size={32} className="hp-quote-icon" />
-              <div className="hp-quote-content">
-                <p className="hp-quote-text">
-                  &ldquo;Education is not just about books, it&apos;s about building character, inspiring curiosity, and shaping leaders of tomorrow.&rdquo;
-                </p>
-                <div className="hp-quote-footer-row">
-                  <span className="hp-quote-author">— Green Valley Public School Mission</span>
-                  <div className="hp-quote-badge">
-                    CBSE Affiliation No. 1930281 • Est. 1999
-                  </div>
+                <div className="mv-achieve-meta">
+                  <h4 className="mv-achieve-title">Science Exhibition</h4>
+                  <span className="mv-achieve-level">District STEM Fair</span>
+                  <span className="mv-achieve-winner">Ananya &amp; Team • Eco-Grid</span>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* 6. COMMAND FOOTER */}
-          <footer className="command-footer">
-            <div><span className="footer-dot" /> Campus Information Portal • Digital Campus Kiosk Terminal</div>
-            <div className="footer-links">
-              <span>CBSE Affiliation 1930281</span>
-              <span>NAAC Grade A++</span>
-              <span>Campus: 6,200 Students</span>
-              <span>Digital Campus Kiosk</span>
+          {/* Card B2: Recent Moments 2x2 Lightbox Gallery */}
+          <div className="mv-gallery-card">
+            <div className="mv-section-header">
+              <div className="mv-section-title-wrap">
+                <Camera size={16} style={{ color: "#0d9488" }} />
+                <h3 className="mv-section-title" style={{ color: "#0d9488" }}>
+                  Campus Life in Motion
+                </h3>
+              </div>
+              <button
+                className="mv-view-all-btn"
+                style={{ color: "#0d9488" }}
+                onClick={() => setGalleryModalOpen(true)}
+              >
+                <span>Gallery</span>
+                <ArrowRight size={13} />
+              </button>
             </div>
-            <button className="assistant-button" onClick={(e) => { e.stopPropagation(); setBotModalOpen(true); }}>
-              <span className="assistant-pulse" /> Need help? <b>Ask GreenBot</b>
-            </button>
-          </footer>
+
+            <div className="mv-gallery-grid">
+              <div
+                className="mv-gallery-item"
+                onClick={() =>
+                  setSelectedGalleryImg({
+                    src: "/events/annual_day.jpg",
+                    title: "Annual Day 2025 Gala & Dance Performance",
+                  })
+                }
+                title="View Annual Day 2025"
+              >
+                <img src="/events/annual_day.jpg" alt="Annual Day" />
+                <div className="mv-gallery-label-bar">Annual Day 2025</div>
+              </div>
+
+              <div
+                className="mv-gallery-item"
+                onClick={() =>
+                  setSelectedGalleryImg({
+                    src: "/events/sports_parade.jpg",
+                    title: "Sports Day Athletic March-Past & Parade",
+                  })
+                }
+                title="View Sports Parade"
+              >
+                <img src="/events/sports_parade.jpg" alt="Sports Parade" />
+                <div className="mv-gallery-label-bar">Sports Day Parade</div>
+              </div>
+
+              <div
+                className="mv-gallery-item"
+                onClick={() =>
+                  setSelectedGalleryImg({
+                    src: "/events/science_fair.jpg",
+                    title: "District Science & Innovation Fair",
+                  })
+                }
+                title="View Science Fair"
+              >
+                <img src="/events/science_fair.jpg" alt="Science Fair" />
+                <div className="mv-gallery-label-bar">Science Expo</div>
+              </div>
+
+              <div
+                className="mv-gallery-item"
+                onClick={() =>
+                  setSelectedGalleryImg({
+                    src: "/events/teachers_day.jpg",
+                    title: "Teachers' Day Felicitation Ceremony",
+                  })
+                }
+                title="View Teachers' Day"
+              >
+                <img src="/events/teachers_day.jpg" alt="Teachers Day" />
+                <div className="mv-gallery-label-bar">Teachers' Day</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* =====================================================================
+           ZONE C (RIGHT): LIVE EVENTS TIMELINE & CAMPUS FACILITIES
+           ===================================================================== */}
+        <div className="mv-col-right">
+          {/* Card C1: Upcoming Events Timeline */}
+          <div className="mv-timeline-card">
+            <div className="mv-section-header">
+              <div className="mv-section-title-wrap">
+                <Calendar size={16} style={{ color: "#ea580c" }} />
+                <h3 className="mv-section-title">Upcoming Schedule</h3>
+              </div>
+              <button
+                className="mv-view-all-btn"
+                onClick={() => setEventsModalOpen(true)}
+              >
+                <span>Calendar</span>
+                <ArrowRight size={13} />
+              </button>
+            </div>
+
+            <div className="mv-timeline-list">
+              <div className="mv-timeline-row">
+                <div className="mv-timeline-date">
+                  <span className="mv-timeline-day">25</span>
+                  <span className="mv-timeline-month">SEP</span>
+                </div>
+                <div className="mv-timeline-info">
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <h4 className="mv-timeline-name">Parent Teacher Meeting</h4>
+                    <span className="mv-timeline-tag academics">PTM</span>
+                  </div>
+                  <span className="mv-timeline-venue">10:00 AM – 12:00 PM | Main Auditorium</span>
+                </div>
+              </div>
+
+              <div className="mv-timeline-row">
+                <div className="mv-timeline-date">
+                  <span className="mv-timeline-day">28</span>
+                  <span className="mv-timeline-month">SEP</span>
+                </div>
+                <div className="mv-timeline-info">
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <h4 className="mv-timeline-name">Sports Day Finals</h4>
+                    <span className="mv-timeline-tag sports">Sports</span>
+                  </div>
+                  <span className="mv-timeline-venue">04:00 PM – 06:00 PM | Athletic Arena</span>
+                </div>
+              </div>
+
+              <div className="mv-timeline-row">
+                <div className="mv-timeline-date">
+                  <span className="mv-timeline-day">02</span>
+                  <span className="mv-timeline-month">OCT</span>
+                </div>
+                <div className="mv-timeline-info">
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <h4 className="mv-timeline-name">Science &amp; AI Exhibition</h4>
+                    <span className="mv-timeline-tag stem">STEM</span>
+                  </div>
+                  <span className="mv-timeline-venue">All Day | Discovery Block Labs</span>
+                </div>
+              </div>
+
+              <div className="mv-timeline-row">
+                <div className="mv-timeline-date">
+                  <span className="mv-timeline-day">10</span>
+                  <span className="mv-timeline-month">OCT</span>
+                </div>
+                <div className="mv-timeline-info">
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <h4 className="mv-timeline-name">Children's Day Gala</h4>
+                    <span className="mv-timeline-tag fest">Cultural</span>
+                  </div>
+                  <span className="mv-timeline-venue">09:00 AM – 12:00 PM | Main Auditorium</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Card C2: Campus Facilities Peek + Quote Ribbon */}
+          <div className="mv-facilities-quote-card">
+            <div className="mv-section-header">
+              <div className="mv-section-title-wrap">
+                <Building2 size={16} style={{ color: "#ea580c" }} />
+                <h3 className="mv-section-title">World-Class Facilities</h3>
+              </div>
+              <button
+                className="mv-view-all-btn"
+                onClick={() => setVirtualTourOpen(true)}
+              >
+                <span>Tour</span>
+                <ArrowRight size={13} />
+              </button>
+            </div>
+
+            <div className="mv-fac-mini-grid">
+              <div className="mv-fac-mini-item" onClick={() => setVirtualTourOpen(true)}>
+                <img src="/facilities/classrooms.jpg" alt="Classrooms" className="mv-fac-mini-img" />
+                <span className="mv-fac-mini-title">Classrooms</span>
+              </div>
+              <div className="mv-fac-mini-item" onClick={() => setVirtualTourOpen(true)}>
+                <img src="/facilities/labs.jpg" alt="STEM Labs" className="mv-fac-mini-img" />
+                <span className="mv-fac-mini-title">AI &amp; Labs</span>
+              </div>
+              <div className="mv-fac-mini-item" onClick={() => setVirtualTourOpen(true)}>
+                <img src="/facilities/library.jpg" alt="Library" className="mv-fac-mini-img" />
+                <span className="mv-fac-mini-title">Library</span>
+              </div>
+              <div className="mv-fac-mini-item" onClick={() => setVirtualTourOpen(true)}>
+                <img src="/facilities/sports.jpg" alt="Sports Arena" className="mv-fac-mini-img" />
+                <span className="mv-fac-mini-title">Sports Turf</span>
+              </div>
+              <div className="mv-fac-mini-item" onClick={() => setVirtualTourOpen(true)}>
+                <img src="/facilities/auditorium.jpg" alt="Auditorium" className="mv-fac-mini-img" />
+                <span className="mv-fac-mini-title">Auditorium</span>
+              </div>
+              <div className="mv-fac-mini-item" onClick={() => setVirtualTourOpen(true)}>
+                <img src="/facilities/playground.jpg" alt="Playground" className="mv-fac-mini-img" />
+                <span className="mv-fac-mini-title">Playground</span>
+              </div>
+            </div>
+
+            <div className="mv-creed-ribbon">
+              <span className="mv-creed-quote-mark">“</span>
+              <p className="mv-creed-text">
+                Education is not just about books, it’s about building a better tomorrow.
+              </p>
+            </div>
+          </div>
         </div>
       </main>
 
-      {/* AI CHAT BOT MODAL */}
-      {botModalOpen && (
+      {/* =========================================================================
+         3. BOTTOM STATUS RIBBON
+         ========================================================================= */}
+      <footer className="mv-footer-bar">
+        <div className="mv-footer-tags">
+          <div className="mv-footer-tag">
+            <ShieldCheck size={13} style={{ color: "#059669" }} />
+            <span>Safe &amp; Biometric Secured Campus</span>
+          </div>
+          <div className="mv-footer-tag">
+            <Users size={13} style={{ color: "#ea580c" }} />
+            <span>180+ Dedicated Faculty</span>
+          </div>
+          <div className="mv-footer-tag">
+            <Leaf size={13} style={{ color: "#16a34a" }} />
+            <span>Eco-Smart Green Campus</span>
+          </div>
+        </div>
+
+        <div className="mv-footer-motto">
+          — Together for a Brighter Tomorrow 🍃 —
+        </div>
+
+        <div className="mv-footer-links">
+          <span>Academics</span> | <span>Sports</span> | <span>Arts</span> | <span>Values</span> | <span>Life Skills</span>
+        </div>
+      </footer>
+
+      {/* =========================================================================
+         MODAL 1: 360 VIRTUAL TOUR
+         ========================================================================= */}
+      {virtualTourOpen && (
         <div
-          className="hp-bot-modal"
-          style={{
-            position: "fixed",
-            inset: 0,
-            zIndex: 100,
-            background: "rgba(15, 23, 42, 0.45)",
-            backdropFilter: "blur(6px)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: "1rem",
-          }}
-          onClick={() => setBotModalOpen(false)}
+          className="mp-modal-backdrop"
+          onClick={() => setVirtualTourOpen(false)}
         >
           <div
-            style={{
-              width: "100%",
-              maxWidth: "520px",
-              background: "#ffffff",
-              borderRadius: "24px",
-              overflow: "hidden",
-              boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
-              border: "1px solid #e2e8f0",
-              display: "flex",
-              flexDirection: "column",
-            }}
+            className="mp-modal-window"
+            style={{ width: "850px" }}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Modal Header */}
             <div
               style={{
-                background: "linear-gradient(135deg, #0284c7 0%, #0369a1 100%)",
+                background: "linear-gradient(135deg, #ea580c 0%, #c2410c 100%)",
                 color: "#ffffff",
-                padding: "1.25rem 1.5rem",
+                padding: "0.85rem 1.25rem",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
               }}
             >
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.85rem",
-                }}
-              >
-                <img
-                  src="/school_bot.jpg"
-                  alt="School Bot"
-                  style={{
-                    width: 44,
-                    height: 44,
-                    borderRadius: "50%",
-                    border: "2px solid #ffffff",
-                    objectFit: "cover",
-                  }}
-                />
-                <div>
-                  <h3
-                    style={{
-                      fontFamily: "Outfit, sans-serif",
-                      fontSize: "1.15rem",
-                      fontWeight: 700,
-                    }}
-                  >
-                    Green Valley AI Assistant
-                  </h3>
-                  <p style={{ fontSize: "0.75rem", opacity: 0.9 }}>
-                    Online • 24/7 School Kiosk Help
-                  </p>
-                </div>
+              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <MapPin size={18} />
+                <h3 style={{ margin: 0, fontSize: "1.05rem", fontWeight: 800 }}>
+                  {schoolName} • 360° Interactive Campus Virtual Tour
+                </h3>
               </div>
               <button
-                onClick={() => setBotModalOpen(false)}
+                onClick={() => setVirtualTourOpen(false)}
                 style={{
                   background: "rgba(255, 255, 255, 0.2)",
                   border: "none",
                   borderRadius: "50%",
-                  width: 32,
-                  height: 32,
+                  width: 30,
+                  height: 30,
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -1077,155 +699,412 @@ export default function CampusInfoPortal({
                   cursor: "pointer",
                 }}
               >
-                <X size={18} />
+                <X size={16} />
               </button>
             </div>
 
-            {/* Quick Suggestions */}
-            <div
-              style={{
-                padding: "0.85rem 1.25rem",
-                background: "#f8fafc",
-                borderBottom: "1px solid #e2e8f0",
-                display: "flex",
-                gap: "0.5rem",
-                flexWrap: "wrap",
-              }}
-            >
-              <button
-                onClick={() =>
-                  handleSendBotMessage("How do I login to Student Portal?")
-                }
+            <div style={{ padding: "1rem", background: "#f8fafc" }}>
+              <img
+                src="/campus_360.jpg"
+                alt="360 Campus Tour"
                 style={{
-                  background: "#ffffff",
-                  border: "1px solid #cbd5e1",
-                  borderRadius: "9999px",
-                  padding: "0.3rem 0.75rem",
-                  fontSize: "0.75rem",
-                  fontWeight: 600,
-                  color: "#0369a1",
-                  cursor: "pointer",
-                }}
-              >
-                Student Portal Info
-              </button>
-              <button
-                onClick={() => handleSendBotMessage("What are the school hours?")}
-                style={{
-                  background: "#ffffff",
-                  border: "1px solid #cbd5e1",
-                  borderRadius: "9999px",
-                  padding: "0.3rem 0.75rem",
-                  fontSize: "0.75rem",
-                  fontWeight: 600,
-                  color: "#0369a1",
-                  cursor: "pointer",
-                }}
-              >
-                School Hours
-              </button>
-              <button
-                onClick={() =>
-                  handleSendBotMessage("Admission details for 2026-27")
-                }
-                style={{
-                  background: "#ffffff",
-                  border: "1px solid #cbd5e1",
-                  borderRadius: "9999px",
-                  padding: "0.3rem 0.75rem",
-                  fontSize: "0.75rem",
-                  fontWeight: 600,
-                  color: "#0369a1",
-                  cursor: "pointer",
-                }}
-              >
-                Admissions
-              </button>
-            </div>
-
-            {/* Messages Area */}
-            <div
-              style={{
-                height: "280px",
-                overflowY: "auto",
-                padding: "1.25rem",
-                display: "flex",
-                flexDirection: "column",
-                gap: "0.85rem",
-              }}
-            >
-              {botChatMessages.map((msg, idx) => (
-                <div
-                  key={idx}
-                  style={{
-                    alignSelf:
-                      msg.sender === "user" ? "flex-end" : "flex-start",
-                    maxWidth: "85%",
-                    background: msg.sender === "user" ? "#0284c7" : "#f1f5f9",
-                    color: msg.sender === "user" ? "#ffffff" : "#1e293b",
-                    padding: "0.65rem 0.95rem",
-                    borderRadius:
-                      msg.sender === "user"
-                        ? "18px 18px 4px 18px"
-                        : "18px 18px 18px 4px",
-                    fontSize: "0.825rem",
-                    lineHeight: 1.4,
-                  }}
-                >
-                  {msg.text}
-                </div>
-              ))}
-            </div>
-
-            {/* Input Bar */}
-            <div
-              style={{
-                padding: "0.85rem 1.25rem",
-                borderTop: "1px solid #e2e8f0",
-                display: "flex",
-                gap: "0.65rem",
-                background: "#ffffff",
-              }}
-            >
-              <input
-                type="text"
-                placeholder="Ask our AI assistant anything..."
-                value={botChatInput}
-                onChange={(e) => setBotChatInput(e.target.value)}
-                onKeyDown={(e) =>
-                  e.key === "Enter" && handleSendBotMessage(botChatInput)
-                }
-                style={{
-                  flex: 1,
-                  background: "#f8fafc",
-                  border: "1px solid #cbd5e1",
-                  borderRadius: "9999px",
-                  padding: "0.55rem 1.1rem",
-                  fontSize: "0.825rem",
-                  outline: "none",
+                  width: "100%",
+                  height: "380px",
+                  objectFit: "cover",
+                  borderRadius: "12px",
                 }}
               />
-              <button
-                onClick={() => handleSendBotMessage(botChatInput)}
+              <div
                 style={{
-                  background: "#0284c7",
-                  color: "#ffffff",
-                  border: "none",
-                  borderRadius: "50%",
-                  width: 38,
-                  height: 38,
                   display: "flex",
+                  justifyContent: "space-between",
                   alignItems: "center",
-                  justifyContent: "center",
-                  cursor: "pointer",
+                  marginTop: "0.75rem",
                 }}
               >
-                <Send size={16} />
-              </button>
+                <div style={{ fontSize: "0.8rem", color: "#475569" }}>
+                  📍 40-Acre Main Block, STEM Innovation Pavilions, Sports Arena &amp; Auditoriums
+                </div>
+                <button
+                  onClick={() => setVirtualTourOpen(false)}
+                  style={{
+                    background: "#ea580c",
+                    color: "#ffffff",
+                    border: "none",
+                    borderRadius: "9999px",
+                    padding: "0.45rem 1.2rem",
+                    fontWeight: 700,
+                    fontSize: "0.8rem",
+                    cursor: "pointer",
+                  }}
+                >
+                  Close Tour
+                </button>
+              </div>
             </div>
           </div>
         </div>
       )}
-    </>
+
+      {/* =========================================================================
+         MODAL 2: RECENT EVENTS GALLERY VIEWER
+         ========================================================================= */}
+      {(galleryModalOpen || selectedGalleryImg) && (
+        <div
+          className="mp-modal-backdrop"
+          onClick={() => {
+            setGalleryModalOpen(false);
+            setSelectedGalleryImg(null);
+          }}
+        >
+          <div
+            className="mp-modal-window"
+            style={{ width: "820px" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
+              style={{
+                background: "linear-gradient(135deg, #0d9488 0%, #0f766e 100%)",
+                color: "#ffffff",
+                padding: "0.85rem 1.25rem",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <Camera size={18} />
+                <h3 style={{ margin: 0, fontSize: "1.05rem", fontWeight: 800 }}>
+                  {selectedGalleryImg ? selectedGalleryImg.title : `${schoolName} Campus Life Gallery`}
+                </h3>
+              </div>
+              <button
+                onClick={() => {
+                  setGalleryModalOpen(false);
+                  setSelectedGalleryImg(null);
+                }}
+                style={{
+                  background: "rgba(255, 255, 255, 0.2)",
+                  border: "none",
+                  borderRadius: "50%",
+                  width: 30,
+                  height: 30,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "#ffffff",
+                  cursor: "pointer",
+                }}
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <div style={{ padding: "1rem", background: "#f8fafc" }}>
+              {selectedGalleryImg ? (
+                <div>
+                  <img
+                    src={selectedGalleryImg.src}
+                    alt={selectedGalleryImg.title}
+                    style={{
+                      width: "100%",
+                      height: "360px",
+                      objectFit: "cover",
+                      borderRadius: "12px",
+                    }}
+                  />
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      marginTop: "0.75rem",
+                    }}
+                  >
+                    <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "#1e293b" }}>
+                      {selectedGalleryImg.title}
+                    </span>
+                    <button
+                      onClick={() => setSelectedGalleryImg(null)}
+                      style={{
+                        background: "#0d9488",
+                        color: "#ffffff",
+                        border: "none",
+                        borderRadius: "9999px",
+                        padding: "0.4rem 1rem",
+                        fontSize: "0.78rem",
+                        fontWeight: 700,
+                        cursor: "pointer",
+                      }}
+                    >
+                      View All Photos
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(2, 1fr)",
+                    gap: "12px",
+                  }}
+                >
+                  <div
+                    onClick={() =>
+                      setSelectedGalleryImg({
+                        src: "/events/annual_day.jpg",
+                        title: "Annual Day 2025 Gala & Dance Performance",
+                      })
+                    }
+                    style={{ cursor: "pointer" }}
+                  >
+                    <img
+                      src="/events/annual_day.jpg"
+                      alt="Annual Day 2025"
+                      style={{ width: "100%", height: "170px", objectFit: "cover", borderRadius: "8px" }}
+                    />
+                    <div style={{ fontWeight: 800, fontSize: "0.82rem", marginTop: 4 }}>
+                      Annual Day 2025 Celebrations
+                    </div>
+                  </div>
+
+                  <div
+                    onClick={() =>
+                      setSelectedGalleryImg({
+                        src: "/events/sports_parade.jpg",
+                        title: "Sports Day Athletic March-Past & Parade",
+                      })
+                    }
+                    style={{ cursor: "pointer" }}
+                  >
+                    <img
+                      src="/events/sports_parade.jpg"
+                      alt="Sports Parade"
+                      style={{ width: "100%", height: "170px", objectFit: "cover", borderRadius: "8px" }}
+                    />
+                    <div style={{ fontWeight: 800, fontSize: "0.82rem", marginTop: 4 }}>
+                      Sports Day Athletic March-Past &amp; Parade
+                    </div>
+                  </div>
+
+                  <div
+                    onClick={() =>
+                      setSelectedGalleryImg({
+                        src: "/events/science_fair.jpg",
+                        title: "District Science & Innovation Fair",
+                      })
+                    }
+                    style={{ cursor: "pointer" }}
+                  >
+                    <img
+                      src="/events/science_fair.jpg"
+                      alt="Science Fair"
+                      style={{ width: "100%", height: "170px", objectFit: "cover", borderRadius: "8px" }}
+                    />
+                    <div style={{ fontWeight: 800, fontSize: "0.82rem", marginTop: 4 }}>
+                      District Science &amp; Innovation Fair
+                    </div>
+                  </div>
+
+                  <div
+                    onClick={() =>
+                      setSelectedGalleryImg({
+                        src: "/events/teachers_day.jpg",
+                        title: "Teachers' Day Felicitation Ceremony",
+                      })
+                    }
+                    style={{ cursor: "pointer" }}
+                  >
+                    <img
+                      src="/events/teachers_day.jpg"
+                      alt="Teachers Day"
+                      style={{ width: "100%", height: "170px", objectFit: "cover", borderRadius: "8px" }}
+                    />
+                    <div style={{ fontWeight: 800, fontSize: "0.82rem", marginTop: 4 }}>
+                      Teachers' Day Felicitation Ceremony
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =========================================================================
+         MODAL 3: VIEW ALL ACHIEVEMENTS
+         ========================================================================= */}
+      {achievementsModalOpen && (
+        <div
+          className="mp-modal-backdrop"
+          onClick={() => setAchievementsModalOpen(false)}
+        >
+          <div
+            className="mp-modal-window"
+            style={{ width: "780px" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
+              style={{
+                background: "linear-gradient(135deg, #ea580c 0%, #c2410c 100%)",
+                color: "#ffffff",
+                padding: "0.85rem 1.25rem",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <Trophy size={18} />
+                <h3 style={{ margin: 0, fontSize: "1.05rem", fontWeight: 800 }}>
+                  {schoolName} Hall of Fame &amp; Honors
+                </h3>
+              </div>
+              <button
+                onClick={() => setAchievementsModalOpen(false)}
+                style={{
+                  background: "rgba(255, 255, 255, 0.2)",
+                  border: "none",
+                  borderRadius: "50%",
+                  width: 30,
+                  height: 30,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "#ffffff",
+                  cursor: "pointer",
+                }}
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <div style={{ padding: "1.25rem", background: "#f8fafc", maxHeight: "450px", overflowY: "auto" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "12px" }}>
+                <div style={{ background: "#ffffff", borderRadius: "10px", padding: "10px", border: "1px solid #fed7aa" }}>
+                  <img src="/achievement_math.jpg" alt="Math Quiz" style={{ width: "100%", height: "120px", objectFit: "cover", borderRadius: "8px" }} />
+                  <span style={{ display: "inline-block", background: "#ea580c", color: "#fff", fontSize: "0.68rem", fontWeight: 800, padding: "2px 8px", borderRadius: "9999px", marginTop: "6px" }}>★ 1st Rank</span>
+                  <h4 style={{ margin: "4px 0 2px", fontSize: "0.85rem", fontWeight: 800 }}>Inter-School Mathematics Quiz</h4>
+                  <p style={{ margin: 0, fontSize: "0.72rem", color: "#64748b" }}>Inter School Competition • Aug 2025</p>
+                </div>
+
+                <div style={{ background: "#ffffff", borderRadius: "10px", padding: "10px", border: "1px solid #fed7aa" }}>
+                  <img src="/achievement_cricket.jpg" alt="Cricket" style={{ width: "100%", height: "120px", objectFit: "cover", borderRadius: "8px" }} />
+                  <span style={{ display: "inline-block", background: "#ea580c", color: "#fff", fontSize: "0.68rem", fontWeight: 800, padding: "2px 8px", borderRadius: "9999px", marginTop: "6px" }}>★ Best Player</span>
+                  <h4 style={{ margin: "4px 0 2px", fontSize: "0.85rem", fontWeight: 800 }}>Inter-School Cricket Tournament</h4>
+                  <p style={{ margin: 0, fontSize: "0.72rem", color: "#64748b" }}>Inter School • Sep 2025</p>
+                </div>
+
+                <div style={{ background: "#ffffff", borderRadius: "10px", padding: "10px", border: "1px solid #fed7aa" }}>
+                  <img src="/achievement_science.jpg" alt="Science" style={{ width: "100%", height: "120px", objectFit: "cover", borderRadius: "8px" }} />
+                  <span style={{ display: "inline-block", background: "#f59e0b", color: "#fff", fontSize: "0.68rem", fontWeight: 800, padding: "2px 8px", borderRadius: "9999px", marginTop: "6px" }}>2 2nd Place</span>
+                  <h4 style={{ margin: "4px 0 2px", fontSize: "0.85rem", fontWeight: 800 }}>District Science Exhibition</h4>
+                  <p style={{ margin: 0, fontSize: "0.72rem", color: "#64748b" }}>District Level • Aug 2025</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =========================================================================
+         MODAL 4: VIEW ALL UPCOMING EVENTS
+         ========================================================================= */}
+      {eventsModalOpen && (
+        <div
+          className="mp-modal-backdrop"
+          onClick={() => setEventsModalOpen(false)}
+        >
+          <div
+            className="mp-modal-window"
+            style={{ width: "650px" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
+              style={{
+                background: "linear-gradient(135deg, #ea580c 0%, #c2410c 100%)",
+                color: "#ffffff",
+                padding: "0.85rem 1.25rem",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <Calendar size={18} />
+                <h3 style={{ margin: 0, fontSize: "1.05rem", fontWeight: 800 }}>
+                  {schoolName} Upcoming Schedule
+                </h3>
+              </div>
+              <button
+                onClick={() => setEventsModalOpen(false)}
+                style={{
+                  background: "rgba(255, 255, 255, 0.2)",
+                  border: "none",
+                  borderRadius: "50%",
+                  width: 30,
+                  height: 30,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "#ffffff",
+                  cursor: "pointer",
+                }}
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <div style={{ padding: "1.25rem", background: "#f8fafc", maxHeight: "420px", overflowY: "auto" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                <div style={{ background: "#ffffff", borderRadius: "8px", padding: "10px 14px", border: "1px solid #fed7aa", display: "flex", alignItems: "center", gap: "12px" }}>
+                  <div style={{ background: "#fff7ed", borderRadius: "6px", width: 44, height: 44, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", border: "1px solid #fed7aa" }}>
+                    <b style={{ fontSize: "1rem", color: "#c2410c" }}>25</b>
+                    <span style={{ fontSize: "0.62rem", color: "#ea580c", fontWeight: 800 }}>SEP</span>
+                  </div>
+                  <div>
+                    <h4 style={{ margin: 0, fontSize: "0.9rem", fontWeight: 800 }}>Parent Teacher Meeting (PTM)</h4>
+                    <p style={{ margin: "2px 0 0", fontSize: "0.75rem", color: "#64748b" }}>10:00 AM – 12:00 PM | School Main Auditorium</p>
+                  </div>
+                </div>
+
+                <div style={{ background: "#ffffff", borderRadius: "8px", padding: "10px 14px", border: "1px solid #fed7aa", display: "flex", alignItems: "center", gap: "12px" }}>
+                  <div style={{ background: "#fff7ed", borderRadius: "6px", width: 44, height: 44, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", border: "1px solid #fed7aa" }}>
+                    <b style={{ fontSize: "1rem", color: "#c2410c" }}>28</b>
+                    <span style={{ fontSize: "0.62rem", color: "#ea580c", fontWeight: 800 }}>SEP</span>
+                  </div>
+                  <div>
+                    <h4 style={{ margin: 0, fontSize: "0.9rem", fontWeight: 800 }}>Sports Day Practice &amp; Athletic Heats</h4>
+                    <p style={{ margin: "2px 0 0", fontSize: "0.75rem", color: "#64748b" }}>04:00 PM – 06:00 PM | Campus Athletic Arena</p>
+                  </div>
+                </div>
+
+                <div style={{ background: "#ffffff", borderRadius: "8px", padding: "10px 14px", border: "1px solid #fed7aa", display: "flex", alignItems: "center", gap: "12px" }}>
+                  <div style={{ background: "#fff7ed", borderRadius: "6px", width: 44, height: 44, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", border: "1px solid #fed7aa" }}>
+                    <b style={{ fontSize: "1rem", color: "#c2410c" }}>02</b>
+                    <span style={{ fontSize: "0.62rem", color: "#ea580c", fontWeight: 800 }}>OCT</span>
+                  </div>
+                  <div>
+                    <h4 style={{ margin: 0, fontSize: "0.9rem", fontWeight: 800 }}>District Science &amp; Innovation Exhibition</h4>
+                    <p style={{ margin: "2px 0 0", fontSize: "0.75rem", color: "#64748b" }}>All Day (09:00 AM – 04:30 PM) | Discovery Block</p>
+                  </div>
+                </div>
+
+                <div style={{ background: "#ffffff", borderRadius: "8px", padding: "10px 14px", border: "1px solid #fed7aa", display: "flex", alignItems: "center", gap: "12px" }}>
+                  <div style={{ background: "#fff7ed", borderRadius: "6px", width: 44, height: 44, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", border: "1px solid #fed7aa" }}>
+                    <b style={{ fontSize: "1rem", color: "#c2410c" }}>10</b>
+                    <span style={{ fontSize: "0.62rem", color: "#ea580c", fontWeight: 800 }}>OCT</span>
+                  </div>
+                  <div>
+                    <h4 style={{ margin: 0, fontSize: "0.9rem", fontWeight: 800 }}>Children's Day Special Cultural Gala</h4>
+                    <p style={{ margin: "2px 0 0", fontSize: "0.75rem", color: "#64748b" }}>09:00 AM – 12:00 PM | School Auditorium</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

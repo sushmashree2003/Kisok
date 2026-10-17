@@ -76,7 +76,7 @@ const STUDENT_MOTTOES = [
   },
   {
     quote: "Excellence is not an act, but a daily habit. Keep learning every single day!",
-    author: "Green Valley Academic Creed",
+    author: "Madhuvan Vatika Academic Creed",
     badge: "Excellence",
   },
   {
@@ -210,7 +210,7 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
     {
       id: "msg-welcome",
       sender: "bot",
-      text: "👋 Hello! I am GreenBot, your Green Valley Student & Parent Kiosk Assistant. Ask me anything about your attendance, exam results, timetable, homework diary, or fees!",
+      text: "👋 Hello! I am VatikaBot, your Madhuvan Vatika Student & Parent Kiosk Assistant. Ask me anything about your attendance, exam results, timetable, homework diary, or fees!",
       time: "Just now",
       suggestions: [
         "What is my attendance rate?",
@@ -770,7 +770,7 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
         botReply = `📚 Home-work Diary:\n• Assigned Tasks: ${homeworkData.length}\n• Latest: ${homeworkData[0]?.subject ? `${homeworkData[0].subject} - ${homeworkData[0].topic} (Due: ${homeworkData[0].dueDate})` : "All daily homework updated from faculty"}`;
         suggestions = ["Open Home-work tab", "Check school notices", "Show attendance"];
       } else {
-        botReply = `🤖 Thanks for asking! As your Green Valley Smart Campus Assistant, I have access to your live academic records, morning attendance, fee ledger, and class schedules. You can also explore any module from the navigation bar above!`;
+        botReply = `🤖 Thanks for asking! As your Madhuvan Vatika Smart Campus Assistant, I have access to your live academic records, morning attendance, fee ledger, and class schedules. You can also explore any module from the navigation bar above!`;
         suggestions = ["What is my attendance rate?", "Show my exam results", "What is my timetable today?", "Do I have pending fee balance?"];
       }
 
@@ -793,7 +793,7 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
     [studentDetails.className, studentDetails.sectionName].filter(Boolean).join(" - ") ||
     [session?.asmcL_ClassName, session?.asms_sectionname].filter(Boolean).join(" - ") ||
     "Student Profile";
-  const schoolName = session?.initname || "Green Valley Public School";
+  const schoolName = session?.initname || "Madhuvan Vatika - MVPS";
 
   // Dynamic attendance metrics
   const totalWorkingDays = attendanceData.reduce((acc, a) => acc + a.classHeld, 0);
@@ -883,7 +883,7 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
             </svg>
           </div>
           <div>
-            <p className="command-kicker">GREEN VALLEY • SMART CAMPUS</p>
+            <p className="command-kicker">MADHUVAN VATIKA • SMART CAMPUS</p>
             <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", flexWrap: "nowrap" }}>
               <h1 style={{ margin: 0, fontFamily: "Outfit, sans-serif", fontSize: "1.15rem", fontWeight: 800, color: "#1e293b", whiteSpace: "nowrap" }}>
                 {schoolName}
@@ -1010,7 +1010,7 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
             { id: "homework" as StudentScreen, name: "Home-work", icon: BookOpen },
             { id: "timetable" as StudentScreen, name: "Time-Table", icon: Clock },
             { id: "exam-overall" as StudentScreen, name: "Over All Exam", icon: BarChart2 },
-            { id: "aispace" as StudentScreen, name: "GreenBot AI", icon: Sparkles },
+            { id: "aispace" as StudentScreen, name: "VatikaBot AI", icon: Sparkles },
           ].map((tab) => {
             const Icon = tab.icon;
             const isActive = currentScreen === tab.id;
@@ -1197,17 +1197,17 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
                 type="button"
                 onClick={() => setCurrentScreen("aispace")}
                 className="hero-ai-capsule-btn"
-                title="Launch Student GreenBot AI Space"
+                title="Launch Student VatikaBot AI Space"
               >
                 <div className="hero-ai-robo-wrap">
-                  <img src="/ai_robot.png" alt="GreenBot" className="hero-ai-robo-img" />
+                  <img src="/ai_robot.png" alt="VatikaBot" className="hero-ai-robo-img" />
                   <span className="hero-ai-pulse-dot" />
                 </div>
                 <div style={{ textAlign: "center" }}>
                   <div className="hero-ai-kicker">
                     <Sparkles size={9} style={{ display: "inline", verticalAlign: "middle", marginRight: 2 }} /> AI SPACE
                   </div>
-                  <span className="hero-ai-action">Ask GreenBot →</span>
+                  <span className="hero-ai-action">Ask VatikaBot →</span>
                 </div>
               </button>
             </div>
@@ -1931,7 +1931,7 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
                   boxShadow: "0 2px 6px rgba(234, 88, 12, 0.25)",
                 }}
               >
-                <Sparkles size={13} /> Ask GreenBot AI →
+                <Sparkles size={13} /> Ask VatikaBot AI →
               </button>
             </div>
           </section>
@@ -3556,7 +3556,7 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
                 <Sparkles size={20} />
               </div>
               <div>
-                <h2>GreenBot • Student &amp; Parent AI Assistant</h2>
+                <h2>VatikaBot • Student &amp; Parent AI Assistant</h2>
                 <p>Instant answers on attendance, exam scorecards, timetable, and school notices</p>
               </div>
             </div>
@@ -3651,7 +3651,7 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
                 {isTyping && (
                   <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "#64748b", fontSize: "0.75rem" }}>
                     <RefreshCw size={13} className="animate-spin" style={{ color: "#ea580c" }} />
-                    <span>GreenBot is typing an answer...</span>
+                    <span>VatikaBot is typing an answer...</span>
                   </div>
                 )}
                 <div ref={chatMessagesEndRef} />
@@ -3684,7 +3684,7 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
                 <input
                   type="text"
                   className="ai-chat-text-input"
-                  placeholder="Ask GreenBot about attendance, report card marks, timetable, or fees..."
+                  placeholder="Ask VatikaBot about attendance, report card marks, timetable, or fees..."
                   value={chatInputText}
                   onChange={(e) => setChatInputText(e.target.value)}
                   onKeyDown={(e) => {
@@ -3696,7 +3696,7 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
                 <button
                   className="ai-chat-send-btn"
                   onClick={() => handleSendChatMessage()}
-                  title="Send message to GreenBot"
+                  title="Send message to VatikaBot"
                 >
                   <Send size={15} />
                 </button>

@@ -189,7 +189,7 @@ export default function LoginScreen({
     },
     visitor: {
       title: "Campus Visitor Portal",
-      subtitle: "Discover Green Valley excellence, campus tours, and admissions.",
+      subtitle: "Discover Madhuvan Vatika excellence, campus tours, and admissions.",
       defaultUser: "visitor@gvps.edu",
       userPlaceholder: "Visitor Pass ID / Mobile Number",
       roleBadge: "Campus Visitor",
@@ -201,7 +201,7 @@ export default function LoginScreen({
       heroHeadlineHighlight: "Where Values Meet Global Vision",
       heroSubtext:
         "Step inside a premier center of holistic education. Explore state-of-the-art STEM labs, athletic arenas, arts pavilions, and transparent admissions guidance.",
-      sloganTitle: "GREEN VALLEY WELCOME CREED",
+      sloganTitle: "MADHUVAN VATIKA WELCOME CREED",
       sloganQuote: "“Enter as Guests, Leave as Family — Every Great Journey Begins with Wonder.”",
       sloganMotto: "Excellence • Empathy • Innovation • Integrity",
       features: [
@@ -512,7 +512,7 @@ export default function LoginScreen({
             </svg>
           </div>
           <div>
-            <p className="command-kicker" style={{ margin: "0 0 2px" }}>GREEN VALLEY • SMART CAMPUS</p>
+            <p className="command-kicker" style={{ margin: "0 0 2px" }}>MADHUVAN VATIKA • SMART CAMPUS</p>
             <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", flexWrap: "wrap" }}>
               <h1
                 style={{
@@ -525,7 +525,7 @@ export default function LoginScreen({
                   letterSpacing: "-0.025em",
                 }}
               >
-                Green Valley Public School
+                Madhuvan Vatika - MVPS
               </h1>
               <span
                 style={{
@@ -789,7 +789,7 @@ export default function LoginScreen({
                   marginTop: "2px",
                 }}
               >
-                — Green Valley Creed: {config.sloganMotto}
+                — Madhuvan Vatika Creed: {config.sloganMotto}
               </span>
             </div>
           </div>
@@ -1378,7 +1378,7 @@ export default function LoginScreen({
               >
                 <ShieldCheck size={16} style={{ color: "#0d9488", flexShrink: 0, marginTop: "2px" }} />
                 <span style={{ fontSize: "0.78rem", fontWeight: 600, color: "#0f766e", lineHeight: 1.4 }}>
-                  <strong>Static Kiosk Demo</strong> — No real data is submitted. This is an interactive demonstration for Green Valley Public School.
+                  <strong>Static Kiosk Demo</strong> — No real data is submitted. This is an interactive demonstration for Madhuvan Vatika - MVPS.
                 </span>
               </div>
 
@@ -1855,7 +1855,7 @@ export default function LoginScreen({
           <span>Digital Campus Kiosk</span>
         </div>
         <button className="assistant-button" type="button" onClick={onBackToKiosk}>
-          <span className="assistant-pulse" /> Need help? <b>Ask GreenBot</b>
+          <span className="assistant-pulse" /> Need help? <b>Ask VatikaBot</b>
         </button>
       </footer>
     </div>

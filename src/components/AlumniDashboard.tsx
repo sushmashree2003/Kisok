@@ -71,7 +71,7 @@ const AI_PRESET_QA: Record<string, string> = {
   "How can I mentor current students?":
     "We welcome your mentorship! You can register for our Mentorship Clinic or submit a Guest Lecture proposal through the Request Desk. The school academic cell coordinates both virtual and in-person sessions for senior students.",
   "What is the alumni scholarship fund?":
-    "The Green Valley Merit & Need-based Scholarship Endowment provides tuition waivers and exam fee support for deserving high schoolers. Check the 'Give Back' tab to view active campaigns, goals, and donation tiers with 80G tax exemptions.",
+    "The Madhuvan Vatika Merit & Need-based Scholarship Endowment provides tuition waivers and exam fee support for deserving high schoolers. Check the 'Give Back' tab to view active campaigns, goals, and donation tiers with 80G tax exemptions.",
   "Tell me about my batch (Class of 2015)":
     "The Class of 2015 (Batch XI) has 112 verified alumni registered in the portal across 9 countries. Notable members include Priya Nair (FinTech leader), Dr. Kavita Menon (AIIMS surgeon), and Vikram Seth (EdTech founder)!",
 };
@@ -91,7 +91,7 @@ const INITIAL_ALUMNI_PROFILE = {
   email: "rohan.sharma.15@alumni.greenvalley.edu.in",
   phone: "+91 98450 12345",
   linkedin: "linkedin.com/in/rohan-sharma-gv15",
-  bio: "Class of 2015 valedictorian and robotics club lead. Passionate about AI in education and mentoring Green Valley high schoolers in competitive programming and higher education admissions.",
+  bio: "Class of 2015 valedictorian and robotics club lead. Passionate about AI in education and mentoring Madhuvan Vatika high schoolers in competitive programming and higher education admissions.",
   achievements: "CBSE National Science Exhibition Winner 2014 • Best Outgoing Student 2015",
   mentorshipInterest: true,
   jobReferralInterest: true,
@@ -176,7 +176,7 @@ const INITIAL_UPDATES = [
     date: "15 Sep 2025",
     desc: "VP at Global FinTech, named in 40-Under-40 Leadership Leaders for digital payment innovations across Asia.",
     fullContent:
-      "Green Valley Public School congratulates Priya Nair (Class of 2015, Batch XI) for being recognized in the prestigious Global 40-Under-40 FinTech Leaders list. Priya was our school cabinet head and topped the CBSE Commerce stream in 2015. She currently manages digital payment infrastructures processing over $10B annually.",
+      "Madhuvan Vatika - MVPS congratulates Priya Nair (Class of 2015, Batch XI) for being recognized in the prestigious Global 40-Under-40 FinTech Leaders list. Priya was our school cabinet head and topped the CBSE Commerce stream in 2015. She currently manages digital payment infrastructures processing over $10B annually.",
   },
   {
     id: 2,
@@ -185,7 +185,7 @@ const INITIAL_UPDATES = [
     tagColor: "#15803d",
     tagBg: "#dcfce7",
     date: "12 Sep 2025",
-    desc: "Google, Microsoft, TCS, and FinTech ventures offer priority referral slots and paid internships for Green Valley alumni.",
+    desc: "Google, Microsoft, TCS, and FinTech ventures offer priority referral slots and paid internships for Madhuvan Vatika alumni.",
     fullContent:
       "Alumni-founded and alumni-led technology enterprises in Bengaluru, Hyderabad, and Pune have posted 14 verified openings across full-stack engineering, cloud architecture, product design, and quantitative research. Submit applications directly via our Job Opportunities portal.",
   },
@@ -198,7 +198,7 @@ const INITIAL_UPDATES = [
     date: "08 Sep 2025",
     desc: "Grand homecoming celebration scheduled at Campus Auditorium with commemorative souvenir release and faculty felicitation.",
     fullContent:
-      "The Green Valley Alumni Association cordially invites all batches to the Decennial Homecoming Gala. Highlights include the launch of our digital archives portal, unveiling of the new STEM Robotics block, and felicitation of 15 veteran educators who have served for over 20 years.",
+      "The Madhuvan Vatika Alumni Association cordially invites all batches to the Decennial Homecoming Gala. Highlights include the launch of our digital archives portal, unveiling of the new STEM Robotics block, and felicitation of 15 veteran educators who have served for over 20 years.",
   },
   {
     id: 4,
@@ -209,7 +209,7 @@ const INITIAL_UPDATES = [
     date: "02 Sep 2025",
     desc: "Alumni endowment fund crosses ₹1.2 Crore milestone to establish modern maker-spaces and AI workstations for school students.",
     fullContent:
-      "In an inspiring show of gratitude, the Class of 2010 has collectively contributed ₹15 Lakh towards the modern Green Valley Robotics & Prototyping Laboratory. The lab will feature 3D printers, IoT micro-controllers, and drone simulation rigs.",
+      "In an inspiring show of gratitude, the Class of 2010 has collectively contributed ₹15 Lakh towards the modern Madhuvan Vatika Robotics & Prototyping Laboratory. The lab will feature 3D printers, IoT micro-controllers, and drone simulation rigs.",
   },
 ];
 
@@ -240,7 +240,7 @@ const INITIAL_CURRENT_AFFAIRS = [
     category: "Academics",
     icon: Award,
     summary:
-      "Indian national delegation bags 3 Golds and 2 Silvers at the Tokyo Olympiad, with Green Valley high schoolers cheering the national milestone.",
+      "Indian national delegation bags 3 Golds and 2 Silvers at the Tokyo Olympiad, with Madhuvan Vatika high schoolers cheering the national milestone.",
   },
 ];
 
@@ -422,7 +422,7 @@ const INITIAL_JOBS = [
     type: "Full-Time",
     experience: "4-7 Years",
     skills: ["React", "Node.js", "TypeScript", "AWS"],
-    desc: "Lead core payment gateways and checkout experiences. Priority interviews and referral bonus for Green Valley alumni.",
+    desc: "Lead core payment gateways and checkout experiences. Priority interviews and referral bonus for Madhuvan Vatika alumni.",
   },
   {
     id: 2,
@@ -439,7 +439,7 @@ const INITIAL_JOBS = [
   {
     id: 3,
     title: "AI Research Fellow / Graduate Intern",
-    company: "Green Valley Innovation Hub",
+    company: "Madhuvan Vatika Innovation Hub",
     postedBy: "Alumni Academic Council",
     location: "Campus / Hybrid",
     salary: "₹8,00,000 - ₹12,00,000 PA",
@@ -554,7 +554,7 @@ const GALLERY_ITEMS = [
   },
   {
     id: 2,
-    title: "Green Valley Academic Quad & Clock Tower",
+    title: "Madhuvan Vatika Academic Quad & Clock Tower",
     album: "Campus Life",
     year: "2025",
     image: "/hero_school_building.jpg",
@@ -582,7 +582,7 @@ const GALLERY_ITEMS = [
     album: "Achievements",
     year: "2024",
     image: "/achievement_math.jpg",
-    caption: "Green Valley students celebrating 1st place in the Regional Math Olympiad.",
+    caption: "Madhuvan Vatika students celebrating 1st place in the Regional Math Olympiad.",
   },
   {
     id: 6,
@@ -667,7 +667,7 @@ export default function AlumniDashboard({ onBackToKiosk }: DashboardProps) {
     {
       id: "msg-welcome",
       sender: "bot",
-      text: "👋 Welcome back, Rohan! I am GreenBot, your Green Valley Alumni Assistant. Ask me anything about alumni meets, reunions, ordering transcripts, scheduling campus visits, or career mentorship opportunities.",
+      text: "👋 Welcome back, Rohan! I am VatikaBot, your Madhuvan Vatika Alumni Assistant. Ask me anything about alumni meets, reunions, ordering transcripts, scheduling campus visits, or career mentorship opportunities.",
       time: "Just now",
     },
   ]);
@@ -847,7 +847,7 @@ export default function AlumniDashboard({ onBackToKiosk }: DashboardProps) {
     setRequests([newReq, ...requests]);
     setIsRequestModalOpen(false);
     setNewRequestNotes("");
-    showToast(`Request ${reqCode} submitted successfully to Green Valley Alumni Office!`);
+    showToast(`Request ${reqCode} submitted successfully to Madhuvan Vatika Alumni Office!`);
   };
 
   // Visit Pass Generation
@@ -939,7 +939,7 @@ export default function AlumniDashboard({ onBackToKiosk }: DashboardProps) {
             </svg>
           </div>
           <div>
-            <p className="command-kicker">GREEN VALLEY • SMART CAMPUS</p>
+            <p className="command-kicker">MADHUVAN VATIKA • SMART CAMPUS</p>
             <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", flexWrap: "nowrap" }}>
               <h1
                 style={{
@@ -951,7 +951,7 @@ export default function AlumniDashboard({ onBackToKiosk }: DashboardProps) {
                   whiteSpace: "nowrap",
                 }}
               >
-                Green Valley Public School
+                Madhuvan Vatika - MVPS
               </h1>
               <span
                 style={{
@@ -1072,7 +1072,7 @@ export default function AlumniDashboard({ onBackToKiosk }: DashboardProps) {
             { id: "visit" as AlumniScreen, name: "Plan a Visit", icon: MapPin },
             { id: "jobs" as AlumniScreen, name: "Job Board", icon: Briefcase },
             { id: "giveback" as AlumniScreen, name: "Give Back", icon: Heart },
-            { id: "aispace" as AlumniScreen, name: "GreenBot AI", icon: Sparkles },
+            { id: "aispace" as AlumniScreen, name: "VatikaBot AI", icon: Sparkles },
             { id: "gallery" as AlumniScreen, name: "Photo Gallery", icon: ImageIcon },
           ].map((tab) => {
             const Icon = tab.icon;
@@ -1148,7 +1148,7 @@ export default function AlumniDashboard({ onBackToKiosk }: DashboardProps) {
         <Sparkles size={12} style={{ color: "#ea580c" }} />
         <span>
           <strong>Static Demonstration Mode:</strong> All alumni records, forms, mock requests, simulated donations,
-          and registrations operate locally in frontend state for Green Valley Public School.
+          and registrations operate locally in frontend state for Madhuvan Vatika - MVPS.
         </span>
       </div>
 
@@ -1229,7 +1229,7 @@ export default function AlumniDashboard({ onBackToKiosk }: DashboardProps) {
               <h2>
                 Welcome Back, <span>{profile.name}</span>
               </h2>
-              <p>Green Valley Global Alumni Legacy Network • 18 International Chapters • Mentorship & Giving</p>
+              <p>Madhuvan Vatika Global Alumni Legacy Network • 18 International Chapters • Mentorship & Giving</p>
               <div className="student-hero-chips">
                 <span className="student-hero-chip">
                   <GraduationCap size={12} /> {profile.batchTitle}
@@ -1273,17 +1273,17 @@ export default function AlumniDashboard({ onBackToKiosk }: DashboardProps) {
                 type="button"
                 onClick={() => setCurrentScreen("aispace")}
                 className="hero-ai-capsule-btn"
-                title="Launch Alumni GreenBot AI Space"
+                title="Launch Alumni VatikaBot AI Space"
               >
                 <div className="hero-ai-robo-wrap">
-                  <img src="/ai_robot.png" alt="GreenBot" className="hero-ai-robo-img" />
+                  <img src="/ai_robot.png" alt="VatikaBot" className="hero-ai-robo-img" />
                   <span className="hero-ai-pulse-dot" />
                 </div>
                 <div style={{ textAlign: "center" }}>
                   <div className="hero-ai-kicker">
                     <Sparkles size={9} style={{ display: "inline", verticalAlign: "middle", marginRight: 2 }} /> AI SPACE
                   </div>
-                  <span className="hero-ai-action">Ask GreenBot →</span>
+                  <span className="hero-ai-action">Ask VatikaBot →</span>
                 </div>
               </button>
             </div>
@@ -1870,7 +1870,7 @@ export default function AlumniDashboard({ onBackToKiosk }: DashboardProps) {
                   </div>
                 </div>
                 <div>
-                  <div className="alumni-tile-title">GreenBot AI</div>
+                  <div className="alumni-tile-title">VatikaBot AI</div>
                   <div className="alumni-tile-sub">Instant guidance</div>
                 </div>
               </div>
@@ -2088,7 +2088,7 @@ export default function AlumniDashboard({ onBackToKiosk }: DashboardProps) {
                         gap: "5px",
                       }}
                     >
-                      GreenBot AI Assistant <Sparkles size={13} style={{ color: "#facc15" }} />
+                      VatikaBot AI Assistant <Sparkles size={13} style={{ color: "#facc15" }} />
                     </h4>
                     <p style={{ margin: "2px 0 0", fontSize: "0.68rem", color: "#cbd5e1" }}>
                       Instant guidance on events, transcripts, visits & mentors.
@@ -2137,7 +2137,7 @@ export default function AlumniDashboard({ onBackToKiosk }: DashboardProps) {
                       marginBottom: "0.65rem",
                     }}
                   >
-                    <strong>GreenBot:</strong> {chatMessages[chatMessages.length - 1].text}
+                    <strong>VatikaBot:</strong> {chatMessages[chatMessages.length - 1].text}
                   </div>
                 )}
 
@@ -2156,7 +2156,7 @@ export default function AlumniDashboard({ onBackToKiosk }: DashboardProps) {
                   <Mic size={14} style={{ color: "#94a3b8" }} />
                   <input
                     type="text"
-                    placeholder="Ask GreenBot anything..."
+                    placeholder="Ask VatikaBot anything..."
                     value={chatInput}
                     onChange={(e) => setChatInput(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && handleSendAiMessage()}
@@ -2302,7 +2302,7 @@ export default function AlumniDashboard({ onBackToKiosk }: DashboardProps) {
               </div>
               <div>
                 <h2>Alumni Directory & Classmate Reconnect</h2>
-                <p>Search over 12,400+ verified Green Valley alumni and reach out to former teachers.</p>
+                <p>Search over 12,400+ verified Madhuvan Vatika alumni and reach out to former teachers.</p>
               </div>
             </div>
             <div className="student-screen-nav-tools">
@@ -2697,7 +2697,7 @@ export default function AlumniDashboard({ onBackToKiosk }: DashboardProps) {
               </div>
               <div>
                 <h2>Alumni Events & Homecoming Calendar</h2>
-                <p>Register for official reunions, masterclasses, and networking sessions at Green Valley.</p>
+                <p>Register for official reunions, masterclasses, and networking sessions at Madhuvan Vatika.</p>
               </div>
             </div>
             <div className="student-screen-nav-tools">
@@ -3257,7 +3257,7 @@ export default function AlumniDashboard({ onBackToKiosk }: DashboardProps) {
                 <Building2 size={20} />
               </div>
               <div>
-                <h2>Green Valley Public School Heritage & Archives</h2>
+                <h2>Madhuvan Vatika - MVPS Heritage & Archives</h2>
                 <p>38 years of academic excellence, national honors, traditions, and institutional legacy.</p>
               </div>
             </div>
@@ -3299,7 +3299,7 @@ export default function AlumniDashboard({ onBackToKiosk }: DashboardProps) {
                 {[
                   {
                     year: "1988",
-                    title: "Foundation of Green Valley Public School",
+                    title: "Foundation of Madhuvan Vatika - MVPS",
                     desc: "Established with 120 students and 8 teachers with a vision to nurture holistic, value-based education.",
                   },
                   {
@@ -3381,7 +3381,7 @@ export default function AlumniDashboard({ onBackToKiosk }: DashboardProps) {
                   </h4>
                 </div>
                 <p style={{ margin: 0, fontSize: "0.82rem", color: "#7c2d12", lineHeight: 1.5 }}>
-                  The emblem of Green Valley depicts the flame of knowledge rising between twin laurel branches of
+                  The emblem of Madhuvan Vatika depicts the flame of knowledge rising between twin laurel branches of
                   integrity and service. As alumni, each graduate carries this noble flame into industry, science, public
                   governance, and arts around the world.
                 </p>
@@ -3595,7 +3595,7 @@ export default function AlumniDashboard({ onBackToKiosk }: DashboardProps) {
                     borderBottom: "1px solid #f1f5f9",
                   }}
                 >
-                  Schedule Your Visit to Green Valley Public School
+                  Schedule Your Visit to Madhuvan Vatika - MVPS
                 </h3>
 
                 <div
@@ -3745,7 +3745,7 @@ export default function AlumniDashboard({ onBackToKiosk }: DashboardProps) {
               </div>
               <div>
                 <h2>Alumni Career & Job Referral Board</h2>
-                <p>Verified openings and direct referrals posted by Green Valley alumni across leading global organizations.</p>
+                <p>Verified openings and direct referrals posted by Madhuvan Vatika alumni across leading global organizations.</p>
               </div>
             </div>
             <div className="student-screen-nav-tools">
@@ -3918,7 +3918,7 @@ export default function AlumniDashboard({ onBackToKiosk }: DashboardProps) {
               </div>
               <div>
                 <h2>Give Back & Alma Mater Philanthropy</h2>
-                <p>Support Green Valley scholarship funds, robotics lab endowments, and sports infrastructure.</p>
+                <p>Support Madhuvan Vatika scholarship funds, robotics lab endowments, and sports infrastructure.</p>
               </div>
             </div>
             <div className="student-screen-nav-tools">
@@ -4160,7 +4160,7 @@ export default function AlumniDashboard({ onBackToKiosk }: DashboardProps) {
                 <Bot size={20} />
               </div>
               <div>
-                <h2>GreenBot AI Assistant (Alumni & Legacy Space)</h2>
+                <h2>VatikaBot AI Assistant (Alumni & Legacy Space)</h2>
                 <p>Instant guidance on reunions, transcript verification, campus passes, and mentorship opportunities.</p>
               </div>
             </div>
@@ -4277,7 +4277,7 @@ export default function AlumniDashboard({ onBackToKiosk }: DashboardProps) {
                 {isAiTyping && (
                   <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "#ea580c", fontSize: "0.78rem" }}>
                     <RefreshCw size={14} className="animate-spin" />
-                    <span>GreenBot is typing an answer...</span>
+                    <span>VatikaBot is typing an answer...</span>
                   </div>
                 )}
                 <div ref={chatBottomRef} />
@@ -4320,7 +4320,7 @@ export default function AlumniDashboard({ onBackToKiosk }: DashboardProps) {
               >
                 <input
                   type="text"
-                  placeholder="Type a question for GreenBot AI..."
+                  placeholder="Type a question for VatikaBot AI..."
                   value={chatInput}
                   onChange={(e) => setChatInput(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSendAiMessage()}
@@ -4364,7 +4364,7 @@ export default function AlumniDashboard({ onBackToKiosk }: DashboardProps) {
                 <ImageIcon size={20} />
               </div>
               <div>
-                <h2>Green Valley Alumni Photo Gallery & Archives</h2>
+                <h2>Madhuvan Vatika Alumni Photo Gallery & Archives</h2>
                 <p>Relive golden school memories, reunion moments, athletic meets, and annual cultural celebrations.</p>
               </div>
             </div>
@@ -4652,7 +4652,7 @@ export default function AlumniDashboard({ onBackToKiosk }: DashboardProps) {
                 {selectedUpdateModal.title}
               </h3>
               <p style={{ margin: "0 0 1rem", fontSize: "0.74rem", color: "#94a3b8" }}>
-                Published: {selectedUpdateModal.date} • Green Valley Alumni Newsroom
+                Published: {selectedUpdateModal.date} • Madhuvan Vatika Alumni Newsroom
               </p>
               <p style={{ fontSize: "0.84rem", color: "#334155", lineHeight: 1.55 }}>
                 {selectedUpdateModal.fullContent}
@@ -4738,8 +4738,8 @@ export default function AlumniDashboard({ onBackToKiosk }: DashboardProps) {
                 required
                 placeholder={
                   messageRecipient.isTeacher
-                    ? "Dear Teacher, remembering your inspiring classes at Green Valley..."
-                    : "Hi! Reconnecting from our Green Valley school days..."
+                    ? "Dear Teacher, remembering your inspiring classes at Madhuvan Vatika..."
+                    : "Hi! Reconnecting from our Madhuvan Vatika school days..."
                 }
                 value={messageText}
                 onChange={(e) => setMessageText(e.target.value)}
@@ -4956,7 +4956,7 @@ export default function AlumniDashboard({ onBackToKiosk }: DashboardProps) {
               }}
             >
               <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: 900, fontFamily: "Outfit, sans-serif" }}>
-                GREEN VALLEY PUBLIC SCHOOL
+                MADHUVAN VATIKA - MVPS
               </h3>
               <p style={{ margin: "2px 0 0", fontSize: "0.72rem", opacity: 0.9 }}>
                 Official Alumni Campus Security Entry Pass
@@ -5111,7 +5111,7 @@ export default function AlumniDashboard({ onBackToKiosk }: DashboardProps) {
               }}
             >
               <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: 900, fontFamily: "Outfit, sans-serif" }}>
-                GREEN VALLEY EDUCATIONAL TRUST
+                MADHUVAN VATIKA EDUCATIONAL TRUST
               </h3>
               <p style={{ margin: "2px 0 0", fontSize: "0.72rem", opacity: 0.9 }}>
                 Official Section 80G Tax Exemption Receipt (Sample)
@@ -5286,7 +5286,7 @@ export default function AlumniDashboard({ onBackToKiosk }: DashboardProps) {
         }}
       >
         <div>
-          <span className="footer-dot" style={{ background: "#ea580c" }} /> Official Green Valley Public School Alumni Command Portal
+          <span className="footer-dot" style={{ background: "#ea580c" }} /> Official Madhuvan Vatika - MVPS Alumni Command Portal
         </div>
         <div className="footer-links">
           <span>CBSE Affiliation 1930281</span>

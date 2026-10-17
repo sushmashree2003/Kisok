@@ -11,7 +11,7 @@ export default function RolesPage() {
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   useEffect(() => {
-    document.title = "Role Selection Portal | Green Valley Public School";
+    document.title = "Role Selection Portal | Madhuvan Vatika - MVPS";
     setCurrentTime(new Date());
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
 

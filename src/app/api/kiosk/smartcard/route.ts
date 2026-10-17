@@ -59,7 +59,7 @@ async function handleSmartcard(cardNumber: string, MI_ID: string | number = 31) 
       RoleId: Number(rawData?.roleId || (isEmployee ? 2 : 3)),
       Rolename: role,
       roleforlogin: role,
-      initname: rawData?.instituteName || "Green Valley Public School",
+      initname: rawData?.instituteName || "Madhuvan Vatika - MVPS",
       initlogo: rawData?.instituteLogo || "",
       miid: Number(MI_ID || 31),
       img: rawData?.img || "",

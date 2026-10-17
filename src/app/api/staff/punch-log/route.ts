@@ -117,7 +117,7 @@ export async function POST(req: NextRequest) {
 
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
-  const userid = searchParams.get("userid") || searchParams.get("empId") || "0";
+  const userid = searchParams.get("userid") || searchParams.get("empId") || "501";
   const MI_Id = searchParams.get("MI_Id") || searchParams.get("miId") || "31";
   const fromDate = searchParams.get("fromDate") || "";
   const toDate = searchParams.get("toDate") || "";

@@ -243,8 +243,8 @@ const CBS_FAQS = [
     a: "Annual fees range from ₹48,000 (Pre-KG) to ₹84,000 (Senior Secondary STEM), payable in 3 term installments. Transport and canteen are optional and route-based.",
   },
   {
-    q: "Is Green Valley Public School affiliated to CBSE?",
-    a: "Yes! Green Valley Public School is permanently affiliated to CBSE New Delhi (Affiliation No. 1930421 • School Code: 45210), maintaining NAAC Grade A++ benchmarking.",
+    q: "Is Madhuvan Vatika - MVPS affiliated to CBSE?",
+    a: "Yes! Madhuvan Vatika - MVPS is permanently affiliated to CBSE New Delhi (Affiliation No. 1930421 • School Code: 45210), maintaining NAAC Grade A++ benchmarking.",
   },
   {
     q: "Can I meet the Principal or Admission Director today?",
@@ -256,7 +256,7 @@ const CBS_FAQS = [
   },
   {
     q: "Are there concessions or scholarship tests for merit students?",
-    a: "Yes. The Green Valley Merit Scholarship offers up to 50% tuition waiver for students scoring 90%+ in the annual scholarship assessment or state-level sports achievers.",
+    a: "Yes. The Madhuvan Vatika Merit Scholarship offers up to 50% tuition waiver for students scoring 90%+ in the annual scholarship assessment or state-level sports achievers.",
   },
 ];
 
@@ -287,7 +287,7 @@ export default function VisitorDashboard({ onBackToKiosk }: VisitorDashboardProp
   const [chatMessages, setChatMessages] = useState<Array<{ sender: "user" | "bot"; text: string }>>([
     {
       sender: "bot",
-      text: "Namaste! Welcome to Green Valley Public School. I am CBS, your AI Campus Guide. Feel free to ask about admissions, campus buildings, fees, or host meetings!",
+      text: "Namaste! Welcome to Madhuvan Vatika - MVPS. I am CBS, your AI Campus Guide. Feel free to ask about admissions, campus buildings, fees, or host meetings!",
     },
   ]);
   const [chatInput, setChatInput] = useState("");
@@ -385,10 +385,10 @@ export default function VisitorDashboard({ onBackToKiosk }: VisitorDashboardProp
             </svg>
           </div>
           <div>
-            <p className="command-kicker">GREEN VALLEY • SMART CAMPUS</p>
+            <p className="command-kicker">MADHUVAN VATIKA • SMART CAMPUS</p>
             <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", flexWrap: "nowrap" }}>
               <h1 style={{ margin: 0, fontFamily: "Outfit, sans-serif", fontSize: "1.15rem", fontWeight: 800, color: "#1e293b", whiteSpace: "nowrap" }}>
-                Green Valley Public School
+                Madhuvan Vatika - MVPS
               </h1>
               <span
                 style={{
@@ -468,7 +468,7 @@ export default function VisitorDashboard({ onBackToKiosk }: VisitorDashboardProp
         <div className="ticker-content">
           <div className="ticker-item">
             <span className="ticker-tag">CAMPUS VISITOR NOTICE:</span>
-            <span>Welcome to Green Valley Public School! Please keep your digital badge visible on campus premises.</span>
+            <span>Welcome to Madhuvan Vatika - MVPS! Please keep your digital badge visible on campus premises.</span>
           </div>
           <div className="ticker-item">
             <span className="ticker-tag" style={{ color: "#ea580c" }}>ADMISSIONS 2026-27:</span>
@@ -567,7 +567,7 @@ export default function VisitorDashboard({ onBackToKiosk }: VisitorDashboardProp
                 title="Launch Visitor AI Assistant"
               >
                 <div className="hero-ai-robo-wrap">
-                  <img src="/ai_robot.png" alt="GreenBot" className="hero-ai-robo-img" />
+                  <img src="/ai_robot.png" alt="VatikaBot" className="hero-ai-robo-img" />
                   <span className="hero-ai-pulse-dot" />
                 </div>
                 <div style={{ textAlign: "center" }}>
@@ -928,7 +928,7 @@ export default function VisitorDashboard({ onBackToKiosk }: VisitorDashboardProp
                   ))}
                 </div>
                 <div style={{ background: "#f8fafc", padding: "0.4rem 0.65rem", borderRadius: "10px", border: "1px solid #e2e8f0", fontSize: "0.75rem", color: "#64748b" }}>
-                  💬 Ask anything about Green Valley Public School for instant automated helpdesk guidance.
+                  💬 Ask anything about Madhuvan Vatika - MVPS for instant automated helpdesk guidance.
                 </div>
               </div>
 
@@ -1085,7 +1085,7 @@ export default function VisitorDashboard({ onBackToKiosk }: VisitorDashboardProp
               </div>
               <div>
                 <h2>Campus Map &amp; Interactive Wayfinder</h2>
-                <p>40-Acre Campus Building Navigator &amp; Floor Guide • Green Valley Public School</p>
+                <p>40-Acre Campus Building Navigator &amp; Floor Guide • Madhuvan Vatika - MVPS</p>
               </div>
             </div>
 
@@ -1245,7 +1245,7 @@ export default function VisitorDashboard({ onBackToKiosk }: VisitorDashboardProp
                 })()}
 
                 <div style={{ background: "#f0fdf4", border: "1.2px solid rgba(187, 247, 208, 0.8)", borderRadius: "14px", padding: "0.85rem", fontSize: "0.76rem", color: "#15803d", lineHeight: 1.4 }}>
-                  <strong>Visitor Wayfinding Tip:</strong> Green Valley campus follows color-coded path markings. Orange trails lead to Admissions &amp; Admin; Teal trails lead to STEM labs.
+                  <strong>Visitor Wayfinding Tip:</strong> Madhuvan Vatika campus follows color-coded path markings. Orange trails lead to Admissions &amp; Admin; Teal trails lead to STEM labs.
                 </div>
               </div>
             </div>
@@ -1412,7 +1412,7 @@ export default function VisitorDashboard({ onBackToKiosk }: VisitorDashboardProp
               >
                 <div style={{ background: "linear-gradient(135deg, #ea580c 0%, #c2410c 100%)", color: "#ffffff", padding: "1.25rem", textAlign: "center" }}>
                   <div style={{ fontSize: "0.7rem", fontWeight: 800, letterSpacing: "0.1em", textTransform: "uppercase", opacity: 0.9 }}>
-                    GREEN VALLEY PUBLIC SCHOOL • VISITOR BADGE
+                    MADHUVAN VATIKA - MVPS • VISITOR BADGE
                   </div>
                   <div style={{ fontFamily: "Outfit, sans-serif", fontSize: "1.3rem", fontWeight: 900, marginTop: "2px" }}>
                     OFFICIAL GUEST PASS

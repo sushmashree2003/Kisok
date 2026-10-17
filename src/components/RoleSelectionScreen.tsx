@@ -80,7 +80,7 @@ const roles: RoleDefinition[] = [
     role: "alumni",
     eyebrow: "STAY CONNECTED",
     title: "Alumni / Ex-Staff",
-    description: "Keep the spirit of Green Valley alive through chapters, mentoring and shared milestones.",
+    description: "Keep the spirit of Madhuvan Vatika alive through chapters, mentoring and shared milestones.",
     image: "/alumni_avatar.png",
     accent: "#d97706",
     soft: "#fffbeb",
@@ -127,9 +127,9 @@ export default function RoleSelectionScreen({
               </svg>
             </div>
             <div>
-              <p className="command-kicker">GREEN VALLEY • SMART CAMPUS</p>
+              <p className="command-kicker">MADHUVAN VATIKA • SMART CAMPUS</p>
               <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", flexWrap: "wrap" }}>
-                <h1>Green Valley Public School</h1>
+                <h1>Madhuvan Vatika - MVPS</h1>
                 <span
                   style={{
                     display: "inline-flex",
@@ -250,7 +250,7 @@ export default function RoleSelectionScreen({
         <footer className="command-footer">
           <div><span className="footer-dot" /> Role Selection Portal • Touch any role card above to proceed</div>
           <div className="footer-links"><span>CBSE Affiliation 1930281</span><span>NAAC Grade A++</span><span>Campus: 6,200 Students</span><span>Digital Campus Kiosk</span></div>
-          <button className="assistant-button" onClick={onOpenBot}><span className="assistant-pulse" /> Need help? <b>Ask GreenBot</b></button>
+          <button className="assistant-button" onClick={onOpenBot}><span className="assistant-pulse" /> Need help? <b>Ask VatikaBot</b></button>
         </footer>
       </div>
 

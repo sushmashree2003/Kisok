@@ -96,7 +96,7 @@ const ADMIN_NOTICES = [
     time: "1h ago",
     date: "14 Oct 2026",
     authority: "Central Board of Secondary Education",
-    details: "Green Valley Public School affiliation (Reg. 1930281) has been extended for another 5-year cycle with Grade A++ accreditation status. Full compliance documentation has been archived into the institutional audit locker.",
+    details: "Madhuvan Vatika - MVPS affiliation (Reg. 1930281) has been extended for another 5-year cycle with Grade A++ accreditation status. Full compliance documentation has been archived into the institutional audit locker.",
   },
   {
     id: 2,
@@ -181,7 +181,7 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
   const [chatMessages, setChatMessages] = useState<Array<{ sender: "bot" | "user"; text: string; time: string; tag?: string }>>([
     {
       sender: "bot",
-      text: "Greetings, Administrator. I am GreenBot, your Institutional Intelligence Assistant. I am connected to the campus smart grid, CBSE compliance ledger, fee reconciliation, and attendance telemetry. How may I assist your administration today?",
+      text: "Greetings, Administrator. I am VatikaBot, your Institutional Intelligence Assistant. I am connected to the campus smart grid, CBSE compliance ledger, fee reconciliation, and attendance telemetry. How may I assist your administration today?",
       time: "Just now",
       tag: "ADMIN EXECUTIVE DESK",
     },
@@ -223,7 +223,7 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
       } else if (lower.includes("solar") || lower.includes("power") || lower.includes("grid") || lower.includes("energy")) {
         botResponse = "⚡ Campus Solar Smart Grid Telemetry:\n• Current Generation: 48.2 kWh (peak sun)\n• Campus Self-Sufficiency: 96% power independence\n• Battery Reserve: 88% capacity at Substation A.";
       } else {
-        botResponse = `✨ Understood, Administrator. GreenBot has logged your request: "${query}". All institutional databases, smart meters, and academic controllers are currently synchronized and running at peak performance.`;
+        botResponse = `✨ Understood, Administrator. VatikaBot has logged your request: "${query}". All institutional databases, smart meters, and academic controllers are currently synchronized and running at peak performance.`;
       }
 
       setChatMessages((prev) => [
@@ -288,7 +288,7 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
   };
 
   const adminName = session?.username || "Dr. R. K. Verma";
-  const schoolName = session?.initname || "Green Valley Public School";
+  const schoolName = session?.initname || "Madhuvan Vatika - MVPS";
   const adminRole = session?.Rolename || "Campus Administrator";
   const academicYear = session?.ASMAY_Year || "2025-2026";
 
@@ -310,7 +310,7 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
             </svg>
           </div>
           <div>
-            <p className="command-kicker">GREEN VALLEY • SMART CAMPUS</p>
+            <p className="command-kicker">MADHUVAN VATIKA • SMART CAMPUS</p>
             <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", flexWrap: "wrap" }}>
               <h1 style={{ margin: 0, fontFamily: "Outfit, sans-serif", fontSize: "1.15rem", fontWeight: 800, color: "#1e293b" }}>
                 {schoolName}
@@ -466,14 +466,14 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
                 title="Launch Admin AI Command Space"
               >
                 <div className="hero-ai-robo-wrap">
-                  <img src="/ai_robot.png" alt="GreenBot" className="hero-ai-robo-img" />
+                  <img src="/ai_robot.png" alt="VatikaBot" className="hero-ai-robo-img" />
                   <span className="hero-ai-pulse-dot" />
                 </div>
                 <div style={{ textAlign: "center" }}>
                   <div className="hero-ai-kicker">
                     <Sparkles size={9} style={{ display: "inline", verticalAlign: "middle", marginRight: 2 }} /> EXECUTIVE AI
                   </div>
-                  <span className="hero-ai-action">Ask GreenBot →</span>
+                  <span className="hero-ai-action">Ask VatikaBot →</span>
                 </div>
               </button>
             </div>
@@ -1288,7 +1288,7 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
               </div>
               <div>
                 <h2>Institutional Fee Ledger & Accounts Reconciliation</h2>
-                <p>Term-2 Tuition & Transportation Fee Ledger • Green Valley Public School</p>
+                <p>Term-2 Tuition & Transportation Fee Ledger • Madhuvan Vatika - MVPS</p>
               </div>
             </div>
 
@@ -1595,7 +1595,7 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
                   </span>
                 </div>
                 <div style={{ fontSize: "0.85rem", color: "#64748b", marginBottom: "0.75rem" }}>
-                  Directorate of Institutional Governance • Green Valley Public School
+                  Directorate of Institutional Governance • Madhuvan Vatika - MVPS
                 </div>
 
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "0.75rem" }}>
@@ -1665,7 +1665,7 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
                 <Bot size={20} />
               </div>
               <div>
-                <h2>GreenBot AI Executive Assistant</h2>
+                <h2>VatikaBot AI Executive Assistant</h2>
                 <p>Institutional Operations Copilot • Governance & Smart Campus Telemetry</p>
               </div>
             </div>
@@ -1700,7 +1700,7 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
                   <div className="ai-robot-showcase-frame" style={{ borderColor: "#7c3aed", boxShadow: "0 8px 24px rgba(124, 58, 237, 0.2)" }}>
                     <img
                       src="/ai_robot.png"
-                      alt="GreenBot Robot"
+                      alt="VatikaBot Robot"
                       className="ai-robot-showcase-img"
                     />
                   </div>
@@ -1775,7 +1775,7 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
                       onClick={() => setChatMessages([
                         {
                           sender: "bot",
-                          text: "Conversation refreshed. GreenBot executive ledger is ready. How can I assist you?",
+                          text: "Conversation refreshed. VatikaBot executive ledger is ready. How can I assist you?",
                           time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
                           tag: "ADMIN EXECUTIVE DESK",
                         }
@@ -1804,14 +1804,14 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
                       className={`ai-msg-row ${msg.sender === "bot" ? "ai-msg-row-bot" : "ai-msg-row-user"}`}
                     >
                       {msg.sender === "bot" ? (
-                        <img src="/ai_robot.png" alt="GreenBot" className="ai-msg-avatar" style={{ border: "2px solid #7c3aed" }} />
+                        <img src="/ai_robot.png" alt="VatikaBot" className="ai-msg-avatar" style={{ border: "2px solid #7c3aed" }} />
                       ) : (
                         <img src={session?.img || "/admin_avatar.png"} alt={adminName} className="ai-msg-avatar" style={{ border: "2px solid #ea580c" }} />
                       )}
 
                       <div className="ai-msg-content-wrap">
                         <div className="ai-msg-sender-meta">
-                          <span>{msg.sender === "bot" ? "GreenBot Executive" : adminName}</span>
+                          <span>{msg.sender === "bot" ? "VatikaBot Executive" : adminName}</span>
                           {msg.sender === "bot" && (
                             <span
                               style={{
@@ -1839,7 +1839,7 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
                   {/* Typing Indicator */}
                   {isTyping && (
                     <div className="ai-msg-row ai-msg-row-bot">
-                      <img src="/ai_robot.png" alt="GreenBot" className="ai-msg-avatar" style={{ border: "2px solid #7c3aed" }} />
+                      <img src="/ai_robot.png" alt="VatikaBot" className="ai-msg-avatar" style={{ border: "2px solid #7c3aed" }} />
                       <div className="ai-typing-indicator">
                         <span className="ai-typing-dot" />
                         <span className="ai-typing-dot" />
@@ -1878,7 +1878,7 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
                   <input
                     type="text"
                     className="ai-chat-text-input"
-                    placeholder="Ask GreenBot about attendance, admissions, finances, solar grid, compliance..."
+                    placeholder="Ask VatikaBot about attendance, admissions, finances, solar grid, compliance..."
                     value={chatInputText}
                     onChange={(e) => setChatInputText(e.target.value)}
                     onKeyDown={(e) => {
@@ -1890,7 +1890,7 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
                   <button
                     className="ai-chat-send-btn"
                     onClick={() => handleSendChatMessage()}
-                    title="Send instruction to GreenBot"
+                    title="Send instruction to VatikaBot"
                     style={{ background: "#7c3aed" }}
                   >
                     <Send size={15} />
@@ -1958,7 +1958,7 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
               <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                 <Play size={16} fill="#7c3aed" color="#7c3aed" />
                 <span style={{ color: "#ffffff", fontWeight: 700, fontSize: "0.85rem" }}>
-                  Green Valley Campus Aerial Architecture & Infrastructure
+                  Madhuvan Vatika Campus Aerial Architecture & Infrastructure
                 </span>
               </div>
               <button
@@ -1983,7 +1983,7 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
             <div style={{ position: "relative", paddingBottom: "56.25%", height: 0, background: "#000000" }}>
               <iframe
                 src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1"
-                title="Green Valley Infrastructure Tour"
+                title="Madhuvan Vatika Infrastructure Tour"
                 style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", border: "none" }}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen

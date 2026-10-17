@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import "./dashboards.css";
+import "./campus-portal.css";
 
 export const metadata: Metadata = {
   title: "Campus Smart Portal",

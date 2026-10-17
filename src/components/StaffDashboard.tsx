@@ -2366,13 +2366,13 @@ export default function StaffDashboard({ onBackToKiosk }: DashboardProps) {
                 </div>
                 <div>
                   <h2>Faculty AI Teaching Assistant</h2>
-                  <p>Instant answers on Timetable, Leaves, Biometrics &amp; Academic Guidelines</p>
+                  <p>Instant answers on Timetable, Leaves, Biometrics &amp; CBSE Guidelines</p>
                 </div>
               </div>
 
               <div className="student-screen-nav-tools">
                 <div style={{ fontSize: "0.75rem", fontWeight: 700, color: "#7c3aed" }}>
-                  ● Smart AI Assistant Online
+                  ● GreenBot AI Engine Online
                 </div>
               </div>
             </div>
@@ -2425,7 +2425,7 @@ export default function StaffDashboard({ onBackToKiosk }: DashboardProps) {
                 ))}
                 {isTyping && (
                   <div style={{ alignSelf: "flex-start", background: "#ffffff", padding: "0.6rem 1rem", borderRadius: "18px", border: "1px solid #e2e8f0", fontSize: "0.8rem", color: "#64748b" }}>
-                    AI Assistant is typing...
+                    GreenBot is typing...
                   </div>
                 )}
                 <div ref={chatMessagesEndRef} />
@@ -2435,7 +2435,7 @@ export default function StaffDashboard({ onBackToKiosk }: DashboardProps) {
               <div style={{ padding: "0.85rem", background: "#ffffff", borderTop: "1px solid #e2e8f0", display: "flex", gap: "0.75rem" }}>
                 <input
                   type="text"
-                  placeholder="Ask AI Assistant about classes, leaves, salary or academic schedules..."
+                  placeholder="Ask GreenBot about classes, leaves, salary or lesson plans..."
                   value={chatInputText}
                   onChange={(e) => setChatInputText(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSendChatMessage()}

@@ -1,0 +1,1038 @@
+/* ==========================================================================
+   MADHUVAN VATIKA - MVPS • NEXT-GEN SMART CAMPUS KIOSK
+   Completely Fresh, High-Impact Asymmetrical Bento Architecture
+   Warm Light-Orange & Amber Palette, Luxury Glassmorphism & Zero Boxiness
+   ========================================================================== */
+
+html:has(.mv-kiosk-wrapper),
+body:has(.mv-kiosk-wrapper) {
+  height: 100vh !important;
+  height: 100dvh !important;
+  max-height: 100dvh !important;
+  width: 100vw !important;
+  overflow: hidden !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.mv-kiosk-wrapper {
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  max-height: 100dvh;
+  background-color: #fffaf4;
+  background-image: 
+    radial-gradient(circle at 8% 10%, rgba(254, 215, 170, 0.75), transparent 45%),
+    radial-gradient(circle at 92% 15%, rgba(253, 186, 116, 0.55), transparent 40%),
+    radial-gradient(circle at 50% 90%, rgba(255, 237, 213, 0.8), transparent 50%),
+    linear-gradient(135deg, #fffcf9 0%, #fff6ed 45%, #ffede0 100%);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  color: #1e293b;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: clamp(8px, 1.2vh, 12px) clamp(12px, 1.4vw, 20px);
+  box-sizing: border-box;
+  overflow: hidden;
+  user-select: none;
+  isolation: isolate;
+  position: relative;
+  gap: clamp(6px, 1vh, 10px);
+}
+
+/* Subtle modern mesh overlay */
+.mv-kiosk-wrapper::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.35;
+  pointer-events: none;
+  background-image: 
+    radial-gradient(rgba(234, 88, 12, 0.12) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* --------------------------------------------------------------------------
+   1. FLOATING COMMAND HEADER (GLASS PILL)
+   -------------------------------------------------------------------------- */
+.mv-header-bar {
+  width: 100%;
+  height: clamp(48px, 6.5vh, 56px);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(16px);
+  border-radius: 9999px;
+  border: 1.5px solid rgba(254, 215, 170, 0.9);
+  box-shadow: 0 4px 20px rgba(234, 88, 12, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 clamp(12px, 1.4vw, 20px);
+  flex-shrink: 0;
+  box-sizing: border-box;
+  z-index: 10;
+}
+
+.mv-brand-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mv-brand-crest {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  filter: drop-shadow(0 2px 6px rgba(234, 88, 12, 0.3));
+}
+
+.mv-brand-titles {
+  display: flex;
+  flex-direction: column;
+}
+
+.mv-brand-name {
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(1rem, 1.25vw, 1.25rem);
+  font-weight: 900;
+  color: #0e2a47;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.mv-brand-sub {
+  font-size: clamp(0.58rem, 0.65vw, 0.68rem);
+  font-weight: 700;
+  color: #ea580c;
+  letter-spacing: 0.04em;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Center Marquee Capsule */
+.mv-news-capsule {
+  flex: 1;
+  max-width: 50%;
+  height: 32px;
+  background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+  border: 1px solid rgba(251, 146, 60, 0.4);
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px 0 4px;
+  gap: 8px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 3px rgba(234, 88, 12, 0.04);
+}
+
+.mv-news-badge {
+  background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+  color: #ffffff;
+  font-size: clamp(0.58rem, 0.65vw, 0.65rem);
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(234, 88, 12, 0.3);
+}
+
+.mv-news-scroller {
+  flex: 1;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.mv-news-track {
+  display: inline-block;
+  white-space: nowrap;
+  animation: mvMarquee 38s linear infinite;
+  font-size: clamp(0.66rem, 0.74vw, 0.74rem);
+  font-weight: 600;
+  color: #0e2a47;
+}
+
+.mv-news-track span {
+  margin: 0 12px;
+}
+
+.mv-news-sep {
+  color: #ea580c;
+  font-weight: 900;
+}
+
+@keyframes mvMarquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* Right Status / Clock */
+.mv-header-tools {
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 1vw, 14px);
+}
+
+.mv-live-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #16a34a;
+}
+
+.mv-pulse-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #16a34a;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.25);
+  animation: pulseGreen 2s infinite;
+}
+
+@keyframes pulseGreen {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.2); opacity: 0.7; }
+}
+
+.mv-clock-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #0e2a47;
+}
+
+.mv-clock-pill b {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 900;
+  color: #ea580c;
+  font-size: 0.85rem;
+}
+
+.mv-fs-trigger {
+  background: #ffffff;
+  border: 1px solid #fed7aa;
+  color: #ea580c;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(234, 88, 12, 0.1);
+  transition: all 0.2s ease;
+}
+
+.mv-fs-trigger:hover {
+  background: #ea580c;
+  color: #ffffff;
+  transform: scale(1.05);
+}
+
+/* --------------------------------------------------------------------------
+   2. MAIN ASYMMETRICAL BENTO GRID (Zero Boxiness, Dynamic Depth)
+   -------------------------------------------------------------------------- */
+.mv-bento-grid {
+  display: grid;
+  grid-template-columns: 1.22fr 1.38fr 1.05fr;
+  gap: clamp(10px, 1.2vw, 16px);
+  flex: 1;
+  min-height: 0;
+  align-items: stretch;
+}
+
+/* ==========================================================================
+   ZONE A (LEFT COLUMN): CINEMATIC SHOWCASE & DIRECT TOUCH ROLES
+   ========================================================================== */
+.mv-col-left {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(8px, 1vh, 12px);
+  height: 100%;
+  min-height: 0;
+}
+
+/* Hero Showcase Card */
+.mv-hero-showcase {
+  flex: 1.25;
+  min-height: 0;
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(234, 88, 12, 0.12);
+  border: 1.5px solid rgba(254, 215, 170, 0.9);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: clamp(12px, 1.6vh, 18px);
+  background-image: url('/hero_school_building.jpg');
+  background-size: cover;
+  background-position: center 30%;
+}
+
+.mv-hero-sc-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(14, 42, 71, 0.92) 0%, rgba(14, 42, 71, 0.75) 55%, rgba(234, 88, 12, 0.4) 100%);
+  backdrop-filter: blur(2px);
+  z-index: 1;
+}
+
+.mv-hero-sc-content {
+  position: relative;
+  z-index: 2;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.mv-hero-cursive-kicker {
+  font-family: 'Caveat', cursive;
+  font-size: clamp(1.4rem, 1.8vw, 1.75rem);
+  font-weight: 700;
+  color: #fb923c;
+  line-height: 1;
+}
+
+.mv-hero-main-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(1.35rem, 1.85vw, 1.85rem);
+  font-weight: 900;
+  color: #ffffff;
+  line-height: 1.15;
+  margin: 4px 0 6px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.mv-hero-desc {
+  font-size: clamp(0.68rem, 0.78vw, 0.8rem);
+  color: #fed7aa;
+  line-height: 1.35;
+  max-width: 95%;
+}
+
+.mv-hero-pills-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin: 10px 0;
+}
+
+.mv-hero-stat-chip {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 10px;
+  padding: 6px 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mv-hero-chip-icon {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(234, 88, 12, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.mv-hero-chip-text b {
+  display: block;
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(0.72rem, 0.82vw, 0.84rem);
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1.1;
+}
+
+.mv-hero-chip-text span {
+  font-size: clamp(0.52rem, 0.58vw, 0.6rem);
+  color: #fed7aa;
+  line-height: 1;
+}
+
+.mv-hero-bottom-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.mv-tour-glow-btn {
+  background: rgba(255, 255, 255, 0.95);
+  color: #0e2a47;
+  border: none;
+  border-radius: 9999px;
+  padding: 6px 14px;
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(0.68rem, 0.76vw, 0.76rem);
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.mv-tour-glow-btn:hover {
+  background: #ea580c;
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.mv-creed-author {
+  font-family: 'Caveat', cursive;
+  font-size: 0.95rem;
+  color: #fdba74;
+  font-weight: 700;
+}
+
+/* Touch Role Hub Card */
+.mv-role-hub-card {
+  flex: 0.95;
+  min-height: 0;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  border-radius: 20px;
+  border: 1.5px solid rgba(254, 215, 170, 0.9);
+  box-shadow: 0 6px 20px rgba(234, 88, 12, 0.08);
+  padding: clamp(10px, 1.4vh, 14px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.mv-hub-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.mv-hub-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(0.85rem, 0.98vw, 1rem);
+  font-weight: 900;
+  color: #0e2a47;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mv-hub-kicker {
+  font-size: 0.58rem;
+  font-weight: 800;
+  color: #ea580c;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  padding: 2px 8px;
+  border-radius: 9999px;
+}
+
+.mv-roles-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 6px 0;
+}
+
+.mv-role-pill-btn {
+  background: #ffffff;
+  border: 1.5px solid rgba(254, 215, 170, 0.85);
+  border-radius: 12px;
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.mv-role-pill-btn:hover {
+  background: #fff7ed;
+  border-color: #ea580c;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(234, 88, 12, 0.12);
+}
+
+.mv-role-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.mv-role-icon.student { background: #ecfdf5; color: #059669; }
+.mv-role-icon.staff { background: #fff7ed; color: #ea580c; }
+.mv-role-icon.visitor { background: #f5f3ff; color: #7c3aed; }
+.mv-role-icon.alumni { background: #eff6ff; color: #2563eb; }
+
+.mv-role-text b {
+  display: block;
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(0.72rem, 0.82vw, 0.82rem);
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.15;
+}
+
+.mv-role-text span {
+  font-size: clamp(0.52rem, 0.58vw, 0.6rem);
+  color: #64748b;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.mv-primary-login-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  padding: clamp(8px, 1.2vh, 11px) 16px;
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(0.85rem, 0.95vw, 0.98rem);
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(234, 88, 12, 0.35);
+  transition: all 0.2s ease;
+}
+
+.mv-primary-login-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 22px rgba(234, 88, 12, 0.45);
+}
+
+/* ==========================================================================
+   ZONE B (CENTER COLUMN): AWARDS SPOTLIGHT & RECENT MOMENTS GALLERY
+   ========================================================================== */
+.mv-col-center {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(8px, 1vh, 12px);
+  height: 100%;
+  min-height: 0;
+}
+
+/* Achievements Spotlight Card */
+.mv-achieve-spotlight-card {
+  flex: 1.15;
+  min-height: 0;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(12px);
+  border-radius: 20px;
+  border: 1.5px solid rgba(254, 215, 170, 0.9);
+  box-shadow: 0 6px 20px rgba(234, 88, 12, 0.08);
+  padding: clamp(10px, 1.4vh, 14px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.mv-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.mv-section-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mv-section-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(0.88rem, 1vw, 1.05rem);
+  font-weight: 900;
+  color: #0e2a47;
+  margin: 0;
+}
+
+.mv-view-all-btn {
+  font-size: clamp(0.64rem, 0.72vw, 0.72rem);
+  font-weight: 800;
+  color: #ea580c;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.mv-view-all-btn:hover {
+  color: #c2410c;
+  transform: translateX(2px);
+}
+
+/* 3 Achievements in Dynamic Cards */
+.mv-achieve-cards-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  flex: 1;
+  min-height: 0;
+  align-items: stretch;
+}
+
+.mv-achieve-card {
+  background: #ffffff;
+  border-radius: 14px;
+  border: 1.5px solid rgba(254, 215, 170, 0.85);
+  box-shadow: 0 2px 8px rgba(234, 88, 12, 0.05);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.mv-achieve-card:hover {
+  transform: translateY(-2px);
+  border-color: #ea580c;
+  box-shadow: 0 6px 16px rgba(234, 88, 12, 0.12);
+}
+
+.mv-achieve-img-box {
+  width: 100%;
+  height: 52%;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.mv-achieve-img-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.mv-achieve-card:hover .mv-achieve-img-box img {
+  transform: scale(1.06);
+}
+
+.mv-achieve-rank-pill {
+  position: absolute;
+  bottom: -9px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+  color: #ffffff;
+  border-radius: 9999px;
+  padding: 1px 8px;
+  font-size: clamp(0.55rem, 0.62vw, 0.64rem);
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  border: 1.5px solid #ffffff;
+  box-shadow: 0 2px 6px rgba(234, 88, 12, 0.35);
+  white-space: nowrap;
+  z-index: 2;
+}
+
+.mv-achieve-meta {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 11px 4px 4px;
+  gap: 2px;
+}
+
+.mv-achieve-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(0.72rem, 0.8vw, 0.82rem);
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.15;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+.mv-achieve-level {
+  font-size: clamp(0.54rem, 0.6vw, 0.62rem);
+  color: #64748b;
+  font-weight: 600;
+  line-height: 1.1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+.mv-achieve-winner {
+  font-size: clamp(0.52rem, 0.58vw, 0.6rem);
+  font-weight: 800;
+  color: #ea580c;
+  background: #fff7ed;
+  padding: 1px 6px;
+  border-radius: 9999px;
+  border: 1px solid #fed7aa;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 95%;
+}
+
+/* Recent Moments 2x2 Gallery Card */
+.mv-gallery-card {
+  flex: 1.05;
+  min-height: 0;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(12px);
+  border-radius: 20px;
+  border: 1.5px solid rgba(254, 215, 170, 0.9);
+  box-shadow: 0 6px 20px rgba(234, 88, 12, 0.08);
+  padding: clamp(10px, 1.4vh, 14px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.mv-gallery-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 8px;
+  flex: 1;
+  min-height: 0;
+}
+
+.mv-gallery-item {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  height: 100%;
+  cursor: pointer;
+  border: 1.5px solid rgba(254, 215, 170, 0.8);
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+}
+
+.mv-gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.35s ease;
+}
+
+.mv-gallery-item:hover img {
+  transform: scale(1.08);
+}
+
+.mv-gallery-label-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(14, 42, 71, 0.92) 0%, transparent 100%);
+  padding: 14px 8px 5px;
+  color: #ffffff;
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(0.6rem, 0.68vw, 0.72rem);
+  font-weight: 800;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ==========================================================================
+   ZONE C (RIGHT COLUMN): LIVE EVENTS TIMELINE & CAMPUS FACILITIES
+   ========================================================================== */
+.mv-col-right {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(8px, 1vh, 12px);
+  height: 100%;
+  min-height: 0;
+}
+
+/* Upcoming Events Timeline Card */
+.mv-timeline-card {
+  flex: 1.25;
+  min-height: 0;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(12px);
+  border-radius: 20px;
+  border: 1.5px solid rgba(254, 215, 170, 0.9);
+  box-shadow: 0 6px 20px rgba(234, 88, 12, 0.08);
+  padding: clamp(10px, 1.4vh, 14px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.mv-timeline-list {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 6px;
+  flex: 1;
+  min-height: 0;
+}
+
+.mv-timeline-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #ffffff;
+  border: 1.5px solid rgba(254, 215, 170, 0.8);
+  border-radius: 12px;
+  padding: 6px 10px;
+  flex: 1;
+  min-height: 0;
+  transition: all 0.2s ease;
+}
+
+.mv-timeline-row:hover {
+  background: #fff7ed;
+  border-color: #ea580c;
+  transform: translateX(2px);
+}
+
+.mv-timeline-date {
+  width: 38px;
+  height: 38px;
+  border-radius: 9px;
+  background: #fff7ed;
+  border: 1.5px solid #fed7aa;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.mv-timeline-day {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 900;
+  color: #c2410c;
+}
+
+.mv-timeline-month {
+  font-size: 0.52rem;
+  font-weight: 800;
+  color: #ea580c;
+  text-transform: uppercase;
+}
+
+.mv-timeline-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+}
+
+.mv-timeline-name {
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(0.72rem, 0.8vw, 0.82rem);
+  font-weight: 800;
+  color: #0e2a47;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
+}
+
+.mv-timeline-venue {
+  font-size: clamp(0.54rem, 0.6vw, 0.62rem);
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
+}
+
+.mv-timeline-tag {
+  font-size: 0.52rem;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 9999px;
+  white-space: nowrap;
+}
+
+.mv-timeline-tag.academics { background: #f0fdf4; color: #16a34a; }
+.mv-timeline-tag.sports { background: #fff7ed; color: #ea580c; }
+.mv-timeline-tag.stem { background: #e0f2fe; color: #0284c7; }
+.mv-timeline-tag.fest { background: #fdf2f8; color: #db2777; }
+
+/* Facilities Peek + Quote Combined Card */
+.mv-facilities-quote-card {
+  flex: 0.95;
+  min-height: 0;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(12px);
+  border-radius: 20px;
+  border: 1.5px solid rgba(254, 215, 170, 0.9);
+  box-shadow: 0 6px 20px rgba(234, 88, 12, 0.08);
+  padding: clamp(10px, 1.4vh, 12px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.mv-fac-mini-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.mv-fac-mini-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(254, 215, 170, 0.75);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
+}
+
+.mv-fac-mini-item:hover {
+  transform: scale(1.05);
+  border-color: #ea580c;
+}
+
+.mv-fac-mini-img {
+  width: 100%;
+  height: clamp(38px, 5.5vh, 48px);
+  object-fit: cover;
+}
+
+.mv-fac-mini-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.52rem;
+  font-weight: 800;
+  color: #0e2a47;
+  padding: 2px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+  text-align: center;
+  background: #ffffff;
+}
+
+/* Warm Quote Ribbon */
+.mv-creed-ribbon {
+  background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+  border: 1.5px solid rgba(251, 146, 60, 0.55);
+  border-radius: 12px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mv-creed-quote-mark {
+  font-family: Georgia, serif;
+  font-size: 1.8rem;
+  color: #ea580c;
+  line-height: 0.8;
+  font-weight: 900;
+}
+
+.mv-creed-text {
+  font-family: 'Caveat', cursive;
+  font-size: clamp(0.85rem, 1.05vw, 1.05rem);
+  font-weight: 700;
+  color: #0e2a47;
+  line-height: 1.25;
+  margin: 0;
+}
+
+/* --------------------------------------------------------------------------
+   3. BOTTOM STATUS BAR
+   -------------------------------------------------------------------------- */
+.mv-footer-bar {
+  width: 100%;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px;
+  font-size: clamp(0.58rem, 0.65vw, 0.68rem);
+  font-weight: 700;
+  color: #64748b;
+  flex-shrink: 0;
+}
+
+.mv-footer-tags {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.mv-footer-tag {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.mv-footer-motto {
+  font-family: 'Caveat', cursive;
+  font-size: 1.15rem;
+  color: #ea580c;
+  font-weight: 700;
+}
+
+.mv-footer-links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #475569;
+}
+
+.mv-footer-links span:hover {
+  color: #ea580c;
+  cursor: pointer;
+}
