@@ -311,7 +311,7 @@ export default function LoginScreen({
     setIsSubmitting(true);
     setErrorMessage(null);
 
-    if (!password.trim()) {
+    if (role !== "alumni" && !password.trim()) {
       setIsSubmitting(false);
       setErrorMessage("Please enter your password to authenticate.");
       return;
@@ -325,7 +325,7 @@ export default function LoginScreen({
         },
         body: JSON.stringify({
           username: username.trim(),
-          password: password,
+          password: password || "alumni",
           mI_ID: institutionId,
           loginUrl: serverUrl,
           role: role,
@@ -1548,10 +1548,10 @@ export default function LoginScreen({
                 <input
                   type={showPassword ? "text" : "password"}
                   className="login-input-field"
-                  placeholder="Password / PIN"
+                  placeholder={role === "alumni" ? "Enter any password / PIN" : "Password / PIN"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  required
+                  required={role !== "alumni"}
                   autoComplete="current-password"
                   spellCheck={false}
                   style={{
