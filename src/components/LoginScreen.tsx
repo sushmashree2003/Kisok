@@ -1020,8 +1020,7 @@ export default function LoginScreen({
             >
               {role === "student" && <GraduationCap size={13} />}
               {role === "staff" && <Users size={13} />}
-              {role === "admin" && <ShieldCheck size={13} />}
-              {role === "guest" && <Users size={13} />}
+              {role === "visitor" && <Users size={13} />}
               {role === "alumni" && <Star size={13} />}
               <span>{config.roleBadge}</span>
             </div>

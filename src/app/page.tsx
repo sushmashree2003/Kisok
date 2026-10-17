@@ -1,4 +1,43 @@
-import { redirect } from "next/navigation";
+"use client";
+
+import { useEffect, useState } from "react";
+import {
+  Calendar,
+  GraduationCap,
+  Users,
+  Leaf,
+  ArrowRight,
+  BookOpen,
+  Settings,
+  Star,
+  Heart,
+  Trophy,
+  Camera,
+  Play,
+  MapPin,
+  Quote,
+  Megaphone,
+  ChevronRight,
+  User,
+  X,
+  Send,
+  ArrowLeft,
+  Sparkles,
+  Maximize,
+  Minimize,
+  Clock,
+  Award,
+  ShieldCheck,
+  Cpu,
+  Tv,
+  Activity,
+  CheckCircle2,
+  School,
+  Building2,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { RoleType } from "@/components/LoginScreen";
+import RoleSelectionScreen from "@/components/RoleSelectionScreen";
 
 export default function Home() {
   const router = useRouter();
@@ -1202,5 +1241,4 @@ export default function Home() {
       )}
     </>
   );
-  redirect("/dashboard");
 }
