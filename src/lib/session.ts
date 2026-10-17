@@ -16,12 +16,12 @@ export function createSessionFromLoginDTO(
   const rolename = dto.roleforlogin || (typeof dto.role === "string" ? dto.role : fallbackRole);
   const empid = Number(dto.empcode || dto.emp_Id || 0);
   const mi_id = Number(dto.MI_Idforlogin || dto.mI_ID || 31);
-  const initname = dto.instituteName || dto.mI_Name || "Green Valley Public School";
+  const initname = dto.instituteName || dto.mI_Name || dto.instname || dto.institutionName || "";
   const initlogo = dto.mI_logo || "";
 
   return {
     username: dto.userName || fallbackUsername,
-    ASMAY_Year: dto.ASMAY_Year || "2025-2026",
+    ASMAY_Year: dto.ASMAY_Year || dto.asmaY_Year || "",
     ASMAY_Id: Number(dto.asmaY_Id || 0),
     AMST_ID: Number(dto.AMST_ID || dto.amsT_Id || 0),
     UserId: Number(dto.userId || 0),

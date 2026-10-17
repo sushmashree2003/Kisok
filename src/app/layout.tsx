@@ -3,8 +3,8 @@ import "./globals.css";
 import "./dashboards.css";
 
 export const metadata: Metadata = {
-  title: "Green Valley Public School Portal",
-  description: "A place to learn, a space to grow, a community to belong",
+  title: "Campus Smart Portal",
+  description: "Smart Kiosk & Academic Management Portal",
 };
 
 export default function RootLayout({

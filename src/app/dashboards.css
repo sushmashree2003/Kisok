@@ -220,7 +220,8 @@
   height: clamp(28px, 3.5vh, 34px);
   border-radius: 50%;
   object-fit: cover;
-  border: 1.5px solid #ffffff;
+  border: 2px solid #ea580c;
+  box-shadow: 0 2px 8px rgba(234, 88, 12, 0.2);
 }
 
 .dash-user-info {
@@ -2906,8 +2907,8 @@
   min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: clamp(0.55rem, 1.1vh, 0.85rem);
-  padding: clamp(0.45rem, 0.9vh, 0.75rem) clamp(1rem, 1.8vw, 1.8rem);
+  gap: clamp(0.35rem, 0.75vh, 0.65rem);
+  padding: clamp(0.35rem, 0.65vh, 0.55rem) clamp(0.85rem, 1.5vw, 1.5rem);
   max-width: 1680px;
   margin: 0 auto;
   width: 100%;
@@ -2924,20 +2925,20 @@
 /* Hero Welcome Banner (RoleSelectionScreen Command Theme - Compact Kiosk Height) */
 .student-hub-hero {
   flex-shrink: 0;
-  min-height: clamp(96px, 11.5vh, 118px);
+  min-height: clamp(84px, 10vh, 102px);
   max-height: none;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 251, 247, 0.94) 100%);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  border-radius: 18px;
+  border-radius: 16px;
   border: 1.5px solid rgba(254, 215, 170, 0.75);
-  padding: clamp(0.48rem, 0.75vh, 0.65rem) clamp(0.95rem, 1.4vw, 1.4rem);
+  padding: clamp(0.38rem, 0.6vh, 0.55rem) clamp(0.85rem, 1.2vw, 1.25rem);
   color: #1e293b;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1.25rem;
-  box-shadow: 0 6px 20px -4px rgba(234, 88, 12, 0.08), inset 0 1px 0 #ffffff;
+  gap: 1rem;
+  box-shadow: 0 4px 16px -4px rgba(234, 88, 12, 0.08), inset 0 1px 0 #ffffff;
   position: relative;
   overflow: visible;
 }
@@ -3061,12 +3062,14 @@
 }
 
 .hero-avatar-3d-img {
-  height: 86px;
+  height: 82px;
   width: auto;
   object-fit: contain;
   filter: drop-shadow(0 6px 10px rgba(234, 88, 12, 0.28));
   z-index: 2;
   transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 2px solid #ea580c;
+  border-radius: 14px;
 }
 
 .hero-avatar-podium:hover .hero-avatar-3d-img {
@@ -3171,6 +3174,9 @@
   width: 34px;
   height: 34px;
   object-fit: contain;
+  border: 2px solid #ea580c;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(234, 88, 12, 0.25);
   filter: drop-shadow(0 3px 6px rgba(234, 88, 12, 0.2));
 }
 
@@ -3223,15 +3229,16 @@
   min-height: 0;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(2, minmax(200px, 1fr));
-  gap: clamp(0.65rem, 1vw, 0.95rem);
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  gap: clamp(0.45rem, 0.8vw, 0.75rem);
 }
 
 .student-hub-card {
   --card-accent: #ea580c;
-  min-height: 200px;
+  min-height: 0;
+  height: 100%;
   background: #ffffff;
-  border-radius: 18px;
+  border-radius: 16px;
   border: 1.2px solid rgba(251, 146, 60, 0.28);
   box-shadow: 0 4px 18px -2px rgba(15, 23, 42, 0.04), 0 2px 6px -1px rgba(234, 88, 12, 0.04), inset 0 1px 0 #ffffff;
   display: flex;
@@ -4564,5 +4571,53 @@
 .ai-chat-send-btn:active {
   transform: scale(0.95);
 }
+
+/* Strict Single-Screen Kiosk Footer for All Dashboards */
+.dashboard-page .command-footer {
+  flex-shrink: 0;
+  height: clamp(34px, 4vh, 40px);
+  min-height: 34px;
+  max-height: 40px;
+  padding: 0 clamp(16px, 2vw, 24px) 0 3.75rem !important;
+  margin-top: auto;
+  border-top: 1px solid rgba(254, 215, 170, 0.6);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: clamp(0.68rem, 0.74vw, 0.76rem);
+  font-weight: 800;
+  color: #64748b;
+  z-index: 25;
+}
+
+.dashboard-page .command-footer .footer-links {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.dashboard-page .command-footer .footer-links span + span {
+  padding-left: 16px;
+  border-left: 1px solid rgba(234, 88, 12, 0.2);
+}
+
+/* Universal Image Borders for Dashboard Avatars & Robots */
+.dash-user-avatar {
+  border: 2px solid #ea580c !important;
+  box-shadow: 0 2px 8px rgba(234, 88, 12, 0.2) !important;
+}
+
+.hero-avatar-3d-img {
+  border: 2px solid #ea580c !important;
+  box-shadow: 0 4px 12px rgba(234, 88, 12, 0.25) !important;
+}
+
+.hero-ai-robo-img {
+  border: 2px solid #ea580c !important;
+  box-shadow: 0 2px 6px rgba(234, 88, 12, 0.25) !important;
+}
+
 
 

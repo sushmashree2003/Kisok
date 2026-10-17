@@ -29,6 +29,7 @@ import {
   Server,
   RefreshCw,
   X,
+  CreditCard,
 } from "lucide-react";
 import { SessionInfo } from "@/types/auth";
 import { saveUserSession, getRememberedUser } from "@/lib/session";
@@ -276,6 +277,7 @@ export default function LoginScreen({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [authSuccess, setAuthSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [roleMismatch, setRoleMismatch] = useState<{ detectedRole: string; targetRole: string } | null>(null);
   const [serverUrl, setServerUrl] = useState(
     CLIENT_API_ENDPOINTS.DEFAULT_SERVER_URL
   );
@@ -300,6 +302,7 @@ export default function LoginScreen({
     }
     setPassword("");
     setErrorMessage(null);
+    setRoleMismatch(null);
     setVisitorName("");
     setVisitorPhone("");
     setVisitorNameError("");
@@ -310,6 +313,7 @@ export default function LoginScreen({
     if (e) e.preventDefault();
     setIsSubmitting(true);
     setErrorMessage(null);
+    setRoleMismatch(null);
 
     if (!password.trim()) {
       setIsSubmitting(false);
@@ -344,6 +348,12 @@ export default function LoginScreen({
         }, 400);
       } else {
         setIsSubmitting(false);
+        if (result.roleMismatch) {
+          setRoleMismatch({
+            detectedRole: result.detectedRole || (role === "staff" ? "Student" : "Staff"),
+            targetRole: result.targetRole || (role === "staff" ? "student" : "staff"),
+          });
+        }
         if (result.firstTimeLogin) {
           setErrorMessage("First time login or password expired. Please update password.");
         } else {
@@ -358,6 +368,36 @@ export default function LoginScreen({
       setErrorMessage(
         "Network connection failed. Unable to reach the school login server."
       );
+    }
+  };
+
+  const handleSmartCardTap = async () => {
+    setIsSubmitting(true);
+    setErrorMessage(null);
+    setRoleMismatch(null);
+    try {
+      const cardId = role === "staff" ? "EMP-1042" : "ADM-1024";
+      const response = await fetch(CLIENT_API_ENDPOINTS.SMARTCARD_PUNCH, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cardId, MI_ID: institutionId }),
+      });
+      const result = await response.json();
+      if (result.success && result.session) {
+        saveUserSession(result.session, rememberMe);
+        setAuthSuccess(true);
+        setTimeout(() => {
+          setIsSubmitting(false);
+          onLoginSuccess(result.session);
+        }, 400);
+      } else {
+        setIsSubmitting(false);
+        setErrorMessage(result.message || "Smart card reader did not recognize card.");
+      }
+    } catch (err: any) {
+      console.error("Smart card tap failed:", err);
+      setIsSubmitting(false);
+      setErrorMessage("Smart card authentication error.");
     }
   };
 
@@ -1220,49 +1260,92 @@ export default function LoginScreen({
             </div>
           )}
 
-          {/* Real-time Authentication Error Alert */}
+          {/* Real-time Authentication Error Alert & Role Isolation Guard */}
           {errorMessage && (
             <div
               style={{
                 width: "100%",
-                background: "#fef2f2",
-                border: "1.5px solid #fecaca",
+                background: roleMismatch ? "#fef2f2" : "#fff1f2",
+                border: roleMismatch ? "2px solid #ef4444" : "1.5px solid #fecaca",
                 borderRadius: "12px",
-                padding: "10px 12px",
+                padding: "10px 14px",
                 marginBottom: "10px",
                 display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
+                flexDirection: "column",
                 gap: "8px",
                 color: "#991b1b",
                 boxSizing: "border-box",
+                boxShadow: roleMismatch ? "0 4px 14px rgba(239, 68, 68, 0.18)" : "none",
               }}
             >
-              <div style={{ display: "flex", alignItems: "center", gap: "8px", flex: 1 }}>
-                <AlertCircle size={18} style={{ color: "#ef4444", flexShrink: 0 }} />
-                <span style={{ fontSize: "0.82rem", fontWeight: 700, lineHeight: 1.35 }}>
-                  {errorMessage}
-                </span>
+              <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "8px", width: "100%" }}>
+                <div style={{ display: "flex", alignItems: "flex-start", gap: "8px", flex: 1 }}>
+                  <AlertCircle size={18} style={{ color: "#ef4444", flexShrink: 0, marginTop: "2px" }} />
+                  <div>
+                    {roleMismatch && (
+                      <div style={{ fontSize: "0.72rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", color: "#b91c1c", marginBottom: 2 }}>
+                        🛡️ Role Isolation Security Guard
+                      </div>
+                    )}
+                    <span style={{ fontSize: "0.82rem", fontWeight: 700, lineHeight: 1.35 }}>
+                      {errorMessage}
+                    </span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setErrorMessage(null);
+                    setRoleMismatch(null);
+                  }}
+                  style={{
+                    background: "transparent",
+                    color: "#991b1b",
+                    border: "none",
+                    padding: "4px",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderRadius: "4px",
+                  }}
+                  aria-label="Dismiss error"
+                  title="Dismiss"
+                >
+                  <X size={16} />
+                </button>
               </div>
-              <button
-                type="button"
-                onClick={() => setErrorMessage(null)}
-                style={{
-                  background: "transparent",
-                  color: "#991b1b",
-                  border: "none",
-                  padding: "4px",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  borderRadius: "4px",
-                }}
-                aria-label="Dismiss error"
-                title="Dismiss"
-              >
-                <X size={16} />
-              </button>
+
+              {roleMismatch && (
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-start", paddingTop: "4px" }}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const target = roleMismatch.detectedRole.toLowerCase() === "student" ? "student" : "staff";
+                      setRoleMismatch(null);
+                      setErrorMessage(null);
+                      onSwitchRole(target as RoleType);
+                    }}
+                    style={{
+                      background: "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)",
+                      color: "#ffffff",
+                      border: "none",
+                      borderRadius: "8px",
+                      padding: "6px 14px",
+                      fontSize: "0.78rem",
+                      fontWeight: 800,
+                      cursor: "pointer",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "6px",
+                      boxShadow: "0 2px 6px rgba(220, 38, 38, 0.3)",
+                    }}
+                  >
+                    <span>Switch to {roleMismatch.detectedRole} Portal</span>
+                    <ArrowRight size={13} />
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
@@ -1692,6 +1775,34 @@ export default function LoginScreen({
                     <ArrowRight size={20} strokeWidth={2.6} />
                   </>
                 )}
+              </button>
+
+              {/* ACR122U RFID Smart Card Quick Tap (Matches Legacy Kiosk ACR122U integration) */}
+              <button
+                type="button"
+                onClick={handleSmartCardTap}
+                disabled={isSubmitting}
+                style={{
+                  height: "38px",
+                  width: "100%",
+                  borderRadius: "10px",
+                  background: "#f8fafc",
+                  border: "1.5px dashed #cbd5e1",
+                  color: "#334155",
+                  fontSize: "0.8rem",
+                  fontWeight: 700,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "7px",
+                  cursor: "pointer",
+                  transition: "all 0.2s ease",
+                  marginTop: "2px",
+                }}
+                title="Tap RFID Smart Card (ACR122U Kiosk Reader)"
+              >
+                <CreditCard size={15} style={{ color: config.accentColor }} />
+                <span>Tap RFID Smart Card ({role === "staff" ? "EMP-1042" : "ADM-1024"})</span>
               </button>
 
               {/* Touch Kiosk Security Footnote */}
