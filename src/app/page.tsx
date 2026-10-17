@@ -134,33 +134,13 @@ export default function Home() {
     router.push(`/login?role=${role}`);
   };
 
-  // Switch to Role Selector Page when clicking anywhere on Page 1 (Home Portal)
-  const handlePortalClick = (e: React.MouseEvent) => {
-    // Prevent switching if clicking AI Bot floating button, modal, or fullscreen button
-    const target = e.target as HTMLElement;
-    if (
-      target.closest(".bot-trigger-wrap") ||
-      target.closest(".hp-bot-modal") ||
-      target.closest(".hp-fullscreen-btn")
-    ) {
-      return;
-    }
-    setActivePage("roles");
-  };
-
   return (
     <>
       {/* =========================================================================
          PAGE 1: GREEN VALLEY PUBLIC SCHOOL HOME PORTAL (MATCHES IMAGE 1 EXACTLY)
          ========================================================================= */}
       {activePage === "portal" && (
-        <main className="hp-wrapper" onClick={handlePortalClick}>
-          {/* Floating visual hint for kiosk users */}
-          <div className="hp-click-overlay-hint">
-            <Sparkles size={14} className="text-yellow-400" />
-            <span>Tap anywhere on screen to enter Role Portal</span>
-          </div>
-
+        <main className="hp-wrapper">
           <div className="hp-container">
             {/* 1. TOP HEADER */}
             <header className="hp-header">
@@ -920,32 +900,19 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* CAMPUS VISION & INSTITUTIONAL PILLARS CARD (COMPLETELY FILLED) */}
+              {/* CAMPUS VISION & INSPIRATIONAL MISSION CARD */}
               <div className="hp-quote-card">
-                <Quote size={28} className="hp-quote-icon" />
-                <p className="hp-quote-text">
-                  &ldquo;Education is not just about books, it&apos;s about building character, inspiring curiosity, and shaping leaders of tomorrow.&rdquo;
-                </p>
-                <span className="hp-quote-author">— Green Valley Public School Mission</span>
-
-                {/* Core Pillars List */}
-                <div className="hp-quote-pillars">
-                  <div className="hp-quote-pillar-item">
-                    <span>🌱</span>
-                    <span>Character & Integrity First</span>
+                <Quote size={32} className="hp-quote-icon" />
+                <div className="hp-quote-content">
+                  <p className="hp-quote-text">
+                    &ldquo;Education is not just about books, it&apos;s about building character, inspiring curiosity, and shaping leaders of tomorrow.&rdquo;
+                  </p>
+                  <div className="hp-quote-footer-row">
+                    <span className="hp-quote-author">— Green Valley Public School Mission</span>
+                    <div className="hp-quote-badge">
+                      CBSE Affiliation No. 1930281 • Est. 1999
+                    </div>
                   </div>
-                  <div className="hp-quote-pillar-item">
-                    <span>💡</span>
-                    <span>Innovation & STEM Pedagogy</span>
-                  </div>
-                  <div className="hp-quote-pillar-item">
-                    <span>🏆</span>
-                    <span>Sports, Arts & Holistic Growth</span>
-                  </div>
-                </div>
-
-                <div className="hp-quote-badge">
-                  CBSE Affiliation No. 1930281 • Est. 1999
                 </div>
               </div>
             </div>

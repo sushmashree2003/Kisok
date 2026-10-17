@@ -390,7 +390,7 @@ export default function LoginScreen({
     };
     try {
       localStorage.setItem("gvps_visitor_session", JSON.stringify(visitorSession));
-    } catch {}
+    } catch { }
     setAuthSuccess(true);
     setTimeout(() => {
       setIsSubmitting(false);
@@ -569,7 +569,6 @@ export default function LoginScreen({
             }}
           >
             <Server size={14} style={{ color: showServerConfig ? "#ffffff" : config.accentColor }} />
-            <span>API: MI-{institutionId}</span>
           </button>
 
           {/* Fullscreen Toggle Button */}
@@ -1029,10 +1028,10 @@ export default function LoginScreen({
                 role === "student"
                   ? "/student_avatar.png"
                   : role === "staff"
-                  ? "/staff_avatar.png"
-                  : role === "alumni"
-                  ? "/alumni_avatar.png"
-                  : "/admin_avatar.png"
+                    ? "/staff_avatar.png"
+                    : role === "alumni"
+                      ? "/alumni_avatar.png"
+                      : "/admin_avatar.png"
               }
               alt={config.title}
               style={{
@@ -1471,74 +1470,136 @@ export default function LoginScreen({
               </div>
             </form>
           ) : (
-          <form
-            onSubmit={handleSubmit}
-            className="login-form"
-            style={{
-              width: "100%",
-              display: "flex",
-              flexDirection: "column",
-              gap: "clamp(0.55rem, 0.9vh, 0.8rem)",
-            }}
-          >
-            {/* Username / ID Input */}
-            <div className="login-field-wrap" style={{ display: "flex", flexDirection: "column", gap: "4px", width: "100%" }}>
-              <label
-                className="login-field-label"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "6px",
-                  fontSize: "0.82rem",
-                  fontWeight: 700,
-                  color: "#334155",
-                }}
-              >
-                <User size={15} style={{ color: config.accentColor }} />
-                <span>
-                  {role === "alumni"
-                    ? "Alumni / Ex-Staff ID / Email"
-                    : role === "staff"
-                      ? "Staff Email / Faculty ID"
-                      : "Admission Number / Student ID"}
-                </span>
-              </label>
-              <div className="login-input-group" style={{ position: "relative", width: "100%", display: "flex", alignItems: "center" }}>
-                <input
-                  type="text"
-                  className="login-input-field"
-                  placeholder={config.userPlaceholder}
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  required
+            <form
+              onSubmit={handleSubmit}
+              className="login-form"
+              style={{
+                width: "100%",
+                display: "flex",
+                flexDirection: "column",
+                gap: "clamp(0.55rem, 0.9vh, 0.8rem)",
+              }}
+            >
+              {/* Username / ID Input */}
+              <div className="login-field-wrap" style={{ display: "flex", flexDirection: "column", gap: "4px", width: "100%" }}>
+                <label
+                  className="login-field-label"
                   style={{
-                    width: "100%",
-                    height: "44px",
-                    background: "#ffffff",
-                    border: "1.5px solid #cbd5e1",
-                    borderRadius: "10px",
-                    padding: "0 14px",
-                    fontSize: "0.95rem",
-                    fontWeight: 600,
-                    color: "#0f172a",
-                    outline: "none",
-                    boxSizing: "border-box",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    fontSize: "0.82rem",
+                    fontWeight: 700,
+                    color: "#334155",
                   }}
-                />
+                >
+                  <User size={15} style={{ color: config.accentColor }} />
+                  <span>
+                    {role === "alumni"
+                      ? "Alumni / Ex-Staff ID / Email"
+                      : role === "staff"
+                        ? "Staff Email / Faculty ID"
+                        : "Admission Number / Student ID"}
+                  </span>
+                </label>
+                <div className="login-input-group" style={{ position: "relative", width: "100%", display: "flex", alignItems: "center" }}>
+                  <input
+                    type="text"
+                    className="login-input-field"
+                    placeholder={config.userPlaceholder}
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    required
+                    style={{
+                      width: "100%",
+                      height: "44px",
+                      background: "#ffffff",
+                      border: "1.5px solid #cbd5e1",
+                      borderRadius: "10px",
+                      padding: "0 14px",
+                      fontSize: "0.95rem",
+                      fontWeight: 600,
+                      color: "#0f172a",
+                      outline: "none",
+                      boxSizing: "border-box",
+                    }}
+                  />
+                </div>
               </div>
-            </div>
 
-            {/* Password / PIN Input */}
-            <div className="login-field-wrap" style={{ display: "flex", flexDirection: "column", gap: "4px", width: "100%" }}>
-              <label
-                className="login-field-label"
+              {/* Password / PIN Input */}
+              <div className="login-field-wrap" style={{ display: "flex", flexDirection: "column", gap: "4px", width: "100%" }}>
+                <label
+                  className="login-field-label"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    fontSize: "0.82rem",
+                    fontWeight: 700,
+                    color: "#334155",
+                  }}
+                >
+                  <Lock size={15} style={{ color: config.accentColor }} />
+                  <span>Access Password / Security PIN</span>
+                </label>
+                <div className="login-input-group" style={{ position: "relative", width: "100%", display: "flex", alignItems: "center" }}>
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    className="login-input-field"
+                    placeholder="Password / PIN"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    autoComplete="current-password"
+                    spellCheck={false}
+                    style={{
+                      width: "100%",
+                      height: "44px",
+                      background: "#ffffff",
+                      border: "1.5px solid #cbd5e1",
+                      borderRadius: "10px",
+                      padding: "0 40px 0 14px",
+                      fontSize: "0.95rem",
+                      fontWeight: 600,
+                      color: "#0f172a",
+                      outline: "none",
+                      boxSizing: "border-box",
+                    }}
+                  />
+                  <button
+                    type="button"
+                    className="login-eye-btn"
+                    onClick={() => setShowPassword(!showPassword)}
+                    aria-label="Toggle password visibility"
+                    style={{
+                      position: "absolute",
+                      right: "10px",
+                      background: "none",
+                      border: "none",
+                      color: "#64748b",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      padding: "4px",
+                    }}
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+              </div>
+
+              {/* Remember Me & Help Row */}
+              <div
+                className="login-remember-row"
                 style={{
                   display: "flex",
                   alignItems: "center",
-                  gap: "6px",
+                  justifyContent: "space-between",
                   fontSize: "0.82rem",
-                  fontWeight: 700,
-                  color: "#334155",
+                  color: "#475569",
+                  padding: "2px 2px",
                 }}
               >
                 <Lock size={15} style={{ color: config.accentColor }} />
@@ -1573,147 +1634,117 @@ export default function LoginScreen({
                   className="login-eye-btn"
                   onClick={() => setShowPassword(!showPassword)}
                   aria-label="Toggle password visibility"
+                <label
+                  className="login-remember-label"
                   style={{
-                    position: "absolute",
-                    right: "10px",
-                    background: "none",
-                    border: "none",
-                    color: "#64748b",
-                    cursor: "pointer",
                     display: "flex",
                     alignItems: "center",
-                    justifyContent: "center",
-                    padding: "4px",
+                    gap: "6px",
+                    cursor: "pointer",
+                    fontWeight: 600,
                   }}
                 >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
+                  <input
+                    type="checkbox"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    style={{ width: "16px", height: "16px", accentColor: config.accentColor, cursor: "pointer" }}
+                  />
+                  <span>Remember on this kiosk</span>
+                </label>
+                <a
+                  href="#forgot"
+                  className="login-forgot-link"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    alert("Please contact the Kiosk Helpdesk at Ext. 104 or visit the administrative reception.");
+                  }}
+                  style={{ color: config.accentColor, textDecoration: "none", fontWeight: 700 }}
+                >
+                  Forgot ID / Help?
+                </a>
               </div>
-            </div>
 
-            {/* Remember Me & Help Row */}
-            <div
-              className="login-remember-row"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                fontSize: "0.82rem",
-                color: "#475569",
-                padding: "2px 2px",
-              }}
-            >
-              <label
-                className="login-remember-label"
+              {/* Primary High-Visibility Sign In Button */}
+              <button
+                type="submit"
+                className="login-submit-btn"
+                disabled={isSubmitting}
+                style={{
+                  height: "48px",
+                  minHeight: "48px",
+                  width: "100%",
+                  borderRadius: "9999px",
+                  color: "#ffffff",
+                  border: "none",
+                  fontFamily: "'Outfit', sans-serif",
+                  fontSize: "1.05rem",
+                  fontWeight: 800,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "9px",
+                  cursor: "pointer",
+                  transition: "all 0.2s ease",
+                  backgroundImage: config.accentGradient,
+                  boxShadow: `0 8px 24px ${config.haloColor}`,
+                  marginTop: "4px",
+                }}
+              >
+                {isSubmitting ? (
+                  <>
+                    <div
+                      className="login-spinner"
+                      style={{
+                        width: "18px",
+                        height: "18px",
+                        border: "2.5px solid rgba(255, 255, 255, 0.35)",
+                        borderTopColor: "#ffffff",
+                        borderRadius: "50%",
+                      }}
+                    />
+                    <span>Verifying Credentials...</span>
+                  </>
+                ) : authSuccess ? (
+                  <>
+                    <Check size={20} />
+                    <span>Access Granted! Loading...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>
+                      Sign In to{" "}
+                      {role === "student"
+                        ? "Student / Parent"
+                        : role === "staff"
+                          ? "Staff"
+                          : "Alumni / Ex-Staff"}{" "}
+                      Portal
+                    </span>
+                    <ArrowRight size={20} strokeWidth={2.6} />
+                  </>
+                )}
+              </button>
+
+              {/* Touch Kiosk Security Footnote */}
+              <div
+                className="login-security-badge"
                 style={{
                   display: "flex",
                   alignItems: "center",
+                  justifyContent: "center",
                   gap: "6px",
-                  cursor: "pointer",
-                  fontWeight: 600,
+                  fontSize: "0.74rem",
+                  fontWeight: 700,
+                  color: "#059669",
+                  textAlign: "center",
+                  marginTop: "4px",
                 }}
               >
-                <input
-                  type="checkbox"
-                  checked={rememberMe}
-                  onChange={(e) => setRememberMe(e.target.checked)}
-                  style={{ width: "16px", height: "16px", accentColor: config.accentColor, cursor: "pointer" }}
-                />
-                <span>Remember on this kiosk</span>
-              </label>
-              <a
-                href="#forgot"
-                className="login-forgot-link"
-                onClick={(e) => {
-                  e.preventDefault();
-                  alert("Please contact the Kiosk Helpdesk at Ext. 104 or visit the administrative reception.");
-                }}
-                style={{ color: config.accentColor, textDecoration: "none", fontWeight: 700 }}
-              >
-                Forgot ID / Help?
-              </a>
-            </div>
-
-            {/* Primary High-Visibility Sign In Button */}
-            <button
-              type="submit"
-              className="login-submit-btn"
-              disabled={isSubmitting}
-              style={{
-                height: "48px",
-                minHeight: "48px",
-                width: "100%",
-                borderRadius: "9999px",
-                color: "#ffffff",
-                border: "none",
-                fontFamily: "'Outfit', sans-serif",
-                fontSize: "1.05rem",
-                fontWeight: 800,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: "9px",
-                cursor: "pointer",
-                transition: "all 0.2s ease",
-                backgroundImage: config.accentGradient,
-                boxShadow: `0 8px 24px ${config.haloColor}`,
-                marginTop: "4px",
-              }}
-            >
-              {isSubmitting ? (
-                <>
-                  <div
-                    className="login-spinner"
-                    style={{
-                      width: "18px",
-                      height: "18px",
-                      border: "2.5px solid rgba(255, 255, 255, 0.35)",
-                      borderTopColor: "#ffffff",
-                      borderRadius: "50%",
-                    }}
-                  />
-                  <span>Verifying Credentials...</span>
-                </>
-              ) : authSuccess ? (
-                <>
-                  <Check size={20} />
-                  <span>Access Granted! Loading...</span>
-                </>
-              ) : (
-                <>
-                  <span>
-                    Sign In to{" "}
-                    {role === "student"
-                      ? "Student / Parent"
-                      : role === "staff"
-                        ? "Staff"
-                        : "Alumni / Ex-Staff"}{" "}
-                    Portal
-                  </span>
-                  <ArrowRight size={20} strokeWidth={2.6} />
-                </>
-              )}
-            </button>
-
-            {/* Touch Kiosk Security Footnote */}
-            <div
-              className="login-security-badge"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: "6px",
-                fontSize: "0.74rem",
-                fontWeight: 700,
-                color: "#059669",
-                textAlign: "center",
-                marginTop: "4px",
-              }}
-            >
-              <ShieldCheck size={15} style={{ color: "#059669" }} />
-              <span>256-Bit SSL Encrypted Session • Authorized GVPS Network</span>
-            </div>
-          </form>
+                <ShieldCheck size={15} style={{ color: "#059669" }} />
+                <span>256-Bit SSL Encrypted Session • Authorized GVPS Network</span>
+              </div>
+            </form>
           )}
         </div>
       </main>
