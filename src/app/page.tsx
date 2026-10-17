@@ -8,7 +8,7 @@ import CampusInfoPortal from "@/components/CampusInfoPortal";
 
 export default function Home() {
   const router = useRouter();
-  const [activePage, setActivePage] = useState<"portal" | "roles">("roles");
+  const [activePage, setActivePage] = useState<"portal" | "roles">("portal");
   const [currentTime, setCurrentTime] = useState<Date | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
 

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { getUserSession } from "@/lib/session";
 import {
@@ -17,6 +17,7 @@ import {
   Minimize,
   Building2,
   ChevronRight,
+  ChevronLeft,
   Play,
   Leaf,
   ShieldCheck,
@@ -28,6 +29,45 @@ import {
   BookOpen,
   Cpu,
 } from "lucide-react";
+
+export const CAMPUS_GALLERY_ITEMS = [
+  {
+    id: "annual_day",
+    title: "Annual Day 2025 Gala & Dance Performance",
+    shortTitle: "Annual Day 2025",
+    category: "Cultural Extravaganza",
+    date: "Jan 2025",
+    description: "Grand annual celebration showcasing student talents, traditional folk dances, classical symphony, and inspiring dramatic performances.",
+    src: "/events/annual_day.jpg",
+  },
+  {
+    id: "sports_parade",
+    title: "Sports Day Athletic March-Past & Parade",
+    shortTitle: "Sports Day Parade",
+    category: "Athletics & Sports",
+    date: "Nov 2024",
+    description: "Annual sports meet featuring ceremonial house march-past, Olympic torch lighting, track sprints, gymnastics, and drill displays.",
+    src: "/events/sports_parade.jpg",
+  },
+  {
+    id: "science_fair",
+    title: "District Science & Innovation Fair",
+    shortTitle: "Science Expo",
+    category: "STEM & Robotics",
+    date: "Aug 2025",
+    description: "District level fair highlighting youth innovations in robotics, renewable solar grid prototypes, AI algorithms, and clean energy.",
+    src: "/events/science_fair.jpg",
+  },
+  {
+    id: "teachers_day",
+    title: "Teachers' Day Felicitation Ceremony",
+    shortTitle: "Teachers' Day",
+    category: "Campus Milestone",
+    date: "Sep 2025",
+    description: "Felicitation ceremony dedicated to honoring our educators for exemplary pedagogical excellence, mentorship, and student guidance.",
+    src: "/events/teachers_day.jpg",
+  },
+];
 
 export interface CampusInfoPortalProps {
   onEnterRoleSelection: () => void;
@@ -47,10 +87,47 @@ export default function CampusInfoPortal({
   const [internalIsFullscreen, setInternalIsFullscreen] = useState(false);
   const [virtualTourOpen, setVirtualTourOpen] = useState(false);
   const [galleryModalOpen, setGalleryModalOpen] = useState(false);
+  const [selectedGalleryIndex, setSelectedGalleryIndex] = useState<number | null>(null);
   const [selectedGalleryImg, setSelectedGalleryImg] = useState<{ src: string; title: string } | null>(null);
   const [achievementsModalOpen, setAchievementsModalOpen] = useState(false);
   const [eventsModalOpen, setEventsModalOpen] = useState(false);
+  const [selectedScheduleId, setSelectedScheduleId] = useState<string>("stem");
   const [schoolName, setSchoolName] = useState<string>("Madhuvan Vatika - MVPS");
+  const heroVideoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setGalleryModalOpen(false);
+        setSelectedGalleryIndex(null);
+        setSelectedGalleryImg(null);
+        setVirtualTourOpen(false);
+        setAchievementsModalOpen(false);
+        setEventsModalOpen(false);
+      } else if (galleryModalOpen && selectedGalleryIndex !== null) {
+        if (e.key === "ArrowLeft") {
+          setSelectedGalleryIndex((prev) =>
+            prev !== null ? (prev - 1 + CAMPUS_GALLERY_ITEMS.length) % CAMPUS_GALLERY_ITEMS.length : 0
+          );
+        } else if (e.key === "ArrowRight") {
+          setSelectedGalleryIndex((prev) =>
+            prev !== null ? (prev + 1) % CAMPUS_GALLERY_ITEMS.length : 0
+          );
+        }
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [galleryModalOpen, selectedGalleryIndex]);
+
+  useEffect(() => {
+    if (heroVideoRef.current) {
+      heroVideoRef.current.muted = true;
+      heroVideoRef.current.play().catch(() => {
+        // Gracefully allow fallback if browser policy restricts autoplay
+      });
+    }
+  }, []);
 
   useEffect(() => {
     const session = getUserSession();
@@ -201,8 +278,28 @@ export default function CampusInfoPortal({
         <div className="mv-col-left">
           {/* Card A1: Hero Cinematic Showcase */}
           <div className="mv-hero-showcase">
-            <div className="mv-hero-sc-overlay" />
             <div className="mv-hero-sc-content">
+              {/* Background Looping Video */}
+              <video
+                ref={heroVideoRef}
+                className="mv-hero-bg-video"
+                autoPlay
+                loop
+                muted
+                playsInline
+                preload="metadata"
+                poster="/hero_school_building.jpg"
+                aria-hidden="true"
+                onError={(e) => {
+                  (e.currentTarget as HTMLElement).style.display = "none";
+                }}
+              >
+                <source src="/Madhuvan_Vatika_Public_School_Full_Promo_20s.mp4" type="video/mp4" />
+              </video>
+
+              {/* Dark Gradient Overlay for Readability */}
+              <div className="mv-hero-sc-overlay" aria-hidden="true" />
+
               <div>
                 <span className="mv-hero-cursive-kicker">Welcome to</span>
                 <h2 className="mv-hero-main-title">{schoolName}</h2>
@@ -428,7 +525,12 @@ export default function CampusInfoPortal({
               <button
                 className="mv-view-all-btn"
                 style={{ color: "#0d9488" }}
-                onClick={() => setGalleryModalOpen(true)}
+                onClick={() => {
+                  setSelectedGalleryIndex(null);
+                  setSelectedGalleryImg(null);
+                  setGalleryModalOpen(true);
+                }}
+                title="Open Campus Photo Gallery"
               >
                 <span>Gallery</span>
                 <ArrowRight size={13} />
@@ -436,61 +538,21 @@ export default function CampusInfoPortal({
             </div>
 
             <div className="mv-gallery-grid">
-              <div
-                className="mv-gallery-item"
-                onClick={() =>
-                  setSelectedGalleryImg({
-                    src: "/events/annual_day.jpg",
-                    title: "Annual Day 2025 Gala & Dance Performance",
-                  })
-                }
-                title="View Annual Day 2025"
-              >
-                <img src="/events/annual_day.jpg" alt="Annual Day" />
-                <div className="mv-gallery-label-bar">Annual Day 2025</div>
-              </div>
-
-              <div
-                className="mv-gallery-item"
-                onClick={() =>
-                  setSelectedGalleryImg({
-                    src: "/events/sports_parade.jpg",
-                    title: "Sports Day Athletic March-Past & Parade",
-                  })
-                }
-                title="View Sports Parade"
-              >
-                <img src="/events/sports_parade.jpg" alt="Sports Parade" />
-                <div className="mv-gallery-label-bar">Sports Day Parade</div>
-              </div>
-
-              <div
-                className="mv-gallery-item"
-                onClick={() =>
-                  setSelectedGalleryImg({
-                    src: "/events/science_fair.jpg",
-                    title: "District Science & Innovation Fair",
-                  })
-                }
-                title="View Science Fair"
-              >
-                <img src="/events/science_fair.jpg" alt="Science Fair" />
-                <div className="mv-gallery-label-bar">Science Expo</div>
-              </div>
-
-              <div
-                className="mv-gallery-item"
-                onClick={() =>
-                  setSelectedGalleryImg({
-                    src: "/events/teachers_day.jpg",
-                    title: "Teachers' Day Felicitation Ceremony",
-                  })
-                }
-                title="View Teachers' Day"
-              >
-                <img src="/events/teachers_day.jpg" alt="Teachers Day" />
-                <div className="mv-gallery-label-bar">Teachers' Day</div>
-              </div>
+              {CAMPUS_GALLERY_ITEMS.map((item, idx) => (
+                <div
+                  key={item.id}
+                  className="mv-gallery-item"
+                  onClick={() => {
+                    setSelectedGalleryIndex(idx);
+                    setSelectedGalleryImg({ src: item.src, title: item.title });
+                    setGalleryModalOpen(true);
+                  }}
+                  title={`Click to open ${item.shortTitle} photo popup`}
+                >
+                  <img src={item.src} alt={item.shortTitle} />
+                  <div className="mv-gallery-label-bar">{item.shortTitle}</div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -500,7 +562,7 @@ export default function CampusInfoPortal({
            ===================================================================== */}
         <div className="mv-col-right">
           {/* Card C1: Upcoming Events Timeline */}
-          <div className="mv-timeline-card">
+          <div className="mv-timeline-container mv-timeline-panel">
             <div className="mv-section-header">
               <div className="mv-section-title-wrap">
                 <Calendar size={16} style={{ color: "#ea580c" }} />
@@ -516,61 +578,80 @@ export default function CampusInfoPortal({
             </div>
 
             <div className="mv-timeline-list">
-              <div className="mv-timeline-row">
-                <div className="mv-timeline-date">
-                  <span className="mv-timeline-day">25</span>
-                  <span className="mv-timeline-month">SEP</span>
-                </div>
-                <div className="mv-timeline-info">
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <h4 className="mv-timeline-name">Parent Teacher Meeting</h4>
-                    <span className="mv-timeline-tag academics">PTM</span>
+              {[
+                {
+                  id: "ptm",
+                  day: "01",
+                  month: "NOV",
+                  name: "Parent Teacher Meeting",
+                  tag: "PTM",
+                  tagClass: "academics",
+                  venue: "10:00 AM – 12:00 PM | Main Auditorium",
+                  image: "/Warm Parent-Teacher Classroom Meeting-2.png",
+                  cardClass: "ptm-card",
+                },
+                {
+                  id: "sports",
+                  day: "05",
+                  month: "NOV",
+                  name: "Sports Day Finals",
+                  tag: "Sports",
+                  tagClass: "sports",
+                  venue: "04:00 PM – 06:00 PM | Athletic Arena",
+                  image: "/Sunny School Sports Field Gear-3.png",
+                  cardClass: "sports-card",
+                },
+                {
+                  id: "stem",
+                  day: "10",
+                  month: "NOV",
+                  name: "Science & AI Exhibition",
+                  tag: "STEM",
+                  tagClass: "stem",
+                  venue: "All Day | Discovery Block Labs",
+                  image: "/Vibrant Modern STEM Laboratory-4.png",
+                  cardClass: "stem-card",
+                },
+                {
+                  id: "cultural",
+                  day: "14",
+                  month: "NOV",
+                  name: "Children's Day Gala",
+                  tag: "Cultural",
+                  tagClass: "fest",
+                  venue: "09:00 AM – 12:00 PM | Main Auditorium",
+                  image: "/Indian Classical Arts on Stage-5.png",
+                  cardClass: "cultural-card",
+                },
+              ].map((event) => {
+                const isSelected = selectedScheduleId === event.id;
+                return (
+                  <div
+                    key={event.id}
+                    className={`mv-timeline-card mv-timeline-row ${event.cardClass} ${isSelected ? "selected active" : ""}`}
+                    onClick={() => setSelectedScheduleId(event.id)}
+                    style={{
+                      backgroundImage: `linear-gradient(90deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.90) 45%, rgba(255, 255, 255, 0.30) 75%, rgba(255, 255, 255, 0) 100%), url('${event.image}')`,
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
+                      backgroundRepeat: "no-repeat",
+                      ...(isSelected ? { borderColor: "#ea580c", borderWidth: "2px", borderStyle: "solid" } : {}),
+                    }}
+                  >
+                    <div className="mv-timeline-date">
+                      <span className="mv-timeline-day">{event.day}</span>
+                      <span className="mv-timeline-month">{event.month}</span>
+                    </div>
+                    <div className="mv-timeline-info">
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <h4 className="mv-timeline-name">{event.name}</h4>
+                        <span className={`mv-timeline-tag ${event.tagClass}`}>{event.tag}</span>
+                      </div>
+                      <span className="mv-timeline-venue">{event.venue}</span>
+                    </div>
                   </div>
-                  <span className="mv-timeline-venue">10:00 AM – 12:00 PM | Main Auditorium</span>
-                </div>
-              </div>
-
-              <div className="mv-timeline-row">
-                <div className="mv-timeline-date">
-                  <span className="mv-timeline-day">28</span>
-                  <span className="mv-timeline-month">SEP</span>
-                </div>
-                <div className="mv-timeline-info">
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <h4 className="mv-timeline-name">Sports Day Finals</h4>
-                    <span className="mv-timeline-tag sports">Sports</span>
-                  </div>
-                  <span className="mv-timeline-venue">04:00 PM – 06:00 PM | Athletic Arena</span>
-                </div>
-              </div>
-
-              <div className="mv-timeline-row">
-                <div className="mv-timeline-date">
-                  <span className="mv-timeline-day">02</span>
-                  <span className="mv-timeline-month">OCT</span>
-                </div>
-                <div className="mv-timeline-info">
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <h4 className="mv-timeline-name">Science &amp; AI Exhibition</h4>
-                    <span className="mv-timeline-tag stem">STEM</span>
-                  </div>
-                  <span className="mv-timeline-venue">All Day | Discovery Block Labs</span>
-                </div>
-              </div>
-
-              <div className="mv-timeline-row">
-                <div className="mv-timeline-date">
-                  <span className="mv-timeline-day">10</span>
-                  <span className="mv-timeline-month">OCT</span>
-                </div>
-                <div className="mv-timeline-info">
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <h4 className="mv-timeline-name">Children's Day Gala</h4>
-                    <span className="mv-timeline-tag fest">Cultural</span>
-                  </div>
-                  <span className="mv-timeline-venue">09:00 AM – 12:00 PM | Main Auditorium</span>
-                </div>
-              </div>
+                );
+              })}
             </div>
           </div>
 
@@ -747,21 +828,23 @@ export default function CampusInfoPortal({
       )}
 
       {/* =========================================================================
-         MODAL 2: RECENT EVENTS GALLERY VIEWER
+         MODAL 2: RECENT EVENTS GALLERY LIGHTBOX POPUP
          ========================================================================= */}
-      {(galleryModalOpen || selectedGalleryImg) && (
+      {(galleryModalOpen || selectedGalleryIndex !== null || selectedGalleryImg) && (
         <div
           className="mp-modal-backdrop"
           onClick={() => {
             setGalleryModalOpen(false);
+            setSelectedGalleryIndex(null);
             setSelectedGalleryImg(null);
           }}
         >
           <div
             className="mp-modal-window"
-            style={{ width: "820px" }}
+            style={{ width: selectedGalleryIndex !== null ? "840px" : "800px" }}
             onClick={(e) => e.stopPropagation()}
           >
+            {/* Modal Header */}
             <div
               style={{
                 background: "linear-gradient(135deg, #0d9488 0%, #0f766e 100%)",
@@ -772,158 +855,338 @@ export default function CampusInfoPortal({
                 justifyContent: "space-between",
               }}
             >
-              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <Camera size={18} />
-                <h3 style={{ margin: 0, fontSize: "1.05rem", fontWeight: 800 }}>
-                  {selectedGalleryImg ? selectedGalleryImg.title : `${schoolName} Campus Life Gallery`}
-                </h3>
+              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                <div
+                  style={{
+                    background: "rgba(255, 255, 255, 0.2)",
+                    borderRadius: "8px",
+                    width: 32,
+                    height: 32,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Camera size={18} />
+                </div>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: "1.02rem", fontWeight: 800 }}>
+                    {selectedGalleryIndex !== null
+                      ? CAMPUS_GALLERY_ITEMS[selectedGalleryIndex].title
+                      : `${schoolName} • Campus Life in Motion`}
+                  </h3>
+                  <span style={{ fontSize: "0.72rem", color: "rgba(255, 255, 255, 0.85)", fontWeight: 600 }}>
+                    {selectedGalleryIndex !== null
+                      ? `Photo ${selectedGalleryIndex + 1} of ${CAMPUS_GALLERY_ITEMS.length} • Tap arrows or thumbnails to navigate`
+                      : "Campus Moments & Extracurricular Highlights"}
+                  </span>
+                </div>
               </div>
-              <button
-                onClick={() => {
-                  setGalleryModalOpen(false);
-                  setSelectedGalleryImg(null);
-                }}
-                style={{
-                  background: "rgba(255, 255, 255, 0.2)",
-                  border: "none",
-                  borderRadius: "50%",
-                  width: 30,
-                  height: 30,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "#ffffff",
-                  cursor: "pointer",
-                }}
-              >
-                <X size={16} />
-              </button>
+
+              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                {selectedGalleryIndex !== null && (
+                  <button
+                    onClick={() => setSelectedGalleryIndex(null)}
+                    style={{
+                      background: "rgba(255, 255, 255, 0.2)",
+                      border: "1px solid rgba(255, 255, 255, 0.35)",
+                      borderRadius: "9999px",
+                      padding: "0.35rem 0.85rem",
+                      color: "#ffffff",
+                      fontSize: "0.75rem",
+                      fontWeight: 700,
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "5px",
+                      transition: "all 0.15s ease",
+                    }}
+                    title="View all photos in grid"
+                  >
+                    <span>All Photos</span>
+                  </button>
+                )}
+
+                <button
+                  onClick={() => {
+                    setGalleryModalOpen(false);
+                    setSelectedGalleryIndex(null);
+                    setSelectedGalleryImg(null);
+                  }}
+                  style={{
+                    background: "rgba(255, 255, 255, 0.2)",
+                    border: "none",
+                    borderRadius: "50%",
+                    width: 32,
+                    height: 32,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "#ffffff",
+                    cursor: "pointer",
+                    transition: "transform 0.15s ease",
+                  }}
+                  title="Close popup"
+                >
+                  <X size={16} />
+                </button>
+              </div>
             </div>
 
-            <div style={{ padding: "1rem", background: "#f8fafc" }}>
-              {selectedGalleryImg ? (
+            {/* Modal Body */}
+            <div style={{ padding: "1.1rem", background: "#f8fafc", overflowY: "auto", maxHeight: "82vh" }}>
+              {selectedGalleryIndex !== null ? (
+                /* SINGLE PHOTO LIGHTBOX VIEW */
                 <div>
-                  <img
-                    src={selectedGalleryImg.src}
-                    alt={selectedGalleryImg.title}
+                  {/* Photo with Navigation Overlay */}
+                  <div
                     style={{
-                      width: "100%",
-                      height: "360px",
-                      objectFit: "cover",
-                      borderRadius: "12px",
+                      position: "relative",
+                      borderRadius: "14px",
+                      overflow: "hidden",
+                      boxShadow: "0 8px 24px rgba(15, 23, 42, 0.15)",
+                      background: "#0f172a",
                     }}
-                  />
+                  >
+                    <img
+                      src={CAMPUS_GALLERY_ITEMS[selectedGalleryIndex].src}
+                      alt={CAMPUS_GALLERY_ITEMS[selectedGalleryIndex].title}
+                      style={{
+                        width: "100%",
+                        height: "clamp(260px, 44vh, 400px)",
+                        objectFit: "cover",
+                        display: "block",
+                      }}
+                    />
+
+                    {/* Previous Button */}
+                    <button
+                      className="mp-lightbox-nav-btn prev"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedGalleryIndex((prev) =>
+                          prev !== null ? (prev - 1 + CAMPUS_GALLERY_ITEMS.length) % CAMPUS_GALLERY_ITEMS.length : 0
+                        );
+                      }}
+                      title="Previous Photo"
+                    >
+                      <ChevronLeft size={22} />
+                    </button>
+
+                    {/* Next Button */}
+                    <button
+                      className="mp-lightbox-nav-btn next"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedGalleryIndex((prev) =>
+                          prev !== null ? (prev + 1) % CAMPUS_GALLERY_ITEMS.length : 0
+                        );
+                      }}
+                      title="Next Photo"
+                    >
+                      <ChevronRight size={22} />
+                    </button>
+
+                    {/* Top overlay pills */}
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: "12px",
+                        left: "12px",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px",
+                      }}
+                    >
+                      <span
+                        style={{
+                          background: "rgba(13, 148, 136, 0.9)",
+                          color: "#ffffff",
+                          backdropFilter: "blur(6px)",
+                          padding: "3px 10px",
+                          borderRadius: "9999px",
+                          fontSize: "0.72rem",
+                          fontWeight: 800,
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "4px",
+                          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.2)",
+                        }}
+                      >
+                        <Sparkles size={11} />
+                        {CAMPUS_GALLERY_ITEMS[selectedGalleryIndex].category}
+                      </span>
+                      <span
+                        style={{
+                          background: "rgba(15, 23, 42, 0.75)",
+                          color: "#ffffff",
+                          backdropFilter: "blur(6px)",
+                          padding: "3px 10px",
+                          borderRadius: "9999px",
+                          fontSize: "0.72rem",
+                          fontWeight: 700,
+                        }}
+                      >
+                        {CAMPUS_GALLERY_ITEMS[selectedGalleryIndex].date}
+                      </span>
+                    </div>
+
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: "12px",
+                        right: "12px",
+                        background: "rgba(15, 23, 42, 0.75)",
+                        color: "#ffffff",
+                        backdropFilter: "blur(6px)",
+                        padding: "3px 10px",
+                        borderRadius: "9999px",
+                        fontSize: "0.72rem",
+                        fontWeight: 800,
+                      }}
+                    >
+                      {selectedGalleryIndex + 1} / {CAMPUS_GALLERY_ITEMS.length}
+                    </div>
+                  </div>
+
+                  {/* Description bar */}
+                  <div
+                    style={{
+                      background: "#ffffff",
+                      borderRadius: "12px",
+                      padding: "10px 14px",
+                      marginTop: "10px",
+                      border: "1px solid #e2e8f0",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "4px",
+                    }}
+                  >
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <h4 style={{ margin: 0, fontSize: "0.95rem", fontWeight: 800, color: "#0f172a" }}>
+                        {CAMPUS_GALLERY_ITEMS[selectedGalleryIndex].title}
+                      </h4>
+                    </div>
+                    <p style={{ margin: 0, fontSize: "0.78rem", color: "#475569", lineHeight: 1.4 }}>
+                      {CAMPUS_GALLERY_ITEMS[selectedGalleryIndex].description}
+                    </p>
+                  </div>
+
+                  {/* Thumbnails row */}
                   <div
                     style={{
                       display: "flex",
-                      justifyContent: "space-between",
                       alignItems: "center",
-                      marginTop: "0.75rem",
+                      justifyContent: "center",
+                      gap: "10px",
+                      marginTop: "12px",
                     }}
                   >
-                    <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "#1e293b" }}>
-                      {selectedGalleryImg.title}
-                    </span>
-                    <button
-                      onClick={() => setSelectedGalleryImg(null)}
-                      style={{
-                        background: "#0d9488",
-                        color: "#ffffff",
-                        border: "none",
-                        borderRadius: "9999px",
-                        padding: "0.4rem 1rem",
-                        fontSize: "0.78rem",
-                        fontWeight: 700,
-                        cursor: "pointer",
-                      }}
-                    >
-                      View All Photos
-                    </button>
+                    {CAMPUS_GALLERY_ITEMS.map((item, idx) => (
+                      <div
+                        key={item.id}
+                        className={`mp-thumb-item ${selectedGalleryIndex === idx ? "active" : ""}`}
+                        onClick={() => setSelectedGalleryIndex(idx)}
+                        title={item.shortTitle}
+                      >
+                        <img src={item.src} alt={item.shortTitle} />
+                      </div>
+                    ))}
                   </div>
                 </div>
               ) : (
+                /* GRID VIEW (ALL 4 PHOTOS) */
                 <div
                   style={{
                     display: "grid",
                     gridTemplateColumns: "repeat(2, 1fr)",
-                    gap: "12px",
+                    gap: "14px",
                   }}
                 >
-                  <div
-                    onClick={() =>
-                      setSelectedGalleryImg({
-                        src: "/events/annual_day.jpg",
-                        title: "Annual Day 2025 Gala & Dance Performance",
-                      })
-                    }
-                    style={{ cursor: "pointer" }}
-                  >
-                    <img
-                      src="/events/annual_day.jpg"
-                      alt="Annual Day 2025"
-                      style={{ width: "100%", height: "170px", objectFit: "cover", borderRadius: "8px" }}
-                    />
-                    <div style={{ fontWeight: 800, fontSize: "0.82rem", marginTop: 4 }}>
-                      Annual Day 2025 Celebrations
+                  {CAMPUS_GALLERY_ITEMS.map((item, idx) => (
+                    <div
+                      key={item.id}
+                      className="mp-gallery-modal-card"
+                      onClick={() => setSelectedGalleryIndex(idx)}
+                      title={`Click to enlarge ${item.shortTitle}`}
+                    >
+                      <div style={{ position: "relative", height: "150px", overflow: "hidden" }}>
+                        <img
+                          src={item.src}
+                          alt={item.title}
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover",
+                            transition: "transform 0.3s ease",
+                          }}
+                        />
+                        <div
+                          style={{
+                            position: "absolute",
+                            top: "8px",
+                            left: "8px",
+                            background: "rgba(13, 148, 136, 0.9)",
+                            color: "#ffffff",
+                            padding: "2px 8px",
+                            borderRadius: "9999px",
+                            fontSize: "0.68rem",
+                            fontWeight: 800,
+                          }}
+                        >
+                          {item.category}
+                        </div>
+                        <div
+                          style={{
+                            position: "absolute",
+                            top: "8px",
+                            right: "8px",
+                            background: "rgba(15, 23, 42, 0.75)",
+                            color: "#ffffff",
+                            padding: "2px 8px",
+                            borderRadius: "9999px",
+                            fontSize: "0.68rem",
+                            fontWeight: 700,
+                          }}
+                        >
+                          {item.date}
+                        </div>
+                      </div>
+                      <div style={{ padding: "10px 12px" }}>
+                        <h4 style={{ margin: "0 0 4px", fontSize: "0.86rem", fontWeight: 800, color: "#0f172a" }}>
+                          {item.shortTitle}
+                        </h4>
+                        <p
+                          style={{
+                            margin: 0,
+                            fontSize: "0.74rem",
+                            color: "#64748b",
+                            lineHeight: 1.35,
+                            display: "-webkit-box",
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: "vertical",
+                            overflow: "hidden",
+                          }}
+                        >
+                          {item.description}
+                        </p>
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "4px",
+                            color: "#0d9488",
+                            fontSize: "0.74rem",
+                            fontWeight: 800,
+                            marginTop: "8px",
+                          }}
+                        >
+                          <span>Tap to view full photo</span>
+                          <ArrowRight size={12} />
+                        </div>
+                      </div>
                     </div>
-                  </div>
-
-                  <div
-                    onClick={() =>
-                      setSelectedGalleryImg({
-                        src: "/events/sports_parade.jpg",
-                        title: "Sports Day Athletic March-Past & Parade",
-                      })
-                    }
-                    style={{ cursor: "pointer" }}
-                  >
-                    <img
-                      src="/events/sports_parade.jpg"
-                      alt="Sports Parade"
-                      style={{ width: "100%", height: "170px", objectFit: "cover", borderRadius: "8px" }}
-                    />
-                    <div style={{ fontWeight: 800, fontSize: "0.82rem", marginTop: 4 }}>
-                      Sports Day Athletic March-Past &amp; Parade
-                    </div>
-                  </div>
-
-                  <div
-                    onClick={() =>
-                      setSelectedGalleryImg({
-                        src: "/events/science_fair.jpg",
-                        title: "District Science & Innovation Fair",
-                      })
-                    }
-                    style={{ cursor: "pointer" }}
-                  >
-                    <img
-                      src="/events/science_fair.jpg"
-                      alt="Science Fair"
-                      style={{ width: "100%", height: "170px", objectFit: "cover", borderRadius: "8px" }}
-                    />
-                    <div style={{ fontWeight: 800, fontSize: "0.82rem", marginTop: 4 }}>
-                      District Science &amp; Innovation Fair
-                    </div>
-                  </div>
-
-                  <div
-                    onClick={() =>
-                      setSelectedGalleryImg({
-                        src: "/events/teachers_day.jpg",
-                        title: "Teachers' Day Felicitation Ceremony",
-                      })
-                    }
-                    style={{ cursor: "pointer" }}
-                  >
-                    <img
-                      src="/events/teachers_day.jpg"
-                      alt="Teachers Day"
-                      style={{ width: "100%", height: "170px", objectFit: "cover", borderRadius: "8px" }}
-                    />
-                    <div style={{ fontWeight: 800, fontSize: "0.82rem", marginTop: 4 }}>
-                      Teachers' Day Felicitation Ceremony
-                    </div>
-                  </div>
+                  ))}
                 </div>
               )}
             </div>
@@ -1059,8 +1322,8 @@ export default function CampusInfoPortal({
               <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
                 <div style={{ background: "#ffffff", borderRadius: "8px", padding: "10px 14px", border: "1px solid #fed7aa", display: "flex", alignItems: "center", gap: "12px" }}>
                   <div style={{ background: "#fff7ed", borderRadius: "6px", width: 44, height: 44, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", border: "1px solid #fed7aa" }}>
-                    <b style={{ fontSize: "1rem", color: "#c2410c" }}>25</b>
-                    <span style={{ fontSize: "0.62rem", color: "#ea580c", fontWeight: 800 }}>SEP</span>
+                    <b style={{ fontSize: "1rem", color: "#c2410c" }}>01</b>
+                    <span style={{ fontSize: "0.62rem", color: "#ea580c", fontWeight: 800 }}>NOV</span>
                   </div>
                   <div>
                     <h4 style={{ margin: 0, fontSize: "0.9rem", fontWeight: 800 }}>Parent Teacher Meeting (PTM)</h4>
@@ -1070,8 +1333,8 @@ export default function CampusInfoPortal({
 
                 <div style={{ background: "#ffffff", borderRadius: "8px", padding: "10px 14px", border: "1px solid #fed7aa", display: "flex", alignItems: "center", gap: "12px" }}>
                   <div style={{ background: "#fff7ed", borderRadius: "6px", width: 44, height: 44, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", border: "1px solid #fed7aa" }}>
-                    <b style={{ fontSize: "1rem", color: "#c2410c" }}>28</b>
-                    <span style={{ fontSize: "0.62rem", color: "#ea580c", fontWeight: 800 }}>SEP</span>
+                    <b style={{ fontSize: "1rem", color: "#c2410c" }}>05</b>
+                    <span style={{ fontSize: "0.62rem", color: "#ea580c", fontWeight: 800 }}>NOV</span>
                   </div>
                   <div>
                     <h4 style={{ margin: 0, fontSize: "0.9rem", fontWeight: 800 }}>Sports Day Practice &amp; Athletic Heats</h4>
@@ -1081,8 +1344,8 @@ export default function CampusInfoPortal({
 
                 <div style={{ background: "#ffffff", borderRadius: "8px", padding: "10px 14px", border: "1px solid #fed7aa", display: "flex", alignItems: "center", gap: "12px" }}>
                   <div style={{ background: "#fff7ed", borderRadius: "6px", width: 44, height: 44, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", border: "1px solid #fed7aa" }}>
-                    <b style={{ fontSize: "1rem", color: "#c2410c" }}>02</b>
-                    <span style={{ fontSize: "0.62rem", color: "#ea580c", fontWeight: 800 }}>OCT</span>
+                    <b style={{ fontSize: "1rem", color: "#c2410c" }}>10</b>
+                    <span style={{ fontSize: "0.62rem", color: "#ea580c", fontWeight: 800 }}>NOV</span>
                   </div>
                   <div>
                     <h4 style={{ margin: 0, fontSize: "0.9rem", fontWeight: 800 }}>District Science &amp; Innovation Exhibition</h4>
@@ -1092,8 +1355,8 @@ export default function CampusInfoPortal({
 
                 <div style={{ background: "#ffffff", borderRadius: "8px", padding: "10px 14px", border: "1px solid #fed7aa", display: "flex", alignItems: "center", gap: "12px" }}>
                   <div style={{ background: "#fff7ed", borderRadius: "6px", width: 44, height: 44, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", border: "1px solid #fed7aa" }}>
-                    <b style={{ fontSize: "1rem", color: "#c2410c" }}>10</b>
-                    <span style={{ fontSize: "0.62rem", color: "#ea580c", fontWeight: 800 }}>OCT</span>
+                    <b style={{ fontSize: "1rem", color: "#c2410c" }}>14</b>
+                    <span style={{ fontSize: "0.62rem", color: "#ea580c", fontWeight: 800 }}>NOV</span>
                   </div>
                   <div>
                     <h4 style={{ margin: 0, fontSize: "0.9rem", fontWeight: 800 }}>Children's Day Special Cultural Gala</h4>
