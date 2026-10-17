@@ -143,21 +143,9 @@ export default function CampusInfoPortal({
     }, 600);
   };
 
-  const handlePortalClick = (e: React.MouseEvent) => {
-    const target = e.target as HTMLElement;
-    if (
-      target.closest(".bot-trigger-wrap") ||
-      target.closest(".hp-bot-modal") ||
-      target.closest(".hp-fullscreen-btn")
-    ) {
-      return;
-    }
-    onEnterRoleSelection();
-  };
-
   return (
     <>
-      <main className="kiosk-command-center hp-wrapper" onClick={handlePortalClick}>
+      <main className="kiosk-command-center hp-wrapper">
         <div className="kiosk-orb kiosk-orb-one" />
         <div className="kiosk-orb kiosk-orb-two" />
 
@@ -705,62 +693,78 @@ export default function CampusInfoPortal({
                   </div>
                 </div>
 
-                {/* TODAY'S SCHOOL LIVE TELEMETRY COUNTERS */}
-                <div className="hp-school-kiosk-stats">
-                  <div className="hp-kiosk-stat-item">
-                    <span className="hp-kiosk-stat-num text-emerald-600">98.6%</span>
-                    <span className="hp-kiosk-stat-label">Attendance Today</span>
+                {/* IMPORTANT KIOSK NOTICE BANNER */}
+                <div className="hp-kiosk-note-banner">
+                  <div className="hp-kiosk-note-icon">
+                    <Megaphone size={14} />
                   </div>
-                  <div className="hp-kiosk-stat-item">
-                    <span className="hp-kiosk-stat-num text-sky-600">18 / 18</span>
-                    <span className="hp-kiosk-stat-label">Buses on Route</span>
-                  </div>
-                  <div className="hp-kiosk-stat-item">
-                    <span className="hp-kiosk-stat-num text-amber-600">Period 3</span>
-                    <span className="hp-kiosk-stat-label">Class Schedule</span>
+                  <div className="hp-kiosk-note-body">
+                    <div className="hp-kiosk-note-header">
+                      <span className="hp-kiosk-note-badge">Campus Notice</span>
+                      <span className="hp-kiosk-note-status">● Active Self-Service</span>
+                    </div>
+                    <p className="hp-kiosk-note-desc">
+                      Tap any service tile below for instant report cards, UPI fee payments, homework notes &amp; live bus tracking.
+                    </p>
                   </div>
                 </div>
 
                 {/* 4 INSTANT SCHOOL SELF-SERVICE KIOSK TILES */}
                 <div className="hp-school-services-grid">
-                  <div className="hp-school-serv-item" onClick={onEnterRoleSelection}>
-                    <div className="hp-school-serv-icon bg-sky-50 text-sky-600">
-                      <FileText size={13} />
+                  <div className="hp-school-serv-item">
+                    <div className="hp-school-serv-top">
+                      <div className="hp-school-serv-icon bg-sky-50 text-sky-600">
+                        <FileText size={15} />
+                      </div>
+                      <span className="hp-serv-chip sky">Print Ready</span>
                     </div>
-                    <div>
+                    <div className="hp-school-serv-text">
                       <strong className="hp-school-serv-title">Exam Marks &amp; Cards</strong>
-                      <span className="hp-school-serv-desc">Print Term Report</span>
+                      <span className="hp-school-serv-desc">Print Term Report Card</span>
                     </div>
+                    <span className="hp-serv-action-hint">Self-Service Kiosk</span>
                   </div>
 
-                  <div className="hp-school-serv-item" onClick={onEnterRoleSelection}>
-                    <div className="hp-school-serv-icon bg-emerald-50 text-emerald-600">
-                      <CreditCard size={13} />
+                  <div className="hp-school-serv-item">
+                    <div className="hp-school-serv-top">
+                      <div className="hp-school-serv-icon bg-emerald-50 text-emerald-600">
+                        <CreditCard size={15} />
+                      </div>
+                      <span className="hp-serv-chip emerald">Instant UPI</span>
                     </div>
-                    <div>
+                    <div className="hp-school-serv-text">
                       <strong className="hp-school-serv-title">Fee &amp; Dues Payment</strong>
-                      <span className="hp-school-serv-desc">Instant UPI Receipt</span>
+                      <span className="hp-school-serv-desc">Instant Receipt &amp; Dues</span>
                     </div>
+                    <span className="hp-serv-action-hint">Self-Service Kiosk</span>
                   </div>
 
-                  <div className="hp-school-serv-item" onClick={onEnterRoleSelection}>
-                    <div className="hp-school-serv-icon bg-purple-50 text-purple-600">
-                      <BookOpen size={13} />
+                  <div className="hp-school-serv-item">
+                    <div className="hp-school-serv-top">
+                      <div className="hp-school-serv-icon bg-purple-50 text-purple-600">
+                        <BookOpen size={15} />
+                      </div>
+                      <span className="hp-serv-chip purple">Daily Notes</span>
                     </div>
-                    <div>
+                    <div className="hp-school-serv-text">
                       <strong className="hp-school-serv-title">Digital Diary &amp; HW</strong>
-                      <span className="hp-school-serv-desc">Daily Teacher Notes</span>
+                      <span className="hp-school-serv-desc">Daily Teacher Circulars</span>
                     </div>
+                    <span className="hp-serv-action-hint">Self-Service Kiosk</span>
                   </div>
 
-                  <div className="hp-school-serv-item" onClick={onEnterRoleSelection}>
-                    <div className="hp-school-serv-icon bg-amber-50 text-amber-600">
-                      <Bus size={13} />
+                  <div className="hp-school-serv-item">
+                    <div className="hp-school-serv-top">
+                      <div className="hp-school-serv-icon bg-amber-50 text-amber-600">
+                        <Bus size={15} />
+                      </div>
+                      <span className="hp-serv-chip amber">Live GPS</span>
                     </div>
-                    <div>
+                    <div className="hp-school-serv-text">
                       <strong className="hp-school-serv-title">School Bus Telemetry</strong>
-                      <span className="hp-school-serv-desc">Live Stop ETA</span>
+                      <span className="hp-school-serv-desc">Live Route Stop ETA</span>
                     </div>
+                    <span className="hp-serv-action-hint">Self-Service Kiosk</span>
                   </div>
                 </div>
 
@@ -950,39 +954,26 @@ export default function CampusInfoPortal({
               </div>
             </div>
 
-            {/* CAMPUS VISION & INSTITUTIONAL PILLARS CARD (COMPLETELY FILLED) */}
+            {/* CAMPUS VISION & INSPIRATIONAL MISSION CARD */}
             <div className="hp-quote-card">
-              <Quote size={28} className="hp-quote-icon" />
-              <p className="hp-quote-text">
-                &ldquo;Education is not just about books, it&apos;s about building character, inspiring curiosity, and shaping leaders of tomorrow.&rdquo;
-              </p>
-              <span className="hp-quote-author">— Green Valley Public School Mission</span>
-
-              {/* Core Pillars List */}
-              <div className="hp-quote-pillars">
-                <div className="hp-quote-pillar-item">
-                  <span>🌱</span>
-                  <span>Character & Integrity First</span>
+              <Quote size={32} className="hp-quote-icon" />
+              <div className="hp-quote-content">
+                <p className="hp-quote-text">
+                  &ldquo;Education is not just about books, it&apos;s about building character, inspiring curiosity, and shaping leaders of tomorrow.&rdquo;
+                </p>
+                <div className="hp-quote-footer-row">
+                  <span className="hp-quote-author">— Green Valley Public School Mission</span>
+                  <div className="hp-quote-badge">
+                    CBSE Affiliation No. 1930281 • Est. 1999
+                  </div>
                 </div>
-                <div className="hp-quote-pillar-item">
-                  <span>💡</span>
-                  <span>Innovation & STEM Pedagogy</span>
-                </div>
-                <div className="hp-quote-pillar-item">
-                  <span>🏆</span>
-                  <span>Sports, Arts & Holistic Growth</span>
-                </div>
-              </div>
-
-              <div className="hp-quote-badge">
-                CBSE Affiliation No. 1930281 • Est. 1999
               </div>
             </div>
           </div>
 
           {/* 6. COMMAND FOOTER */}
           <footer className="command-footer">
-            <div><span className="footer-dot" /> Campus Information Portal • Tap anywhere on screen to enter Role Selection Portal</div>
+            <div><span className="footer-dot" /> Campus Information Portal • Digital Campus Kiosk Terminal</div>
             <div className="footer-links">
               <span>CBSE Affiliation 1930281</span>
               <span>NAAC Grade A++</span>
