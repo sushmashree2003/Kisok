@@ -1547,10 +1547,10 @@ export default function LoginScreen({
                   <input
                     type={showPassword ? "text" : "password"}
                     className="login-input-field"
-                    placeholder="Password / PIN"
+                    placeholder={role === "alumni" ? "Enter any password / PIN" : "Password / PIN"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    required
+                    required={role !== "alumni"}
                     autoComplete="current-password"
                     spellCheck={false}
                     style={{
@@ -1602,38 +1602,6 @@ export default function LoginScreen({
                   padding: "2px 2px",
                 }}
               >
-                <Lock size={15} style={{ color: config.accentColor }} />
-                <span>Access Password / Security PIN</span>
-              </label>
-              <div className="login-input-group" style={{ position: "relative", width: "100%", display: "flex", alignItems: "center" }}>
-                <input
-                  type={showPassword ? "text" : "password"}
-                  className="login-input-field"
-                  placeholder={role === "alumni" ? "Enter any password / PIN" : "Password / PIN"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required={role !== "alumni"}
-                  autoComplete="current-password"
-                  spellCheck={false}
-                  style={{
-                    width: "100%",
-                    height: "44px",
-                    background: "#ffffff",
-                    border: "1.5px solid #cbd5e1",
-                    borderRadius: "10px",
-                    padding: "0 40px 0 14px",
-                    fontSize: "0.95rem",
-                    fontWeight: 600,
-                    color: "#0f172a",
-                    outline: "none",
-                    boxSizing: "border-box",
-                  }}
-                />
-                <button
-                  type="button"
-                  className="login-eye-btn"
-                  onClick={() => setShowPassword(!showPassword)}
-                  aria-label="Toggle password visibility"
                 <label
                   className="login-remember-label"
                   style={{
