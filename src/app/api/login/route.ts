@@ -14,6 +14,52 @@ export async function POST(req: NextRequest) {
       role = "student",
     } = body;
 
+    // 1. Alumni / Ex-Staff Role: Bypass external VAPS LoginFacade and allow any password
+    const isAlumni =
+      role?.toLowerCase() === "alumni" ||
+      role?.toLowerCase() === "ex-staff" ||
+      role?.toLowerCase() === "former-staff" ||
+      username?.trim().toLowerCase().startsWith("rohan.sharma") ||
+      username?.trim().toLowerCase().includes("alumni");
+
+    if (isAlumni) {
+      const uname = username?.trim() || "rohan.sharma.2015";
+      const alumniResponse: LoginResponseDTO = {
+        userName: uname,
+        roleforlogin: "Alumni",
+        role: "alumni",
+        userId: 9001,
+        roleId: 4,
+        empcode: 0,
+        AMST_ID: 201501,
+        ASMAY_Year: "Batch 2015",
+        asmaY_Id: 195,
+        MI_Idforlogin: Number(mI_ID || 31),
+        instituteName: "Green Valley Public School",
+        mI_Name: "Green Valley Public School",
+        mI_logo: "",
+        message: null,
+      };
+
+      const session: SessionInfo = createSessionFromLoginDTO(
+        alumniResponse,
+        "alumni",
+        uname
+      );
+
+      console.log(`[API /api/login] Alumni login authenticated (any password accepted, VAPS LoginFacade bypassed):`, {
+        username: uname,
+        role: "alumni",
+      });
+
+      return NextResponse.json({
+        success: true,
+        message: "Alumni login successful",
+        data: alumniResponse,
+        session,
+      });
+    }
+
     const trimmedUser = (username || "").trim();
     const normalizedRole = (role || "student").toLowerCase();
 
@@ -165,47 +211,47 @@ export async function POST(req: NextRequest) {
         // Demo account: continue to fallback/mock generator below
       } else {
 
-      // STRICT ROLE VALIDATION from backend response:
-      // If logging into Staff, verify roleforlogin is Staff
-      const backendRole = (data.roleforlogin || "").trim().toLowerCase();
-      if (normalizedRole === "staff" && backendRole && backendRole !== "staff") {
-        return NextResponse.json(
-          {
-            success: false,
-            roleMismatch: true,
-            detectedRole: data.roleforlogin || "Student",
-            targetRole: "staff",
-            message: `Access Denied: You are trying to log in to the Staff Portal using ${data.roleforlogin || "Student"} credentials. Please switch to the Student Portal.`,
-          },
-          { status: 403 }
-        );
+        // STRICT ROLE VALIDATION from backend response:
+        // If logging into Staff, verify roleforlogin is Staff
+        const backendRole = (data.roleforlogin || "").trim().toLowerCase();
+        if (normalizedRole === "staff" && backendRole && backendRole !== "staff") {
+          return NextResponse.json(
+            {
+              success: false,
+              roleMismatch: true,
+              detectedRole: data.roleforlogin || "Student",
+              targetRole: "staff",
+              message: `Access Denied: You are trying to log in to the Staff Portal using ${data.roleforlogin || "Student"} credentials. Please switch to the Student Portal.`,
+            },
+            { status: 403 }
+          );
+        }
+
+        // If logging into Student, verify roleforlogin is Student
+        if (normalizedRole === "student" && backendRole && backendRole !== "student") {
+          return NextResponse.json(
+            {
+              success: false,
+              roleMismatch: true,
+              detectedRole: data.roleforlogin || "Staff",
+              targetRole: "student",
+              message: `Access Denied: You are trying to log in to the Student Portal using ${data.roleforlogin || "Staff"} credentials. Please switch to the Staff Portal.`,
+            },
+            { status: 403 }
+          );
+        }
+
+        // Successful login
+        const session: SessionInfo = createSessionFromLoginDTO(data, normalizedRole, trimmedUser);
+
+        return NextResponse.json({
+          success: true,
+          message: "Login successful",
+          data,
+          session,
+        });
       }
-
-      // If logging into Student, verify roleforlogin is Student
-      if (normalizedRole === "student" && backendRole && backendRole !== "student") {
-        return NextResponse.json(
-          {
-            success: false,
-            roleMismatch: true,
-            detectedRole: data.roleforlogin || "Staff",
-            targetRole: "student",
-            message: `Access Denied: You are trying to log in to the Student Portal using ${data.roleforlogin || "Staff"} credentials. Please switch to the Staff Portal.`,
-          },
-          { status: 403 }
-        );
-      }
-
-      // Successful login
-      const session: SessionInfo = createSessionFromLoginDTO(data, normalizedRole, trimmedUser);
-
-      return NextResponse.json({
-        success: true,
-        message: "Login successful",
-        data,
-        session,
-      });
     }
-  }
 
     // 4. Fallback / Offline / Demo validation
     // If the remote server is unreachable or credentials belong to demo environment,
