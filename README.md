@@ -143,6 +143,61 @@ To run this application on a physical touch kiosk or Raspberry Pi / Intel NUC di
 
 ---
 
+## 🤖 Role-Based AI Chatbot System (Groq + NVIDIA NIM)
+
+The kiosk includes a production-ready, serverless role-based AI chatbot architecture powered by **Groq** (for ~300ms ultra-low latency conversational responses) and **NVIDIA NIM** (for deep reasoning, academic predictions, and personalized recommendations).
+
+### 29 Specialized Role Agents Across 4 Groups
+
+| Role Group | Count | Agents Included |
+| :--- | :--- | :--- |
+| **Student / Parent** | 9 | `StudentAssistant`, `Attendance`, `Academic`, `Exam`, `Fee`, `Transport`, `Notice`, `Learning`, `FamilySupport` |
+| **Teacher / Staff** | 8 | `TeacherCopilot`, `Class`, `AttendanceAnalysis`, `Assessment`, `Lesson`, `StaffKnowledge`, `HRLeave`, `Resource` |
+| **Visitor / Applicant** | 6 | `Visitor`, `Admission`, `CampusNavigation`, `Appointment`, `Application`, `PublicKnowledge` |
+| **Alumni / Ex-Employee** | 6 | `AlumniAssistant`, `Event`, `Records`, `Community`, `Achievement`, `OfficeSupport` |
+
+### API Endpoints
+
+1. **POST `/api/chat`**
+   - **Request**: `{ "message": string, "role": string, "history"?: ChatMessage[] }`
+   - **Response**: `{ "success": boolean, "answer": string, "role": string, "model": string, "selectedAgent": string, "provider": "groq" | "nvidia" }`
+   - **Features**: Automatic routing to Groq or NVIDIA NIM based on query complexity; automatic failover; anti-hallucination guardrails.
+
+2. **POST `/api/plan`**
+   - **Request**: `{ "message": string, "role": string }`
+   - **Response**: `{ "success": boolean, "intent": string, "selectedAgent": string, "needsPrediction": boolean, "needsRecommendation": boolean, "needsKnowledgeBase": boolean, "provider": "groq" | "nvidia" }`
+   - **Features**: Sub-second Groq-powered intent detection with a deterministic keyword heuristic fallback.
+
+### Environment Variables
+
+Configure these in `.env.local` for local development or in **Vercel Project Settings > Environment Variables**:
+
+```bash
+# 1. Groq Cloud API (Fast Conversational Response & Planning)
+GROQ_API_KEY=your_groq_api_key_here
+GROQ_BASE_URL=https://api.groq.com
+GROQ_MODEL=openai/gpt-oss-120b
+
+# 2. NVIDIA NIM Cloud (Deep Thinking, Predictions & Recommendations)
+NVIDIA_API_KEY=your_nvidia_api_key_here
+NVIDIA_BASE_URL=https://integrate.api.nvidia.com/v1
+NVIDIA_MODEL=moonshotai/kimi-k3
+NVIDIA_REASONING_EFFORT=max
+NVIDIA_MAX_TOKENS=16384
+```
+
+---
+
+## 🚀 Deploying to Vercel
+
+1. Push your repository to GitHub.
+2. In the [Vercel Dashboard](https://vercel.com/dashboard), import your repository.
+3. In **Project Settings > Environment Variables**, add the Groq and NVIDIA variables (`GROQ_API_KEY`, `NVIDIA_API_KEY`, etc.).
+4. Click **Deploy**. Both `/api/chat` and `/api/plan` will run as serverless Node.js functions within execution limits.
+
+---
+
 ## 📝 License & Attribution
 
-Developed for **Green Valley Public School**. Built with Next.js, React, and Tailwind CSS.
+Developed for **Madhuvan Vatika Public School (MVPS)**. Built with Next.js, React, Groq, and NVIDIA NIM.
+
