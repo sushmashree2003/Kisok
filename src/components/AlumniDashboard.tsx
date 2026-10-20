@@ -733,8 +733,9 @@ export default function AlumniDashboard({ onBackToKiosk }: DashboardProps) {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // AI Chat Handler
-  const handleSendAiMessage = (queryText?: string) => {
+  // AI Chat Handler connected to /api/chat
+  const handleSendAiMessage = async (queryText?: string) => {
+    if (isAiTyping) return;
     const textToSend = queryText || chatInput;
     if (!textToSend.trim()) return;
 
@@ -749,24 +750,24 @@ export default function AlumniDashboard({ onBackToKiosk }: DashboardProps) {
     if (!queryText) setChatInput("");
     setIsAiTyping(true);
 
-    setTimeout(() => {
-      let replyText =
-        "Thank you for reaching out! You can explore the dedicated sections of the Alumni Portal for reunions, transcripts, campus visits, or mentorship opportunities.";
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: textToSend,
+          role: "alumni",
+          history: chatMessages.slice(-6).map((m) => ({
+            role: m.sender === "user" ? "user" : "assistant",
+            content: m.text,
+          })),
+        }),
+      });
 
-      const lower = textToSend.toLowerCase();
-      if (lower.includes("meet") || lower.includes("reunion") || lower.includes("when is")) {
-        replyText = AI_PRESET_QA["When is the next Alumni Meet?"];
-      } else if (lower.includes("transcript") || lower.includes("degree") || lower.includes("certificate")) {
-        replyText = AI_PRESET_QA["How do I request my transcripts?"];
-      } else if (lower.includes("visit") || lower.includes("tour") || lower.includes("campus pass")) {
-        replyText = AI_PRESET_QA["How can I schedule a campus visit?"];
-      } else if (lower.includes("mentor") || lower.includes("lecture") || lower.includes("teach")) {
-        replyText = AI_PRESET_QA["How can I mentor current students?"];
-      } else if (lower.includes("donation") || lower.includes("give back") || lower.includes("scholarship")) {
-        replyText = AI_PRESET_QA["What is the alumni scholarship fund?"];
-      } else if (lower.includes("2015") || lower.includes("batch") || lower.includes("classmates")) {
-        replyText = AI_PRESET_QA["Tell me about my batch (Class of 2015)"];
-      }
+      const data = await res.json();
+      const replyText =
+        data.answer ||
+        "Thank you for reaching out! You can explore the dedicated sections of the Alumni Portal for reunions, transcripts, campus visits, or mentorship opportunities.";
 
       setChatMessages((prev) => [
         ...prev,
@@ -777,8 +778,19 @@ export default function AlumniDashboard({ onBackToKiosk }: DashboardProps) {
           time: new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true }),
         },
       ]);
+    } catch {
+      setChatMessages((prev) => [
+        ...prev,
+        {
+          id: `bot-${Date.now()}`,
+          sender: "bot" as const,
+          text: "⚠️ Alumni AI Service is temporarily unreachable. Please check back shortly or email the Alumni Secretariat.",
+          time: new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true }),
+        },
+      ]);
+    } finally {
       setIsAiTyping(false);
-    }, 600);
+    }
   };
 
   // RSVP Event Handler
@@ -2158,6 +2170,7 @@ export default function AlumniDashboard({ onBackToKiosk }: DashboardProps) {
                     type="text"
                     placeholder="Ask VatikaBot anything..."
                     value={chatInput}
+                    disabled={isAiTyping}
                     onChange={(e) => setChatInput(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && handleSendAiMessage()}
                     style={{
@@ -2171,14 +2184,15 @@ export default function AlumniDashboard({ onBackToKiosk }: DashboardProps) {
                   />
                   <button
                     onClick={() => handleSendAiMessage()}
+                    disabled={isAiTyping}
                     style={{
-                      background: "#ea580c",
+                      background: isAiTyping ? "#94a3b8" : "#ea580c",
                       border: "none",
                       color: "#ffffff",
                       width: 26,
                       height: 26,
                       borderRadius: 6,
-                      cursor: "pointer",
+                      cursor: isAiTyping ? "not-allowed" : "pointer",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
@@ -4322,21 +4336,23 @@ export default function AlumniDashboard({ onBackToKiosk }: DashboardProps) {
                   type="text"
                   placeholder="Type a question for VatikaBot AI..."
                   value={chatInput}
+                  disabled={isAiTyping}
                   onChange={(e) => setChatInput(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSendAiMessage()}
                   style={{ border: "none", outline: "none", fontSize: "0.85rem", flex: 1, padding: "4px" }}
                 />
                 <button
                   onClick={() => handleSendAiMessage()}
+                  disabled={isAiTyping}
                   style={{
                     padding: "8px 16px",
                     borderRadius: 10,
-                    background: "#ea580c",
+                    background: isAiTyping ? "#94a3b8" : "#ea580c",
                     color: "#ffffff",
                     border: "none",
                     fontSize: "0.82rem",
                     fontWeight: 800,
-                    cursor: "pointer",
+                    cursor: isAiTyping ? "not-allowed" : "pointer",
                     display: "inline-flex",
                     alignItems: "center",
                     gap: "6px",

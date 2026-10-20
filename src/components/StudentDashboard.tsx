@@ -731,8 +731,9 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
     if (screen === "exam-overall") fetchExamOverall();
   };
 
-  // AI Chat Handler
-  const handleSendChatMessage = (promptText?: string) => {
+  // AI Chat Handler connected to /api/chat
+  const handleSendChatMessage = async (promptText?: string) => {
+    if (isTyping) return;
     const q = (promptText || chatInputText).trim();
     if (!q) return;
 
@@ -747,32 +748,29 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
     setChatInputText("");
     setIsTyping(true);
 
-    setTimeout(() => {
-      const lower = q.toLowerCase();
-      let botReply = "";
-      let suggestions: string[] = [];
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: q,
+          role: "student",
+          history: chatMessages.slice(-6).map((m) => ({
+            role: m.sender === "user" ? "user" : "assistant",
+            content: m.text,
+          })),
+        }),
+      });
 
-      if (lower.includes("attendance")) {
-        botReply = `📊 Live Attendance Report:\n• Cumulative Attendance: ${dynamicAttendanceRate}%\n• Total Working Days: ${totalWorkingDays}\n• Days Present: ${totalPresentDays}\n• Status: ${dynamicAttendanceRate >= 75 ? "Excellent (Above CBSE 75% norm) ✅" : "Needs Attention ⚠️"}`;
-        suggestions = ["Show timetable", "Check fee dues", "Show exam scorecards"];
-      } else if (lower.includes("exam") || lower.includes("marks") || lower.includes("score")) {
-        botReply = `📝 Examination Summary:\n• Evaluated Subjects: ${examMarksData.length}\n• Assessment Mode: ${examMode === "EWAS" ? "Exam-Wise Analysis" : "Subject-Wise Analysis"}\n• Recent Subjects Recorded: ${examMarksData.slice(0, 3).map((m) => `${m.subject}: ${m.obtainedMarks}/${m.maxMarks} (Grade ${m.grade})`).join(", ") || "Active Scorecards available"}`;
-        suggestions = ["Open Exam Results tab", "Check homework", "Show timetable"];
-      } else if (lower.includes("fee") || lower.includes("due") || lower.includes("balance")) {
-        botReply = `💳 Fee Analysis Ledger:\n• Pending Balance: ₹${totalFeeBalance.toLocaleString()}\n• Total Receivable: ₹${feeData.reduce((acc, f) => acc + f.receivable, 0).toLocaleString()}\n• Total Paid: ₹${feeData.reduce((acc, f) => acc + f.collection, 0).toLocaleString()}\n• Account Status: ${totalFeeBalance <= 0 ? "All Clear (Zero Outstanding) 🎉" : "Dues Pending at Accounts Desk"}`;
-        suggestions = ["Open Fees tab", "Check attendance", "Show notices"];
-      } else if (lower.includes("timetable") || lower.includes("class") || lower.includes("period")) {
-        botReply = timetableData.studentTT.length > 0
-          ? `🗓️ Weekly Time-Table:\n• Total Weekly Periods: ${timetableData.studentTT.length}\n• Next Scheduled Class: ${timetableData.studentTT[0]?.ISMS_SubjectName || "Class"}${timetableData.studentTT[0]?.EmpName ? ` by ${timetableData.studentTT[0].EmpName}` : ""}`
-          : `🗓️ Weekly Time-Table: No published timetable periods found on the server for the current session.`;
-        suggestions = ["Open Time-Table tab", "Check homework diary", "Ask something else"];
-      } else if (lower.includes("homework") || lower.includes("diary")) {
-        botReply = `📚 Home-work Diary:\n• Assigned Tasks: ${homeworkData.length}\n• Latest: ${homeworkData[0]?.subject ? `${homeworkData[0].subject} - ${homeworkData[0].topic} (Due: ${homeworkData[0].dueDate})` : "All daily homework updated from faculty"}`;
-        suggestions = ["Open Home-work tab", "Check school notices", "Show attendance"];
-      } else {
-        botReply = `🤖 Thanks for asking! As your Madhuvan Vatika Smart Campus Assistant, I have access to your live academic records, morning attendance, fee ledger, and class schedules. You can also explore any module from the navigation bar above!`;
-        suggestions = ["What is my attendance rate?", "Show my exam results", "What is my timetable today?", "Do I have pending fee balance?"];
-      }
+      const data = await res.json();
+      const botReply = data.answer || "I could not retrieve an answer at this time. Please try again.";
+
+      const suggestions = [
+        "What is my attendance rate?",
+        "Show my exam results",
+        "What is my timetable today?",
+        "Do I have pending fee balance?",
+      ];
 
       setChatMessages((prev) => [
         ...prev,
@@ -784,8 +782,19 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
           suggestions,
         },
       ]);
+    } catch {
+      setChatMessages((prev) => [
+        ...prev,
+        {
+          id: `msg-bot-${Date.now()}`,
+          sender: "bot",
+          text: "⚠️ Campus AI assistant is temporarily unavailable. Please check your network connection or try again shortly.",
+          time: new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }),
+        },
+      ]);
+    } finally {
       setIsTyping(false);
-    }, 600);
+    }
   };
 
   const studentDisplayName = studentDetails.name || session?.name || session?.username || "Student";
@@ -3662,19 +3671,19 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
                 <span style={{ fontSize: "0.68rem", fontWeight: 800, color: "#94a3b8", flexShrink: 0 }}>
                   Quick Prompts:
                 </span>
-                <button className="ai-quick-prompt-btn" onClick={() => handleSendChatMessage("What is my attendance rate?")}>
+                <button className="ai-quick-prompt-btn" disabled={isTyping} onClick={() => handleSendChatMessage("What is my attendance rate?")}>
                   📊 Attendance Ratio
                 </button>
-                <button className="ai-quick-prompt-btn" onClick={() => handleSendChatMessage("Show my exam results")}>
+                <button className="ai-quick-prompt-btn" disabled={isTyping} onClick={() => handleSendChatMessage("Show my exam results")}>
                   📝 Exam Scorecards
                 </button>
-                <button className="ai-quick-prompt-btn" onClick={() => handleSendChatMessage("What is my timetable today?")}>
+                <button className="ai-quick-prompt-btn" disabled={isTyping} onClick={() => handleSendChatMessage("What is my timetable today?")}>
                   🗓️ Today&apos;s Classes
                 </button>
-                <button className="ai-quick-prompt-btn" onClick={() => handleSendChatMessage("Do I have pending fee balance?")}>
+                <button className="ai-quick-prompt-btn" disabled={isTyping} onClick={() => handleSendChatMessage("Do I have pending fee balance?")}>
                   💳 Fee Balance Status
                 </button>
-                <button className="ai-quick-prompt-btn" onClick={() => handleSendChatMessage("Show homework diary")}>
+                <button className="ai-quick-prompt-btn" disabled={isTyping} onClick={() => handleSendChatMessage("Show homework diary")}>
                   📚 Homework Diary
                 </button>
               </div>
@@ -3686,6 +3695,7 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
                   className="ai-chat-text-input"
                   placeholder="Ask VatikaBot about attendance, report card marks, timetable, or fees..."
                   value={chatInputText}
+                  disabled={isTyping}
                   onChange={(e) => setChatInputText(e.target.value)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
@@ -3696,6 +3706,7 @@ export default function StudentDashboard({ onBackToKiosk }: DashboardProps) {
                 <button
                   className="ai-chat-send-btn"
                   onClick={() => handleSendChatMessage()}
+                  disabled={isTyping}
                   title="Send message to VatikaBot"
                 >
                   <Send size={15} />

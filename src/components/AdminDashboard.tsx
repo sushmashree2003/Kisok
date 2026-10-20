@@ -196,7 +196,8 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
     }
   }, [chatMessages, currentScreen]);
 
-  const handleSendChatMessage = (textToSend?: string) => {
+  const handleSendChatMessage = async (textToSend?: string) => {
+    if (isTyping) return;
     const query = (textToSend || chatInputText).trim();
     if (!query) return;
 
@@ -206,25 +207,24 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
     if (!textToSend) setChatInputText("");
     setIsTyping(true);
 
-    setTimeout(() => {
-      let botResponse = "";
-      const lower = query.toLowerCase();
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: query,
+          role: "admin",
+          history: chatMessages.slice(-6).map((m) => ({
+            role: m.sender === "user" ? "user" : "assistant",
+            content: m.text,
+          })),
+        }),
+      });
 
-      if (lower.includes("attendance") || lower.includes("present") || lower.includes("absent")) {
-        botResponse = "📊 Campus Attendance Telemetry for today:\n• Overall Student Attendance: 94.8% (5,918 present out of 6,240 enrolled)\n• Faculty Check-ins: 98.8% (85 of 86 present, 1 on sanctioned duty leave)\n• Biometric gates sync: Active across all 6 campus entrances with real-time VAPS cloud streaming.";
-      } else if (lower.includes("fee") || lower.includes("collection") || lower.includes("finance") || lower.includes("revenue")) {
-        botResponse = "💳 Financial Liquidity & Fee Ledger Summary:\n• Term 2 Collections: ₹4.82 Cr collected (92.4% realization against ₹5.21 Cr target)\n• Outstanding Dues: ₹39.0 Lakh across 312 student profiles\n• Automated SMS & WhatsApp reminders dispatched to pending parents on 12th Oct.";
-      } else if (lower.includes("admission") || lower.includes("seats") || lower.includes("intake") || lower.includes("enrol")) {
-        botResponse = "🎓 AY 2026-27 Admissions Pipeline:\n• Total Applications Received: 428 across Grades LKG to 11\n• Entrance Evaluations Cleared: 310 candidates\n• Final Seats Confirmed: 215 / 250 available vacancies\n• Class 6 & Class 9 waitlists active.";
-      } else if (lower.includes("bus") || lower.includes("transport") || lower.includes("safety") || lower.includes("fleet")) {
-        botResponse = "🚌 Transport & Campus Fleet Status:\n• 38/38 GPS buses operational and geo-fenced\n• All vehicle speed governors verified compliant (<40 km/h campus perimeter)\n• 0 route deviations reported today\n• CCTV fleet feeds streamed to security command.";
-      } else if (lower.includes("cbse") || lower.includes("affiliation") || lower.includes("compliance") || lower.includes("audit")) {
-        botResponse = "🛡️ CBSE Regulatory & Compliance Audit:\n• CBSE Affiliation No. 1930281 renewal formally ratified through 2031\n• NAAC Institutional Accreditation: Grade A++ (Score 3.82/4.0)\n• Fire Safety NOC & Building Stability certificates valid till March 2027.";
-      } else if (lower.includes("solar") || lower.includes("power") || lower.includes("grid") || lower.includes("energy")) {
-        botResponse = "⚡ Campus Solar Smart Grid Telemetry:\n• Current Generation: 48.2 kWh (peak sun)\n• Campus Self-Sufficiency: 96% power independence\n• Battery Reserve: 88% capacity at Substation A.";
-      } else {
-        botResponse = `✨ Understood, Administrator. VatikaBot has logged your request: "${query}". All institutional databases, smart meters, and academic controllers are currently synchronized and running at peak performance.`;
-      }
+      const data = await res.json();
+      const botResponse =
+        data.answer ||
+        `✨ Understood, Administrator. VatikaBot has logged your request: "${query}". All institutional databases are synchronized.`;
 
       setChatMessages((prev) => [
         ...prev,
@@ -232,11 +232,22 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
           sender: "bot",
           text: botResponse,
           time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-          tag: "ADMIN EXECUTIVE DESK",
+          tag: data.selectedAgent ? `${data.selectedAgent.toUpperCase()} DESK` : "ADMIN EXECUTIVE DESK",
         },
       ]);
+    } catch {
+      setChatMessages((prev) => [
+        ...prev,
+        {
+          sender: "bot",
+          text: "⚠️ Administrative AI Telemetry is temporarily unavailable. Please retry shortly.",
+          time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+          tag: "SYSTEM ALERT",
+        },
+      ]);
+    } finally {
       setIsTyping(false);
-    }, 700);
+    }
   };
 
   // Real-time Clock
@@ -1880,6 +1891,7 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
                     className="ai-chat-text-input"
                     placeholder="Ask VatikaBot about attendance, admissions, finances, solar grid, compliance..."
                     value={chatInputText}
+                    disabled={isTyping}
                     onChange={(e) => setChatInputText(e.target.value)}
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
@@ -1890,8 +1902,9 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
                   <button
                     className="ai-chat-send-btn"
                     onClick={() => handleSendChatMessage()}
+                    disabled={isTyping}
                     title="Send instruction to VatikaBot"
-                    style={{ background: "#7c3aed" }}
+                    style={{ background: isTyping ? "#94a3b8" : "#7c3aed", cursor: isTyping ? "not-allowed" : "pointer" }}
                   >
                     <Send size={15} />
                   </button>

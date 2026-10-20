@@ -534,7 +534,8 @@ export default function StaffDashboard({ onBackToKiosk }: DashboardProps) {
     }
   }, [chatMessages, currentScreen, isTyping]);
 
-  const handleSendChatMessage = (customQuery?: string) => {
+  const handleSendChatMessage = async (customQuery?: string) => {
+    if (isTyping) return;
     const query = (customQuery || chatInputText).trim();
     if (!query) return;
 
@@ -553,27 +554,22 @@ export default function StaffDashboard({ onBackToKiosk }: DashboardProps) {
     if (!customQuery) setChatInputText("");
     setIsTyping(true);
 
-    setTimeout(() => {
-      let botResponse = "I have noted your request. You can check the respective tabs for detailed records.";
-      const q = query.toLowerCase();
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: query,
+          role: "staff",
+          history: chatMessages.slice(-6).map((m) => ({
+            role: m.sender === "user" ? "user" : "assistant",
+            content: m.text,
+          })),
+        }),
+      });
 
-      if (q.includes("class") || q.includes("timetable") || q.includes("period") || q.includes("schedule")) {
-        botResponse = todayClasses.length > 0
-          ? `📅 **Today's Teaching Schedule**: You have ${todayClasses.length} period(s) scheduled for today. Period 1 begins at ${todayClasses[0].time || "morning"} (${todayClasses[0].class}, ${todayClasses[0].room}).`
-          : `📅 **Today's Teaching Schedule**: No active teaching periods scheduled for today.`;
-      } else if (q.includes("leave") || q.includes("cl") || q.includes("balance")) {
-        botResponse = `🏖️ **Leave Balance Status**: You currently have **${leaveData.summary.casualLeaveBalance} Casual Leaves**, **${leaveData.summary.medicalLeaveBalance} Medical Leaves**, and **${leaveData.summary.earnedLeaveBalance} Earned Leaves** available.`;
-      } else if (q.includes("punch") || q.includes("biometric") || q.includes("attendance")) {
-        botResponse = latestPunch?.inTime
-          ? `⏱️ **Biometric Status**: Your check-in was recorded at **${latestPunch.inTime}** via ${punchTerminal}. Status: ${punchStatus}.`
-          : `⏱️ **Biometric Status**: No check-in records found for today.`;
-      } else if (q.includes("salary") || q.includes("payslip") || q.includes("pay")) {
-        botResponse = latestSalary?.net
-          ? `💳 **Salary Record**: ${latestSalary.month || "Latest"} salary: Net Pay ${netSalaryDisplay}, Gross: ${grossSalaryDisplay}.`
-          : `💳 **Salary Record**: No salary records published for current fiscal year.`;
-      } else if (q.includes("exam") || q.includes("mark") || q.includes("grade") || q.includes("score")) {
-        botResponse = `📊 **Student Evaluation**: Please navigate to the Student Evaluation tab to view class scorecards and marksheet submissions.`;
-      }
+      const data = await res.json();
+      const botResponse = data.answer || "I have noted your request. You can check the respective tabs for detailed records.";
 
       setChatMessages((prev) => [
         ...prev,
@@ -590,8 +586,19 @@ export default function StaffDashboard({ onBackToKiosk }: DashboardProps) {
           ],
         },
       ]);
+    } catch {
+      setChatMessages((prev) => [
+        ...prev,
+        {
+          id: `msg-bot-${Date.now()}`,
+          sender: "bot",
+          text: "⚠️ Faculty AI Assistant is temporarily unavailable. Please verify your connection or try again shortly.",
+          time: new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }),
+        },
+      ]);
+    } finally {
       setIsTyping(false);
-    }, 600);
+    }
   };
 
   return (
@@ -2437,6 +2444,7 @@ export default function StaffDashboard({ onBackToKiosk }: DashboardProps) {
                   type="text"
                   placeholder="Ask GreenBot about classes, leaves, salary or lesson plans..."
                   value={chatInputText}
+                  disabled={isTyping}
                   onChange={(e) => setChatInputText(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSendChatMessage()}
                   style={{
@@ -2451,8 +2459,9 @@ export default function StaffDashboard({ onBackToKiosk }: DashboardProps) {
                 />
                 <button
                   onClick={() => handleSendChatMessage()}
+                  disabled={isTyping}
                   style={{
-                    background: "#ea580c",
+                    background: isTyping ? "#94a3b8" : "#ea580c",
                     color: "#ffffff",
                     border: "none",
                     borderRadius: "50%",
@@ -2461,7 +2470,7 @@ export default function StaffDashboard({ onBackToKiosk }: DashboardProps) {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    cursor: "pointer",
+                    cursor: isTyping ? "not-allowed" : "pointer",
                   }}
                 >
                   <Send size={18} />

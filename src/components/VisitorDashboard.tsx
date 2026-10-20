@@ -291,6 +291,7 @@ export default function VisitorDashboard({ onBackToKiosk }: VisitorDashboardProp
     },
   ]);
   const [chatInput, setChatInput] = useState("");
+  const [isChatTyping, setIsChatTyping] = useState(false);
 
   // Load localStorage data safely
   useEffect(() => {
@@ -326,31 +327,45 @@ export default function VisitorDashboard({ onBackToKiosk }: VisitorDashboardProp
     }
   };
 
-  const handleSendChat = (queryText: string) => {
+  const handleSendChat = async (queryText: string) => {
+    if (isChatTyping) return;
     const trimmed = queryText.trim();
     if (!trimmed) return;
     const userMsg = trimmed;
     setChatMessages((prev) => [...prev, { sender: "user", text: userMsg }]);
     setChatInput("");
+    setIsChatTyping(true);
 
-    setTimeout(() => {
-      let reply = "Thank you for inquiring! For personalized assistance, our Reception desk is open in Central Gate 1 (Ext. 101) or you can visit Counter 104 in Block A.";
-      const qLower = userMsg.toLowerCase();
-      if (qLower.includes("fee") || qLower.includes("cost") || qLower.includes("charge")) {
-        reply = "Annual tuition ranges from ₹48,000 for Pre-KG to ₹84,000 for Senior Secondary STEM classes. Flexible 3-term installments and merit concessions are available.";
-      } else if (qLower.includes("time") || qLower.includes("hour") || qLower.includes("open")) {
-        reply = "Campus visitor hours are Monday to Saturday from 08:30 AM to 04:30 PM. Administrative offices remain open until 04:00 PM.";
-      } else if (qLower.includes("admission") || qLower.includes("apply") || qLower.includes("nursery") || qLower.includes("form")) {
-        reply = "Admissions for 2026-27 are currently open from Nursery through Grade XI. Collect the prospectus from Counter 104 or review the full fee matrix in Module 2.";
-      } else if (qLower.includes("principal") || qLower.includes("meet") || qLower.includes("appointment")) {
-        reply = "Dr. Kavitha Iyer (Principal) meets visitors between 10:30 AM and 01:00 PM. Please use Card 3 (Visitor Check-In) to notify the secretariat.";
-      } else if (qLower.includes("bus") || qLower.includes("transport") || qLower.includes("route")) {
-        reply = "We operate 32 GPS-monitored air-conditioned buses across 34 city routes with female attendants and parent telemetry app access.";
-      } else if (qLower.includes("where") || qLower.includes("map") || qLower.includes("block") || qLower.includes("lab")) {
-        reply = "Use Card 1 (Campus Map & Wayfinder) for interactive floor-by-floor walking routes to STEM labs, the auditorium, and academic blocks.";
-      }
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: userMsg,
+          role: "visitor",
+          history: chatMessages.slice(-6).map((m) => ({
+            role: m.sender === "user" ? "user" : "assistant",
+            content: m.text,
+          })),
+        }),
+      });
+
+      const data = await res.json();
+      const reply =
+        data.answer ||
+        "Thank you for inquiring! For personalized assistance, our Reception desk is open in Central Gate 1 (Ext. 101) or you can visit Counter 104 in Block A.";
       setChatMessages((prev) => [...prev, { sender: "bot", text: reply }]);
-    }, 500);
+    } catch {
+      setChatMessages((prev) => [
+        ...prev,
+        {
+          sender: "bot",
+          text: "⚠️ Campus AI Assistant is temporarily unavailable. Please visit Reception Desk at Counter 104 in Block A.",
+        },
+      ]);
+    } finally {
+      setIsChatTyping(false);
+    }
   };
 
   const handleNotifyHost = () => {
@@ -1790,6 +1805,11 @@ export default function VisitorDashboard({ onBackToKiosk }: VisitorDashboardProp
                     {msg.text}
                   </div>
                 ))}
+                {isChatTyping && (
+                  <div style={{ alignSelf: "flex-start", color: "#64748b", fontSize: "0.75rem", fontStyle: "italic", padding: "0.25rem 0.5rem" }}>
+                    CBS is thinking and typing an answer...
+                  </div>
+                )}
               </div>
 
               {/* Chat Input */}
@@ -1798,6 +1818,7 @@ export default function VisitorDashboard({ onBackToKiosk }: VisitorDashboardProp
                   type="text"
                   placeholder="Ask CBS about fees, timings, admissions, or directions..."
                   value={chatInput}
+                  disabled={isChatTyping}
                   onChange={(e) => setChatInput(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSendChat(chatInput)}
                   style={{
@@ -1812,17 +1833,18 @@ export default function VisitorDashboard({ onBackToKiosk }: VisitorDashboardProp
                 />
                 <button
                   onClick={() => handleSendChat(chatInput)}
+                  disabled={isChatTyping}
                   style={{
                     width: 38,
                     height: 38,
                     borderRadius: "50%",
-                    background: "#ea580c",
+                    background: isChatTyping ? "#94a3b8" : "#ea580c",
                     color: "#ffffff",
                     border: "none",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    cursor: "pointer",
+                    cursor: isChatTyping ? "not-allowed" : "pointer",
                     boxShadow: "0 2px 8px rgba(234, 88, 12, 0.3)",
                   }}
                 >
