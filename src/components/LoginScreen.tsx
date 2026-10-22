@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -29,7 +30,6 @@ import {
   Server,
   RefreshCw,
   X,
-  CreditCard,
 } from "lucide-react";
 import { SessionInfo } from "@/types/auth";
 import { saveUserSession, getRememberedUser } from "@/lib/session";
@@ -189,7 +189,7 @@ export default function LoginScreen({
     },
     visitor: {
       title: "Campus Visitor Portal",
-      subtitle: "Discover Madhuvan Vatika excellence, campus tours, and admissions.",
+      subtitle: "Discover Green Valley excellence, campus tours, and admissions.",
       defaultUser: "visitor@gvps.edu",
       userPlaceholder: "Visitor Pass ID / Mobile Number",
       roleBadge: "Campus Visitor",
@@ -201,7 +201,7 @@ export default function LoginScreen({
       heroHeadlineHighlight: "Where Values Meet Global Vision",
       heroSubtext:
         "Step inside a premier center of holistic education. Explore state-of-the-art STEM labs, athletic arenas, arts pavilions, and transparent admissions guidance.",
-      sloganTitle: "MADHUVAN VATIKA WELCOME CREED",
+      sloganTitle: "GREEN VALLEY WELCOME CREED",
       sloganQuote: "“Enter as Guests, Leave as Family — Every Great Journey Begins with Wonder.”",
       sloganMotto: "Excellence • Empathy • Innovation • Integrity",
       features: [
@@ -277,7 +277,6 @@ export default function LoginScreen({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [authSuccess, setAuthSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [roleMismatch, setRoleMismatch] = useState<{ detectedRole: string; targetRole: string } | null>(null);
   const [serverUrl, setServerUrl] = useState(
     CLIENT_API_ENDPOINTS.DEFAULT_SERVER_URL
   );
@@ -302,7 +301,6 @@ export default function LoginScreen({
     }
     setPassword("");
     setErrorMessage(null);
-    setRoleMismatch(null);
     setVisitorName("");
     setVisitorPhone("");
     setVisitorNameError("");
@@ -313,7 +311,6 @@ export default function LoginScreen({
     if (e) e.preventDefault();
     setIsSubmitting(true);
     setErrorMessage(null);
-    setRoleMismatch(null);
 
     if (role !== "alumni" && !password.trim()) {
       setIsSubmitting(false);
@@ -348,12 +345,6 @@ export default function LoginScreen({
         }, 400);
       } else {
         setIsSubmitting(false);
-        if (result.roleMismatch) {
-          setRoleMismatch({
-            detectedRole: result.detectedRole || (role === "staff" ? "Student" : "Staff"),
-            targetRole: result.targetRole || (role === "staff" ? "student" : "staff"),
-          });
-        }
         if (result.firstTimeLogin) {
           setErrorMessage("First time login or password expired. Please update password.");
         } else {
@@ -368,36 +359,6 @@ export default function LoginScreen({
       setErrorMessage(
         "Network connection failed. Unable to reach the school login server."
       );
-    }
-  };
-
-  const handleSmartCardTap = async () => {
-    setIsSubmitting(true);
-    setErrorMessage(null);
-    setRoleMismatch(null);
-    try {
-      const cardId = role === "staff" ? "EMP-1042" : "ADM-1024";
-      const response = await fetch(CLIENT_API_ENDPOINTS.SMARTCARD_PUNCH, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cardId, MI_ID: institutionId }),
-      });
-      const result = await response.json();
-      if (result.success && result.session) {
-        saveUserSession(result.session, rememberMe);
-        setAuthSuccess(true);
-        setTimeout(() => {
-          setIsSubmitting(false);
-          onLoginSuccess(result.session);
-        }, 400);
-      } else {
-        setIsSubmitting(false);
-        setErrorMessage(result.message || "Smart card reader did not recognize card.");
-      }
-    } catch (err: any) {
-      console.error("Smart card tap failed:", err);
-      setIsSubmitting(false);
-      setErrorMessage("Smart card authentication error.");
     }
   };
 
@@ -503,13 +464,8 @@ export default function LoginScreen({
           <button className="command-back" onClick={onBackToKiosk} aria-label="Back to role selection">
             <ArrowLeft size={19} />
           </button>
-          <div className="command-mark" aria-hidden="true" style={{ width: "42px", height: "42px" }}>
-            <svg width="34" height="34" viewBox="0 0 48 48" fill="none">
-              <path d="M24 7c4 4 10 6 14 3 0 8-7 13-14 14C17 23 10 18 10 10c4 3 10 1 14-3Z" fill="#f97316" />
-              <path d="M24 24V11" stroke="#ea580c" strokeWidth="2.5" strokeLinecap="round" />
-              <path d="M5 36c7-4.5 13-3.5 19 1 6-4.5 12-5.5 19-1V18c-7-4.5-13-3.5-19 1-6-4.5-12-5.5-19-1v18Z" fill="#c2410c" />
-              <path d="M24 19v18" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
-            </svg>
+          <div className="command-mark" aria-hidden="true" style={{ width: "42px", height: "42px" }} suppressHydrationWarning>
+            <img src="/mvps/brand/logo.png" alt="Madhuvan Vatika Public School Logo" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
           </div>
           <div>
             <p className="command-kicker" style={{ margin: "0 0 2px" }}>MADHUVAN VATIKA • SMART CAMPUS</p>
@@ -789,7 +745,7 @@ export default function LoginScreen({
                   marginTop: "2px",
                 }}
               >
-                — Madhuvan Vatika Creed: {config.sloganMotto}
+                — Green Valley Creed: {config.sloganMotto}
               </span>
             </div>
           </div>
@@ -1260,92 +1216,49 @@ export default function LoginScreen({
             </div>
           )}
 
-          {/* Real-time Authentication Error Alert & Role Isolation Guard */}
+          {/* Real-time Authentication Error Alert */}
           {errorMessage && (
             <div
               style={{
                 width: "100%",
-                background: roleMismatch ? "#fef2f2" : "#fff1f2",
-                border: roleMismatch ? "2px solid #ef4444" : "1.5px solid #fecaca",
+                background: "#fef2f2",
+                border: "1.5px solid #fecaca",
                 borderRadius: "12px",
-                padding: "10px 14px",
+                padding: "10px 12px",
                 marginBottom: "10px",
                 display: "flex",
-                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "space-between",
                 gap: "8px",
                 color: "#991b1b",
                 boxSizing: "border-box",
-                boxShadow: roleMismatch ? "0 4px 14px rgba(239, 68, 68, 0.18)" : "none",
               }}
             >
-              <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "8px", width: "100%" }}>
-                <div style={{ display: "flex", alignItems: "flex-start", gap: "8px", flex: 1 }}>
-                  <AlertCircle size={18} style={{ color: "#ef4444", flexShrink: 0, marginTop: "2px" }} />
-                  <div>
-                    {roleMismatch && (
-                      <div style={{ fontSize: "0.72rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", color: "#b91c1c", marginBottom: 2 }}>
-                        🛡️ Role Isolation Security Guard
-                      </div>
-                    )}
-                    <span style={{ fontSize: "0.82rem", fontWeight: 700, lineHeight: 1.35 }}>
-                      {errorMessage}
-                    </span>
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setErrorMessage(null);
-                    setRoleMismatch(null);
-                  }}
-                  style={{
-                    background: "transparent",
-                    color: "#991b1b",
-                    border: "none",
-                    padding: "4px",
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderRadius: "4px",
-                  }}
-                  aria-label="Dismiss error"
-                  title="Dismiss"
-                >
-                  <X size={16} />
-                </button>
+              <div style={{ display: "flex", alignItems: "center", gap: "8px", flex: 1 }}>
+                <AlertCircle size={18} style={{ color: "#ef4444", flexShrink: 0 }} />
+                <span style={{ fontSize: "0.82rem", fontWeight: 700, lineHeight: 1.35 }}>
+                  {errorMessage}
+                </span>
               </div>
-
-              {roleMismatch && (
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-start", paddingTop: "4px" }}>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const target = roleMismatch.detectedRole.toLowerCase() === "student" ? "student" : "staff";
-                      setRoleMismatch(null);
-                      setErrorMessage(null);
-                      onSwitchRole(target as RoleType);
-                    }}
-                    style={{
-                      background: "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)",
-                      color: "#ffffff",
-                      border: "none",
-                      borderRadius: "8px",
-                      padding: "6px 14px",
-                      fontSize: "0.78rem",
-                      fontWeight: 800,
-                      cursor: "pointer",
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: "6px",
-                      boxShadow: "0 2px 6px rgba(220, 38, 38, 0.3)",
-                    }}
-                  >
-                    <span>Switch to {roleMismatch.detectedRole} Portal</span>
-                    <ArrowRight size={13} />
-                  </button>
-                </div>
-              )}
+              <button
+                type="button"
+                onClick={() => setErrorMessage(null)}
+                style={{
+                  background: "transparent",
+                  color: "#991b1b",
+                  border: "none",
+                  padding: "4px",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderRadius: "4px",
+                }}
+                aria-label="Dismiss error"
+                title="Dismiss"
+              >
+                <X size={16} />
+              </button>
             </div>
           )}
 
@@ -1378,7 +1291,7 @@ export default function LoginScreen({
               >
                 <ShieldCheck size={16} style={{ color: "#0d9488", flexShrink: 0, marginTop: "2px" }} />
                 <span style={{ fontSize: "0.78rem", fontWeight: 600, color: "#0f766e", lineHeight: 1.4 }}>
-                  <strong>Static Kiosk Demo</strong> — No real data is submitted. This is an interactive demonstration for Madhuvan Vatika - MVPS.
+                  <strong>Static Kiosk Demo</strong> — No real data is submitted. This is an interactive demonstration for Green Valley Public School.
                 </span>
               </div>
 
@@ -1777,34 +1690,6 @@ export default function LoginScreen({
                 )}
               </button>
 
-              {/* ACR122U RFID Smart Card Quick Tap (Matches Legacy Kiosk ACR122U integration) */}
-              <button
-                type="button"
-                onClick={handleSmartCardTap}
-                disabled={isSubmitting}
-                style={{
-                  height: "38px",
-                  width: "100%",
-                  borderRadius: "10px",
-                  background: "#f8fafc",
-                  border: "1.5px dashed #cbd5e1",
-                  color: "#334155",
-                  fontSize: "0.8rem",
-                  fontWeight: 700,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: "7px",
-                  cursor: "pointer",
-                  transition: "all 0.2s ease",
-                  marginTop: "2px",
-                }}
-                title="Tap RFID Smart Card (ACR122U Kiosk Reader)"
-              >
-                <CreditCard size={15} style={{ color: config.accentColor }} />
-                <span>Tap RFID Smart Card ({role === "staff" ? "EMP-1042" : "ADM-1024"})</span>
-              </button>
-
               {/* Touch Kiosk Security Footnote */}
               <div
                 className="login-security-badge"
@@ -1855,7 +1740,7 @@ export default function LoginScreen({
           <span>Digital Campus Kiosk</span>
         </div>
         <button className="assistant-button" type="button" onClick={onBackToKiosk}>
-          <span className="assistant-pulse" /> Need help? <b>Ask VatikaBot</b>
+          <span className="assistant-pulse" /> Need help? <b>Ask GREEN_AI</b>
         </button>
       </footer>
     </div>

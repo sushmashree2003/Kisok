@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
+import MarkdownResponse from "@/components/chat/MarkdownResponse";
 import { getUserSession, clearUserSession } from "@/lib/session";
 import { SessionInfo } from "@/types/auth";
 import { CLIENT_API_ENDPOINTS } from "@/config/api";
@@ -510,7 +511,7 @@ export default function StaffDashboard({ onBackToKiosk }: DashboardProps) {
     {
       id: "msg-welcome-staff",
       sender: "bot",
-      text: "Welcome to Faculty AI Assistant! 👋 I can help summarize your class schedule, check leave balances, attendance logs, or payslip records. How may I assist you today?",
+      text: "Welcome to **MVP AI Faculty Assistant**! 👋 I can help summarize your class schedule, check leave balances, attendance logs, or payslip records. How may I assist you today?",
       time: "Just now",
       suggestions: [
         "What are my classes today?",
@@ -610,13 +611,8 @@ export default function StaffDashboard({ onBackToKiosk }: DashboardProps) {
       {/* TOP COMMAND NAVBAR */}
       <header className="dash-navbar">
         <div className="command-brand" onClick={handleLogout} style={{ cursor: "pointer" }}>
-          <div className="command-mark" aria-hidden="true">
-            <svg width="34" height="34" viewBox="0 0 48 48" fill="none">
-              <path d="M24 7c4 4 10 6 14 3 0 8-7 13-14 14C17 23 10 18 10 10c4 3 10 1 14-3Z" fill="#ea580c" />
-              <path d="M24 24V11" stroke="#c2410c" strokeWidth="2.5" strokeLinecap="round" />
-              <path d="M5 36c7-4.5 13-3.5 19 1 6-4.5 12-5.5 19-1V18c-7-4.5-13-3.5-19 1-6-4.5-12-5.5-19-1v18Z" fill="#9a3412" />
-              <path d="M24 19v18" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
-            </svg>
+          <div className="command-mark" aria-hidden="true" suppressHydrationWarning>
+            <img src="/mvps/brand/logo.png" alt="Madhuvan Vatika Public School Logo" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
           </div>
           <div>
             <p className="command-kicker">
@@ -752,7 +748,7 @@ export default function StaffDashboard({ onBackToKiosk }: DashboardProps) {
             { id: "notices" as ActiveScreen, name: "Staff Circulars", icon: Megaphone },
             { id: "evaluation" as ActiveScreen, name: "Student Evaluation", icon: BarChart3 },
             { id: "profile" as ActiveScreen, name: "Faculty Profile", icon: User },
-            { id: "aispace" as ActiveScreen, name: "Campus AI", icon: Sparkles },
+            { id: "aispace" as ActiveScreen, name: "MVP AI", icon: Sparkles },
           ].map((tab) => {
             const Icon = tab.icon;
             const isActive = currentScreen === tab.id;
@@ -911,7 +907,7 @@ export default function StaffDashboard({ onBackToKiosk }: DashboardProps) {
                   <div className="hero-ai-kicker">
                     <Sparkles size={9} style={{ display: "inline", verticalAlign: "middle", marginRight: 2 }} /> AI SPACE
                   </div>
-                  <span className="hero-ai-action">Ask AI Assistant →</span>
+                  <span className="hero-ai-action">Ask MVP AI →</span>
                 </div>
               </button>
             </div>
@@ -1625,7 +1621,7 @@ export default function StaffDashboard({ onBackToKiosk }: DashboardProps) {
                   boxShadow: "0 2px 6px rgba(234, 88, 12, 0.25)",
                 }}
               >
-                <Sparkles size={13} /> Ask Campus AI →
+                <Sparkles size={13} /> Ask MVP AI →
               </button>
             </div>
           </section>
@@ -2372,14 +2368,14 @@ export default function StaffDashboard({ onBackToKiosk }: DashboardProps) {
                   <Sparkles size={20} />
                 </div>
                 <div>
-                  <h2>Faculty AI Teaching Assistant</h2>
+                  <h2>Faculty MVP AI Teaching Assistant</h2>
                   <p>Instant answers on Timetable, Leaves, Biometrics &amp; CBSE Guidelines</p>
                 </div>
               </div>
 
               <div className="student-screen-nav-tools">
                 <div style={{ fontSize: "0.75rem", fontWeight: 700, color: "#7c3aed" }}>
-                  ● GreenBot AI Engine Online
+                  ● MVP AI Engine Online
                 </div>
               </div>
             </div>
@@ -2402,7 +2398,7 @@ export default function StaffDashboard({ onBackToKiosk }: DashboardProps) {
                       lineHeight: 1.5,
                     }}
                   >
-                    <div>{msg.text}</div>
+                    <MarkdownResponse content={msg.text} isUser={msg.sender === "user"} />
                     <div style={{ fontSize: "0.68rem", opacity: 0.7, marginTop: "4px", textAlign: msg.sender === "user" ? "right" : "left" }}>
                       {msg.time}
                     </div>
@@ -2431,8 +2427,8 @@ export default function StaffDashboard({ onBackToKiosk }: DashboardProps) {
                   </div>
                 ))}
                 {isTyping && (
-                  <div style={{ alignSelf: "flex-start", background: "#ffffff", padding: "0.6rem 1rem", borderRadius: "18px", border: "1px solid #e2e8f0", fontSize: "0.8rem", color: "#64748b" }}>
-                    GreenBot is typing...
+                  <div style={{ alignSelf: "flex-start", background: "#ffffff", padding: "0.6rem 1rem", borderRadius: "18px", border: "1.5px solid #fed7aa", fontSize: "0.8rem", color: "#ea580c", fontWeight: 600, display: "flex", alignItems: "center", gap: "6px" }}>
+                    <RefreshCw size={13} className="animate-spin" /> MVP AI is typing an answer...
                   </div>
                 )}
                 <div ref={chatMessagesEndRef} />
@@ -2442,7 +2438,7 @@ export default function StaffDashboard({ onBackToKiosk }: DashboardProps) {
               <div style={{ padding: "0.85rem", background: "#ffffff", borderTop: "1px solid #e2e8f0", display: "flex", gap: "0.75rem" }}>
                 <input
                   type="text"
-                  placeholder="Ask GreenBot about classes, leaves, salary or lesson plans..."
+                  placeholder="Ask MVP AI about classes, leaves, salary or lesson plans..."
                   value={chatInputText}
                   disabled={isTyping}
                   onChange={(e) => setChatInputText(e.target.value)}

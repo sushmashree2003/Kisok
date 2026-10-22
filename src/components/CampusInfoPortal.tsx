@@ -30,42 +30,213 @@ import {
   Cpu,
 } from "lucide-react";
 
+export const LEADERSHIP_MEMBERS = [
+  {
+    id: "chairman",
+    name: "Amit Chadha",
+    designation: "Chairman",
+    image: "/mvps/leadership/chairman_amit_chadha.jpg",
+    quotePreview: "Education is not about life, it is life itself. Every possible effort is made to make education a lifelike experience for learners at Madhuvan Vatika Public School.",
+    fullQuote: "Education is not about life, it is life itself deeply considering this famous quote, every possible effort is being made to make education a lifelike experience for the learners at Madhuvan Vatika Public School. The students are encouraged to quest, experiment and analyse. Tailor made teaching methodologies and learner centric approach play a core role at MVPS.\n\nCo-curricular Activities are designed and implemented to develop a healthy Mind, Body and Soul besides supporting the zest of the students. We expect our students to be wholesome and replete with knowledge. I am assured that our school will continue to achieve the benchmark in academic & Non-academic spheres.\n\nWish you happy learning.",
+  },
+  {
+    id: "principal",
+    name: "Deepak Puri",
+    designation: "Principal",
+    image: "/mvps/leadership/principal_deepak_puri.jpg",
+    quotePreview: "Empowering Minds, Shaping Futures. At MVPS, we believe that education is more than academic excellence; it is about fostering a lifelong passion for learning.",
+    fullQuote: "Empowering Minds, Shaping Futures. Welcome to Madhuvan Vatika Public School. Choosing the right school for your child is one of the most significant decisions you will make as a parent. At Madhuvan Vatika Public School, we believe that education is more than just academic excellence; it is about fostering a lifelong passion for learning and the courage to innovate.\n\nOur dedicated faculty works tirelessly to create an environment where intellectual curiosity is celebrated. We don't just teach students to succeed in exams; we prepare them to navigate a rapidly changing world with integrity and resilience. We believe that every student possesses a unique spark, and it is our privilege to provide the tools, technology, and mentorship to turn that spark into a flame in a rapidly changing world.",
+  },
+  {
+    id: "vice_chairman",
+    name: "Aman Chadha",
+    designation: "Vice Chairman",
+    image: "/mvps/leadership/vice_chairman_aman_chadha.jpg",
+    quotePreview: "MVPS at Asmanpur is the realization of my long nurtured dream to provide quality education to the children of Nurpur Bedi, Ropar.",
+    fullQuote: "Madhuvan Vatika Public School at Asmanpur is the realization of my long nurtured dream to provide quality education to the children of Nurpur Bedi, Ropar. MVPS School has brought in the kind of education which helps our students to dream big, dare to become the change and do best to their ability.\n\nWe help the children to retain their individuality while learning joyously. Our endeavour is to provide world-class facilities in sensitively designed classrooms and state-of-the-art playgrounds to give the learners the best in all areas of learning.",
+  },
+  {
+    id: "director",
+    name: "Keshav Kumar",
+    designation: "Director",
+    image: "/mvps/leadership/director_keshav_kumar.jpg",
+    quotePreview: "A child is neither genius nor dumb by birth; it is education and environment that decide destiny. We leave no stone unturned to inculcate true values.",
+    fullQuote: "A child is neither genius nor dumb by birth, it is education and environment that decide the destiny of a child. The Management, Principal, Parents and Students play a vital role in the progress of educational institute. It is our constant endeavor to improve quality education by every means.\n\nThe collective dream which we have cherished a decade ago has come true to provide opportunity to the children in and around this locality for all round development. I am assured that the school team will leave no stone unturned to inculcate values depicted in our vision and mission besides making the child a world citizen of repute.\n\nExpecting your cooperation and assuring the same to you.",
+  },
+];
+
+export const TOUR_FACILITIES = [
+  {
+    id: "campus_front",
+    title: "Campus Façade & Main Pavilion",
+    category: "Campus Architecture",
+    image: "/mvps/hero/banner_01.jpg",
+    description: "Grand institutional campus situated in Asmanpur, Nurpur Bedi with wide entrance atriums, manicured gardens, and full CCTV coverage.",
+  },
+  {
+    id: "classrooms",
+    title: "Modern Smart Classrooms",
+    category: "Scholastic Space",
+    image: "/mvps/facilities/classrooms_01.jpg",
+    description: "Spacious, well-ventilated classrooms with ergonomic desks, interactive boards, and multimedia-enabled pedagogical aids.",
+  },
+  {
+    id: "labs",
+    title: "STEM & Science Laboratories",
+    category: "Innovation Hub",
+    image: "/mvps/facilities/labs.jpg",
+    description: "Fully equipped Physics, Chemistry, Biology, and Robotics/AI workstations facilitating experiential research and discovery.",
+  },
+  {
+    id: "library",
+    title: "Central Knowledge Library",
+    category: "Resource Center",
+    image: "/mvps/facilities/library_01.jpg",
+    description: "Vast collection of curriculum texts, reference encyclopedias, national journals, and quiet individual reading nooks.",
+  },
+  {
+    id: "sports",
+    title: "Championship Sports Grounds",
+    category: "Athletics & Physical",
+    image: "/mvps/facilities/sports_01.jpg",
+    description: "Regulation volleyball courts, athletic running tracks, cricket pitches, and badminton arenas promoting fitness and teamwork.",
+  },
+  {
+    id: "transport",
+    title: "Safe GPS-Enabled Bus Fleet",
+    category: "Logistics & Safety",
+    image: "/mvps/facilities/transport_buses.jpg",
+    description: "Dedicated fleet of well-maintained school buses equipped with GPS tracking, first-aid, speed governors, and trained attendants.",
+  },
+  {
+    id: "playarea",
+    title: "Outdoor Recreational Lawns",
+    category: "Kindergarten & Play",
+    image: "/mvps/facilities/playarea_01.jpg",
+    description: "Lush green open lawns and safe recreational play structures fostering joyful peer social interaction and motor skill growth.",
+  },
+];
+
 export const CAMPUS_GALLERY_ITEMS = [
   {
-    id: "annual_day",
-    title: "Annual Day 2025 Gala & Dance Performance",
-    shortTitle: "Annual Day 2025",
-    category: "Cultural Extravaganza",
+    id: "annual_cultural_stage",
+    title: "Grand Annual Function & Cultural Symphony",
+    shortTitle: "Annual Stage Gala",
+    category: "Cultural & Arts",
+    categoryFilter: "cultural",
     date: "Jan 2025",
-    description: "Grand annual celebration showcasing student talents, traditional folk dances, classical symphony, and inspiring dramatic performances.",
-    src: "/events/annual_day.jpg",
+    description: "Students presenting vibrant Indian classical dance, folk choreography, and theatrical drama in the school auditorium.",
+    src: "/mvps/gallery/event_stage_01.jpg",
   },
   {
-    id: "sports_parade",
-    title: "Sports Day Athletic March-Past & Parade",
-    shortTitle: "Sports Day Parade",
+    id: "sports_cricket_tournament",
+    title: "Inter-House Championship Cricket Tournament",
+    shortTitle: "Cricket Finals",
     category: "Athletics & Sports",
+    categoryFilter: "sports",
     date: "Nov 2024",
-    description: "Annual sports meet featuring ceremonial house march-past, Olympic torch lighting, track sprints, gymnastics, and drill displays.",
-    src: "/events/sports_parade.jpg",
+    description: "Competitive school tournament highlighting athletic agility, match batting masterclasses, and spirit of sportsmanship.",
+    src: "/mvps/gallery/sports_cricket_01.jpg",
   },
   {
-    id: "science_fair",
-    title: "District Science & Innovation Fair",
-    shortTitle: "Science Expo",
-    category: "STEM & Robotics",
+    id: "smart_class_learning",
+    title: "Interactive Classroom Pedagogy & Discussions",
+    shortTitle: "Modern Classroom",
+    category: "Academic Excellence",
+    categoryFilter: "academics",
+    date: "Feb 2025",
+    description: "Student-centered interactive learning sessions utilizing CBSE integrated curricular frameworks and analytical thinking.",
+    src: "/mvps/facilities/classrooms_01.jpg",
+  },
+  {
+    id: "science_stem_lab",
+    title: "Hands-on Science & Chemistry Lab Practicals",
+    shortTitle: "STEM Laboratory",
+    category: "Academic Excellence",
+    categoryFilter: "academics",
     date: "Aug 2025",
-    description: "District level fair highlighting youth innovations in robotics, renewable solar grid prototypes, AI algorithms, and clean energy.",
-    src: "/events/science_fair.jpg",
+    description: "Students performing rigorous laboratory experiments, scientific titrations, and experiential biology investigations.",
+    src: "/mvps/facilities/labs.jpg",
   },
   {
-    id: "teachers_day",
-    title: "Teachers' Day Felicitation Ceremony",
-    shortTitle: "Teachers' Day",
-    category: "Campus Milestone",
-    date: "Sep 2025",
-    description: "Felicitation ceremony dedicated to honoring our educators for exemplary pedagogical excellence, mentorship, and student guidance.",
-    src: "/events/teachers_day.jpg",
+    id: "athletics_race",
+    title: "Annual Sports Meet Track Sprints & Relays",
+    shortTitle: "Track & Field Sprints",
+    category: "Athletics & Sports",
+    categoryFilter: "sports",
+    date: "Nov 2024",
+    description: "Track and field athletes competing in 100m, 200m, and inter-house relay sprints under official athletics guidelines.",
+    src: "/mvps/gallery/sports_race_01.jpg",
+  },
+  {
+    id: "cultural_celebration",
+    title: "Folk Dance & Festive Celebrations",
+    shortTitle: "Folk Dance Gala",
+    category: "Cultural & Arts",
+    categoryFilter: "cultural",
+    date: "Oct 2024",
+    description: "Colorful traditional Punjabi and Indian regional folk dance performances celebrating cultural unity and artistic expression.",
+    src: "/mvps/gallery/event_cultural_01.jpg",
+  },
+  {
+    id: "bus_fleet_safety",
+    title: "Campus Transport Fleet & Commuter Safety",
+    shortTitle: "Transport Fleet",
+    category: "Campus Facilities",
+    categoryFilter: "facilities",
+    date: "Daily Operations",
+    description: "Safe and dependable fleet of buses covering Asmanpur, Nurpur Bedi, Ropar, and surrounding regional routes.",
+    src: "/mvps/facilities/transport_buses.jpg",
+  },
+  {
+    id: "central_library",
+    title: "Central Reading Room & Digital Knowledge Base",
+    shortTitle: "Campus Library",
+    category: "Campus Facilities",
+    categoryFilter: "facilities",
+    date: "All Season",
+    description: "Richly stocked library promoting reading habits, self-directed research, and academic literature review.",
+    src: "/mvps/facilities/library_01.jpg",
+  },
+  {
+    id: "stage_drama_performance",
+    title: "Dramatic Arts & Theatrical Showcase",
+    shortTitle: "Theatrical Arts",
+    category: "Cultural & Arts",
+    categoryFilter: "cultural",
+    date: "Dec 2024",
+    description: "Award-winning theatrical stage production emphasizing moral values, character education, and student elocution.",
+    src: "/mvps/gallery/event_stage_02.jpg",
+  },
+  {
+    id: "sports_volleyball_arena",
+    title: "Outdoor Sports Arena & Volleyball Match",
+    shortTitle: "Sports Arena",
+    category: "Athletics & Sports",
+    categoryFilter: "sports",
+    date: "Jan 2025",
+    description: "Students training and competing in team volleyball on the dedicated outdoor campus sports court.",
+    src: "/mvps/facilities/sports_01.jpg",
+  },
+  {
+    id: "campus_play_lawns",
+    title: "Expansive Green Lawns & Activity Grounds",
+    shortTitle: "Green Lawns",
+    category: "Campus Facilities",
+    categoryFilter: "facilities",
+    date: "Ongoing",
+    description: "Clean, eco-friendly green lawns providing a calm, natural ambience for wellness and outdoor student assemblies.",
+    src: "/mvps/facilities/playarea_01.jpg",
+  },
+  {
+    id: "co_curricular_activities",
+    title: "Student Creative Arts & Extracurriculars",
+    shortTitle: "Co-Curriculars",
+    category: "Academic Excellence",
+    categoryFilter: "academics",
+    date: "Sep 2024",
+    description: "Creative arts, public speaking, drawing competitions, and student club activities nurturing wholesome child development.",
+    src: "/mvps/gallery/event_activity_01.jpg",
   },
 ];
 
@@ -91,6 +262,10 @@ export default function CampusInfoPortal({
   const [selectedGalleryImg, setSelectedGalleryImg] = useState<{ src: string; title: string } | null>(null);
   const [achievementsModalOpen, setAchievementsModalOpen] = useState(false);
   const [eventsModalOpen, setEventsModalOpen] = useState(false);
+  const [leadershipModalOpen, setLeadershipModalOpen] = useState(false);
+  const [selectedLeader, setSelectedLeader] = useState<(typeof LEADERSHIP_MEMBERS)[0] | null>(null);
+  const [galleryCategoryFilter, setGalleryCategoryFilter] = useState<string>("all");
+  const [activeTourFacilityIndex, setActiveTourFacilityIndex] = useState(0);
   const [selectedScheduleId, setSelectedScheduleId] = useState<string>("stem");
   const [schoolName, setSchoolName] = useState<string>("Madhuvan Vatika - MVPS");
   const heroVideoRef = useRef<HTMLVideoElement>(null);
@@ -104,6 +279,8 @@ export default function CampusInfoPortal({
         setVirtualTourOpen(false);
         setAchievementsModalOpen(false);
         setEventsModalOpen(false);
+        setLeadershipModalOpen(false);
+        setSelectedLeader(null);
       } else if (galleryModalOpen && selectedGalleryIndex !== null) {
         if (e.key === "ArrowLeft") {
           setSelectedGalleryIndex((prev) =>
@@ -193,28 +370,11 @@ export default function CampusInfoPortal({
       <header className="mv-header-bar">
         {/* Brand Group */}
         <div className="mv-brand-group">
-          <svg className="mv-brand-crest" viewBox="0 0 48 48" fill="none">
-            <path
-              d="M24 7C28 11 34 13 38 10C38 18 31 23 24 24C17 23 10 18 10 10C14 13 20 11 24 7Z"
-              fill="#ea580c"
-            />
-            <path
-              d="M24 24V11"
-              stroke="#c2410c"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-            />
-            <path
-              d="M5 36C12 31.5 18 32.5 24 37C30 32.5 36 31.5 43 36V18C36 13.5 30 14.5 24 19C18 14.5 12 13.5 5 18V36Z"
-              fill="#0e2a47"
-            />
-            <path
-              d="M24 19V37"
-              stroke="#ffffff"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-            />
-          </svg>
+          <img
+            src="/mvps/brand/logo.png"
+            alt={`${schoolName} Official Crest`}
+            className="mv-brand-logo-img"
+          />
           <div className="mv-brand-titles">
             <h1 className="mv-brand-name">{schoolName}</h1>
             <div className="mv-brand-sub">
@@ -288,7 +448,7 @@ export default function CampusInfoPortal({
                 muted
                 playsInline
                 preload="metadata"
-                poster="/hero_school_building.jpg"
+                poster="/mvps/hero/banner_01.jpg"
                 aria-hidden="true"
                 onError={(e) => {
                   (e.currentTarget as HTMLElement).style.display = "none";
@@ -360,6 +520,17 @@ export default function CampusInfoPortal({
                 >
                   <Play size={11} fill="#ea580c" />
                   <span>Explore 360° Campus</span>
+                </button>
+                <button
+                  className="mv-leadership-btn"
+                  onClick={() => {
+                    setSelectedLeader(null);
+                    setLeadershipModalOpen(true);
+                  }}
+                  title="View Chairman, Director & Principal Messages"
+                >
+                  <Award size={13} style={{ color: "#facc15" }} />
+                  <span>Leadership &amp; Vision</span>
                 </button>
                 <span className="mv-creed-author">— Madhuvan Vatika Legacy</span>
               </div>
@@ -538,7 +709,7 @@ export default function CampusInfoPortal({
             </div>
 
             <div className="mv-gallery-grid">
-              {CAMPUS_GALLERY_ITEMS.map((item, idx) => (
+              {CAMPUS_GALLERY_ITEMS.slice(0, 4).map((item, idx) => (
                 <div
                   key={item.id}
                   className="mv-gallery-item"
@@ -672,29 +843,29 @@ export default function CampusInfoPortal({
             </div>
 
             <div className="mv-fac-mini-grid">
-              <div className="mv-fac-mini-item" onClick={() => setVirtualTourOpen(true)}>
-                <img src="/facilities/classrooms.jpg" alt="Classrooms" className="mv-fac-mini-img" />
+              <div className="mv-fac-mini-item" onClick={() => { setActiveTourFacilityIndex(1); setVirtualTourOpen(true); }}>
+                <img src="/mvps/facilities/classrooms_01.jpg" alt="Classrooms" className="mv-fac-mini-img" />
                 <span className="mv-fac-mini-title">Classrooms</span>
               </div>
-              <div className="mv-fac-mini-item" onClick={() => setVirtualTourOpen(true)}>
-                <img src="/facilities/labs.jpg" alt="STEM Labs" className="mv-fac-mini-img" />
+              <div className="mv-fac-mini-item" onClick={() => { setActiveTourFacilityIndex(2); setVirtualTourOpen(true); }}>
+                <img src="/mvps/facilities/labs.jpg" alt="STEM Labs" className="mv-fac-mini-img" />
                 <span className="mv-fac-mini-title">AI &amp; Labs</span>
               </div>
-              <div className="mv-fac-mini-item" onClick={() => setVirtualTourOpen(true)}>
-                <img src="/facilities/library.jpg" alt="Library" className="mv-fac-mini-img" />
+              <div className="mv-fac-mini-item" onClick={() => { setActiveTourFacilityIndex(3); setVirtualTourOpen(true); }}>
+                <img src="/mvps/facilities/library_01.jpg" alt="Library" className="mv-fac-mini-img" />
                 <span className="mv-fac-mini-title">Library</span>
               </div>
-              <div className="mv-fac-mini-item" onClick={() => setVirtualTourOpen(true)}>
-                <img src="/facilities/sports.jpg" alt="Sports Arena" className="mv-fac-mini-img" />
+              <div className="mv-fac-mini-item" onClick={() => { setActiveTourFacilityIndex(4); setVirtualTourOpen(true); }}>
+                <img src="/mvps/facilities/sports_01.jpg" alt="Sports Arena" className="mv-fac-mini-img" />
                 <span className="mv-fac-mini-title">Sports Turf</span>
               </div>
-              <div className="mv-fac-mini-item" onClick={() => setVirtualTourOpen(true)}>
-                <img src="/facilities/auditorium.jpg" alt="Auditorium" className="mv-fac-mini-img" />
-                <span className="mv-fac-mini-title">Auditorium</span>
+              <div className="mv-fac-mini-item" onClick={() => { setActiveTourFacilityIndex(5); setVirtualTourOpen(true); }}>
+                <img src="/mvps/facilities/transport_buses.jpg" alt="Bus Fleet" className="mv-fac-mini-img" />
+                <span className="mv-fac-mini-title">Bus Fleet</span>
               </div>
-              <div className="mv-fac-mini-item" onClick={() => setVirtualTourOpen(true)}>
-                <img src="/facilities/playground.jpg" alt="Playground" className="mv-fac-mini-img" />
-                <span className="mv-fac-mini-title">Playground</span>
+              <div className="mv-fac-mini-item" onClick={() => { setActiveTourFacilityIndex(6); setVirtualTourOpen(true); }}>
+                <img src="/mvps/facilities/playarea_01.jpg" alt="Playground" className="mv-fac-mini-img" />
+                <span className="mv-fac-mini-title">Play Area</span>
               </div>
             </div>
 
@@ -737,7 +908,7 @@ export default function CampusInfoPortal({
       </footer>
 
       {/* =========================================================================
-         MODAL 1: 360 VIRTUAL TOUR
+         MODAL 1: 360 VIRTUAL TOUR & FACILITIES EXPLORER
          ========================================================================= */}
       {virtualTourOpen && (
         <div
@@ -746,7 +917,7 @@ export default function CampusInfoPortal({
         >
           <div
             className="mp-modal-window"
-            style={{ width: "850px" }}
+            style={{ width: "900px", maxWidth: "94vw" }}
             onClick={(e) => e.stopPropagation()}
           >
             <div
@@ -759,10 +930,10 @@ export default function CampusInfoPortal({
                 justifyContent: "space-between",
               }}
             >
-              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                 <MapPin size={18} />
                 <h3 style={{ margin: 0, fontSize: "1.05rem", fontWeight: 800 }}>
-                  {schoolName} • 360° Interactive Campus Virtual Tour
+                  {schoolName} • Campus Architecture &amp; Facilities Tour
                 </h3>
               </div>
               <button
@@ -784,43 +955,122 @@ export default function CampusInfoPortal({
               </button>
             </div>
 
-            <div style={{ padding: "1rem", background: "#f8fafc" }}>
-              <img
-                src="/campus_360.jpg"
-                alt="360 Campus Tour"
+            <div style={{ padding: "1.1rem", background: "#f8fafc" }}>
+              {/* Facility Tabs Bar */}
+              <div className="mv-tour-tabs-bar" style={{ marginBottom: "12px" }}>
+                {TOUR_FACILITIES.map((facility, idx) => (
+                  <button
+                    key={facility.id}
+                    className={`mv-tour-tab-btn ${activeTourFacilityIndex === idx ? "active" : ""}`}
+                    onClick={() => setActiveTourFacilityIndex(idx)}
+                  >
+                    <span>{facility.title}</span>
+                  </button>
+                ))}
+              </div>
+
+              {/* Active Facility View */}
+              <div
                 style={{
-                  width: "100%",
+                  position: "relative",
+                  borderRadius: "14px",
+                  overflow: "hidden",
+                  boxShadow: "0 8px 24px rgba(15, 23, 42, 0.12)",
                   height: "380px",
-                  objectFit: "cover",
-                  borderRadius: "12px",
+                  background: "#0f172a",
                 }}
-              />
+              >
+                <img
+                  src={TOUR_FACILITIES[activeTourFacilityIndex].image}
+                  alt={TOUR_FACILITIES[activeTourFacilityIndex].title}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                  }}
+                />
+                <div
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    background: "linear-gradient(180deg, transparent 40%, rgba(14, 42, 71, 0.90) 100%)",
+                    pointerEvents: "none",
+                  }}
+                />
+                <div
+                  style={{
+                    position: "absolute",
+                    bottom: "16px",
+                    left: "20px",
+                    right: "20px",
+                    color: "#ffffff",
+                  }}
+                >
+                  <span
+                    style={{
+                      background: "rgba(234, 88, 12, 0.95)",
+                      padding: "3px 10px",
+                      borderRadius: "9999px",
+                      fontSize: "0.72rem",
+                      fontWeight: 800,
+                      textTransform: "uppercase",
+                      letterSpacing: "0.04em",
+                    }}
+                  >
+                    {TOUR_FACILITIES[activeTourFacilityIndex].category}
+                  </span>
+                  <h4 style={{ margin: "6px 0 3px", fontSize: "1.2rem", fontWeight: 800 }}>
+                    {TOUR_FACILITIES[activeTourFacilityIndex].title}
+                  </h4>
+                  <p style={{ margin: 0, fontSize: "0.82rem", opacity: 0.92, lineHeight: 1.4, maxWidth: "700px" }}>
+                    {TOUR_FACILITIES[activeTourFacilityIndex].description}
+                  </p>
+                </div>
+              </div>
+
               <div
                 style={{
                   display: "flex",
                   justifyContent: "space-between",
                   alignItems: "center",
-                  marginTop: "0.75rem",
+                  marginTop: "0.85rem",
                 }}
               >
-                <div style={{ fontSize: "0.8rem", color: "#475569" }}>
-                  📍 40-Acre Main Block, STEM Innovation Pavilions, Sports Arena &amp; Auditoriums
+                <div style={{ fontSize: "0.8rem", color: "#475569", fontWeight: 600 }}>
+                  📍 Village Asmanpur, PO Nurpur Bedi, Ropar • Facility {activeTourFacilityIndex + 1} of {TOUR_FACILITIES.length}
                 </div>
-                <button
-                  onClick={() => setVirtualTourOpen(false)}
-                  style={{
-                    background: "#ea580c",
-                    color: "#ffffff",
-                    border: "none",
-                    borderRadius: "9999px",
-                    padding: "0.45rem 1.2rem",
-                    fontWeight: 700,
-                    fontSize: "0.8rem",
-                    cursor: "pointer",
-                  }}
-                >
-                  Close Tour
-                </button>
+                <div style={{ display: "flex", gap: "8px" }}>
+                  <button
+                    onClick={() => setActiveTourFacilityIndex((prev) => (prev - 1 + TOUR_FACILITIES.length) % TOUR_FACILITIES.length)}
+                    style={{
+                      background: "#ffffff",
+                      border: "1.5px solid #cbd5e1",
+                      borderRadius: "9999px",
+                      padding: "0.35rem 0.9rem",
+                      fontWeight: 700,
+                      fontSize: "0.78rem",
+                      cursor: "pointer",
+                      color: "#334155",
+                    }}
+                  >
+                    Previous
+                  </button>
+                  <button
+                    onClick={() => setActiveTourFacilityIndex((prev) => (prev + 1) % TOUR_FACILITIES.length)}
+                    style={{
+                      background: "#ea580c",
+                      color: "#ffffff",
+                      border: "none",
+                      borderRadius: "9999px",
+                      padding: "0.35rem 1rem",
+                      fontWeight: 700,
+                      fontSize: "0.78rem",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Next Facility
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -1077,9 +1327,12 @@ export default function CampusInfoPortal({
                     style={{
                       display: "flex",
                       alignItems: "center",
-                      justifyContent: "center",
+                      justifyContent: "flex-start",
                       gap: "10px",
                       marginTop: "12px",
+                      overflowX: "auto",
+                      paddingBottom: "8px",
+                      scrollbarWidth: "thin",
                     }}
                   >
                     {CAMPUS_GALLERY_ITEMS.map((item, idx) => (
@@ -1095,98 +1348,125 @@ export default function CampusInfoPortal({
                   </div>
                 </div>
               ) : (
-                /* GRID VIEW (ALL 4 PHOTOS) */
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(2, 1fr)",
-                    gap: "14px",
-                  }}
-                >
-                  {CAMPUS_GALLERY_ITEMS.map((item, idx) => (
-                    <div
-                      key={item.id}
-                      className="mp-gallery-modal-card"
-                      onClick={() => setSelectedGalleryIndex(idx)}
-                      title={`Click to enlarge ${item.shortTitle}`}
-                    >
-                      <div style={{ position: "relative", height: "150px", overflow: "hidden" }}>
-                        <img
-                          src={item.src}
-                          alt={item.title}
-                          style={{
-                            width: "100%",
-                            height: "100%",
-                            objectFit: "cover",
-                            transition: "transform 0.3s ease",
-                          }}
-                        />
+                /* GRID VIEW WITH CATEGORY FILTERS */
+                <div>
+                  {/* Category Filter Pills */}
+                  <div className="mv-gallery-filter-bar">
+                    {[
+                      { id: "all", label: "All Photos" },
+                      { id: "sports", label: "Sports & Athletics" },
+                      { id: "academics", label: "Academics & Labs" },
+                      { id: "cultural", label: "Cultural & Stage" },
+                      { id: "facilities", label: "Campus Facilities" },
+                    ].map((tab) => (
+                      <button
+                        key={tab.id}
+                        className={`mv-gallery-filter-pill ${galleryCategoryFilter === tab.id ? "active" : ""}`}
+                        onClick={() => setGalleryCategoryFilter(tab.id)}
+                      >
+                        <span>{tab.label}</span>
+                      </button>
+                    ))}
+                  </div>
+
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "repeat(3, 1fr)",
+                      gap: "14px",
+                    }}
+                  >
+                    {(galleryCategoryFilter === "all"
+                      ? CAMPUS_GALLERY_ITEMS
+                      : CAMPUS_GALLERY_ITEMS.filter((item) => item.categoryFilter === galleryCategoryFilter)
+                    ).map((item) => {
+                      const origIndex = CAMPUS_GALLERY_ITEMS.findIndex((orig) => orig.id === item.id);
+                      return (
                         <div
-                          style={{
-                            position: "absolute",
-                            top: "8px",
-                            left: "8px",
-                            background: "rgba(13, 148, 136, 0.9)",
-                            color: "#ffffff",
-                            padding: "2px 8px",
-                            borderRadius: "9999px",
-                            fontSize: "0.68rem",
-                            fontWeight: 800,
-                          }}
+                          key={item.id}
+                          className="mp-gallery-modal-card"
+                          onClick={() => setSelectedGalleryIndex(origIndex >= 0 ? origIndex : 0)}
+                          title={`Click to enlarge ${item.shortTitle}`}
                         >
-                          {item.category}
+                          <div style={{ position: "relative", height: "140px", overflow: "hidden" }}>
+                            <img
+                              src={item.src}
+                              alt={item.title}
+                              style={{
+                                width: "100%",
+                                height: "100%",
+                                objectFit: "cover",
+                                transition: "transform 0.3s ease",
+                              }}
+                            />
+                            <div
+                              style={{
+                                position: "absolute",
+                                top: "8px",
+                                left: "8px",
+                                background: "rgba(13, 148, 136, 0.9)",
+                                color: "#ffffff",
+                                padding: "2px 8px",
+                                borderRadius: "9999px",
+                                fontSize: "0.68rem",
+                                fontWeight: 800,
+                              }}
+                            >
+                              {item.category}
+                            </div>
+                            <div
+                              style={{
+                                position: "absolute",
+                                top: "8px",
+                                right: "8px",
+                                background: "rgba(15, 23, 42, 0.75)",
+                                color: "#ffffff",
+                                padding: "2px 8px",
+                                borderRadius: "9999px",
+                                fontSize: "0.68rem",
+                                fontWeight: 700,
+                              }}
+                            >
+                              {item.date}
+                            </div>
+                          </div>
+                          <div style={{ padding: "10px 12px" }}>
+                            <h4 style={{ margin: "0 0 4px", fontSize: "0.86rem", fontWeight: 800, color: "#0f172a" }}>
+                              {item.shortTitle}
+                            </h4>
+                            <p
+                              style={{
+                                margin: 0,
+                                fontSize: "0.74rem",
+                                color: "#64748b",
+                                lineHeight: 1.35,
+                                display: "-webkit-box",
+                                WebkitLineClamp: 2,
+                                WebkitBoxOrient: "vertical",
+                                overflow: "hidden",
+                              }}
+                            >
+                              {item.description}
+                            </p>
+                            <div
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "4px",
+                                color: "#0d9488",
+                                fontSize: "0.74rem",
+                                fontWeight: 800,
+                                marginTop: "8px",
+                              }}
+                            >
+                              <span>Tap to view photo</span>
+                              <ArrowRight size={12} />
+                            </div>
+                          </div>
                         </div>
-                        <div
-                          style={{
-                            position: "absolute",
-                            top: "8px",
-                            right: "8px",
-                            background: "rgba(15, 23, 42, 0.75)",
-                            color: "#ffffff",
-                            padding: "2px 8px",
-                            borderRadius: "9999px",
-                            fontSize: "0.68rem",
-                            fontWeight: 700,
-                          }}
-                        >
-                          {item.date}
-                        </div>
-                      </div>
-                      <div style={{ padding: "10px 12px" }}>
-                        <h4 style={{ margin: "0 0 4px", fontSize: "0.86rem", fontWeight: 800, color: "#0f172a" }}>
-                          {item.shortTitle}
-                        </h4>
-                        <p
-                          style={{
-                            margin: 0,
-                            fontSize: "0.74rem",
-                            color: "#64748b",
-                            lineHeight: 1.35,
-                            display: "-webkit-box",
-                            WebkitLineClamp: 2,
-                            WebkitBoxOrient: "vertical",
-                            overflow: "hidden",
-                          }}
-                        >
-                          {item.description}
-                        </p>
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "4px",
-                            color: "#0d9488",
-                            fontSize: "0.74rem",
-                            fontWeight: 800,
-                            marginTop: "8px",
-                          }}
-                        >
-                          <span>Tap to view full photo</span>
-                          <ArrowRight size={12} />
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+                      );
+                    })}
+                  </div>
                 </div>
               )}
             </div>
@@ -1364,6 +1644,233 @@ export default function CampusInfoPortal({
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* =========================================================================
+         MODAL 5: LEADERSHIP & VISION MODAL
+         ========================================================================= */}
+      {leadershipModalOpen && (
+        <div
+          className="mp-modal-backdrop"
+          onClick={() => {
+            setLeadershipModalOpen(false);
+            setSelectedLeader(null);
+          }}
+        >
+          <div
+            className="mp-modal-window"
+            style={{ width: "880px", maxWidth: "94vw" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div
+              style={{
+                background: "linear-gradient(135deg, #0e2a47 0%, #1e3a8a 100%)",
+                color: "#ffffff",
+                padding: "0.85rem 1.25rem",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                <div
+                  style={{
+                    background: "rgba(255, 255, 255, 0.15)",
+                    borderRadius: "8px",
+                    width: 32,
+                    height: 32,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Award size={18} style={{ color: "#facc15" }} />
+                </div>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: "1.05rem", fontWeight: 800 }}>
+                    {selectedLeader ? selectedLeader.name : "Institutional Leadership & Vision"}
+                  </h3>
+                  <span style={{ fontSize: "0.72rem", color: "rgba(255, 255, 255, 0.82)", fontWeight: 600 }}>
+                    {selectedLeader ? selectedLeader.designation : "Madhuvan Vatika Public School • Guiding Philosophies"}
+                  </span>
+                </div>
+              </div>
+
+              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                {selectedLeader && (
+                  <button
+                    onClick={() => setSelectedLeader(null)}
+                    style={{
+                      background: "rgba(255, 255, 255, 0.2)",
+                      border: "1px solid rgba(255, 255, 255, 0.35)",
+                      borderRadius: "9999px",
+                      padding: "0.35rem 0.85rem",
+                      color: "#ffffff",
+                      fontSize: "0.75rem",
+                      fontWeight: 700,
+                      cursor: "pointer",
+                    }}
+                  >
+                    View All Leaders
+                  </button>
+                )}
+                <button
+                  onClick={() => {
+                    setLeadershipModalOpen(false);
+                    setSelectedLeader(null);
+                  }}
+                  style={{
+                    background: "rgba(255, 255, 255, 0.2)",
+                    border: "none",
+                    borderRadius: "50%",
+                    width: 32,
+                    height: 32,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "#ffffff",
+                    cursor: "pointer",
+                  }}
+                >
+                  <X size={16} />
+                </button>
+              </div>
+            </div>
+
+            {/* Modal Body */}
+            <div style={{ padding: "1.2rem", background: "#f8fafc", maxHeight: "80vh", overflowY: "auto" }}>
+              {selectedLeader ? (
+                /* SINGLE LEADER DETAIL VIEW */
+                <div style={{ display: "flex", gap: "24px", alignItems: "flex-start", flexWrap: "wrap" }}>
+                  <div
+                    style={{
+                      width: "240px",
+                      borderRadius: "14px",
+                      overflow: "hidden",
+                      boxShadow: "0 8px 24px rgba(14, 42, 71, 0.12)",
+                      flexShrink: 0,
+                      background: "#ffffff",
+                      border: "2px solid #fed7aa",
+                    }}
+                  >
+                    <img
+                      src={selectedLeader.image}
+                      alt={selectedLeader.name}
+                      style={{ width: "100%", height: "280px", objectFit: "cover" }}
+                    />
+                    <div style={{ padding: "12px", textAlign: "center" }}>
+                      <h4 style={{ margin: 0, fontSize: "1.1rem", fontWeight: 800, color: "#0e2a47" }}>
+                        {selectedLeader.name}
+                      </h4>
+                      <p style={{ margin: "2px 0 0", fontSize: "0.8rem", fontWeight: 800, color: "#ea580c" }}>
+                        {selectedLeader.designation}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div style={{ flex: 1, minWidth: "300px" }}>
+                    <div
+                      style={{
+                        background: "#ffffff",
+                        padding: "1.2rem",
+                        borderRadius: "14px",
+                        border: "1px solid #e2e8f0",
+                        boxShadow: "0 4px 14px rgba(0, 0, 0, 0.04)",
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontSize: "2.5rem",
+                          lineHeight: 1,
+                          color: "#ea580c",
+                          fontFamily: "serif",
+                          fontWeight: 900,
+                          display: "block",
+                          marginBottom: "4px",
+                        }}
+                      >
+                        “
+                      </span>
+                      <p
+                        style={{
+                          fontSize: "0.92rem",
+                          lineHeight: 1.65,
+                          color: "#334155",
+                          whiteSpace: "pre-line",
+                          margin: 0,
+                          fontWeight: 500,
+                        }}
+                      >
+                        {selectedLeader.fullQuote}
+                      </p>
+                      <div
+                        style={{
+                          marginTop: "1.2rem",
+                          paddingTop: "0.8rem",
+                          borderTop: "1px solid #f1f5f9",
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
+                      >
+                        <span style={{ fontSize: "0.8rem", color: "#64748b", fontStyle: "italic" }}>
+                          — Madhuvan Vatika Public School Leadership Desk
+                        </span>
+                        <button
+                          onClick={() => setSelectedLeader(null)}
+                          style={{
+                            background: "#ea580c",
+                            color: "#ffffff",
+                            border: "none",
+                            borderRadius: "9999px",
+                            padding: "0.4rem 1rem",
+                            fontSize: "0.78rem",
+                            fontWeight: 700,
+                            cursor: "pointer",
+                          }}
+                        >
+                          Back to Leaders
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                /* GRID OF 4 LEADERS */
+                <div>
+                  <p style={{ margin: "0 0 14px", fontSize: "0.84rem", color: "#64748b", fontWeight: 600 }}>
+                    Tap any leadership card to read their complete vision and message for Madhuvan Vatika scholars:
+                  </p>
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "repeat(4, 1fr)",
+                      gap: "14px",
+                    }}
+                  >
+                    {LEADERSHIP_MEMBERS.map((leader) => (
+                      <div
+                        key={leader.id}
+                        className="mv-leader-card"
+                        onClick={() => setSelectedLeader(leader)}
+                        title={`Click to read message from ${leader.name}`}
+                      >
+                        <div className="mv-leader-img-box">
+                          <img src={leader.image} alt={leader.name} className="mv-leader-img" />
+                        </div>
+                        <div className="mv-leader-meta">
+                          <h4 className="mv-leader-name">{leader.name}</h4>
+                          <span className="mv-leader-role">{leader.designation}</span>
+                          <p className="mv-leader-preview">{leader.quotePreview}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

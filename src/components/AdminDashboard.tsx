@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import MarkdownResponse from "@/components/chat/MarkdownResponse";
 import { getUserSession, clearUserSession } from "@/lib/session";
 import { SessionInfo } from "@/types/auth";
 import {
@@ -181,7 +182,7 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
   const [chatMessages, setChatMessages] = useState<Array<{ sender: "bot" | "user"; text: string; time: string; tag?: string }>>([
     {
       sender: "bot",
-      text: "Greetings, Administrator. I am VatikaBot, your Institutional Intelligence Assistant. I am connected to the campus smart grid, CBSE compliance ledger, fee reconciliation, and attendance telemetry. How may I assist your administration today?",
+      text: "Greetings, Administrator. I am **MVP AI**, your Institutional Intelligence Assistant. I am connected to the campus smart grid, CBSE compliance ledger, fee reconciliation, and attendance telemetry. How may I assist your administration today?",
       time: "Just now",
       tag: "ADMIN EXECUTIVE DESK",
     },
@@ -224,7 +225,7 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
       const data = await res.json();
       const botResponse =
         data.answer ||
-        `✨ Understood, Administrator. VatikaBot has logged your request: "${query}". All institutional databases are synchronized.`;
+        `✨ Understood, Administrator. MVP AI has logged your request: "${query}". All institutional databases are synchronized.`;
 
       setChatMessages((prev) => [
         ...prev,
@@ -312,13 +313,8 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
       {/* TOP COMMAND NAVBAR (ROLE SELECTION COMMAND THEME) */}
       <header className="dash-navbar">
         <div className="command-brand" onClick={handleLogout} style={{ cursor: "pointer" }}>
-          <div className="command-mark" aria-hidden="true">
-            <svg width="34" height="34" viewBox="0 0 48 48" fill="none">
-              <path d="M24 7c4 4 10 6 14 3 0 8-7 13-14 14C17 23 10 18 10 10c4 3 10 1 14-3Z" fill="#7c3aed" />
-              <path d="M24 24V11" stroke="#6d28d9" strokeWidth="2.5" strokeLinecap="round" />
-              <path d="M5 36c7-4.5 13-3.5 19 1 6-4.5 12-5.5 19-1V18c-7-4.5-13-3.5-19 1-6-4.5-12-5.5-19-1v18Z" fill="#5b21b6" />
-              <path d="M24 19v18" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
-            </svg>
+          <div className="command-mark" aria-hidden="true" suppressHydrationWarning>
+            <img src="/mvps/brand/logo.png" alt="Madhuvan Vatika Public School Logo" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
           </div>
           <div>
             <p className="command-kicker">MADHUVAN VATIKA • SMART CAMPUS</p>
@@ -477,14 +473,14 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
                 title="Launch Admin AI Command Space"
               >
                 <div className="hero-ai-robo-wrap">
-                  <img src="/ai_robot.png" alt="VatikaBot" className="hero-ai-robo-img" />
+                  <img src="/ai_robot.png" alt="MVP AI" className="hero-ai-robo-img" />
                   <span className="hero-ai-pulse-dot" />
                 </div>
                 <div style={{ textAlign: "center" }}>
                   <div className="hero-ai-kicker">
                     <Sparkles size={9} style={{ display: "inline", verticalAlign: "middle", marginRight: 2 }} /> EXECUTIVE AI
                   </div>
-                  <span className="hero-ai-action">Ask VatikaBot →</span>
+                  <span className="hero-ai-action">Ask MVP AI →</span>
                 </div>
               </button>
             </div>
@@ -1676,7 +1672,7 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
                 <Bot size={20} />
               </div>
               <div>
-                <h2>VatikaBot AI Executive Assistant</h2>
+                <h2>MVP AI Executive Assistant</h2>
                 <p>Institutional Operations Copilot • Governance & Smart Campus Telemetry</p>
               </div>
             </div>
@@ -1711,12 +1707,12 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
                   <div className="ai-robot-showcase-frame" style={{ borderColor: "#7c3aed", boxShadow: "0 8px 24px rgba(124, 58, 237, 0.2)" }}>
                     <img
                       src="/ai_robot.png"
-                      alt="VatikaBot Robot"
+                      alt="MVP AI Robot"
                       className="ai-robot-showcase-img"
                     />
                   </div>
                   <div className="ai-robot-badge" style={{ background: "#7c3aed" }}>
-                    <Bot size={13} /> GREENBOT AI • ADMIN DESK
+                    <Bot size={13} /> MVP AI • ADMIN DESK
                   </div>
                 </div>
 
@@ -1786,7 +1782,7 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
                       onClick={() => setChatMessages([
                         {
                           sender: "bot",
-                          text: "Conversation refreshed. VatikaBot executive ledger is ready. How can I assist you?",
+                          text: "Conversation refreshed. MVP AI executive ledger is ready. How can I assist you?",
                           time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
                           tag: "ADMIN EXECUTIVE DESK",
                         }
@@ -1815,14 +1811,14 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
                       className={`ai-msg-row ${msg.sender === "bot" ? "ai-msg-row-bot" : "ai-msg-row-user"}`}
                     >
                       {msg.sender === "bot" ? (
-                        <img src="/ai_robot.png" alt="VatikaBot" className="ai-msg-avatar" style={{ border: "2px solid #7c3aed" }} />
+                        <img src="/ai_robot.png" alt="MVP AI" className="ai-msg-avatar" style={{ border: "2px solid #7c3aed" }} />
                       ) : (
                         <img src={session?.img || "/admin_avatar.png"} alt={adminName} className="ai-msg-avatar" style={{ border: "2px solid #ea580c" }} />
                       )}
 
                       <div className="ai-msg-content-wrap">
                         <div className="ai-msg-sender-meta">
-                          <span>{msg.sender === "bot" ? "VatikaBot Executive" : adminName}</span>
+                          <span>{msg.sender === "bot" ? "MVP AI Executive" : adminName}</span>
                           {msg.sender === "bot" && (
                             <span
                               style={{
@@ -1841,7 +1837,7 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
                         </div>
 
                         <div className={`ai-bubble ${msg.sender === "bot" ? "ai-bubble-bot" : "ai-bubble-user"}`}>
-                          <div style={{ whiteSpace: "pre-wrap" }}>{msg.text}</div>
+                          <MarkdownResponse content={msg.text} isUser={msg.sender === "user"} />
                         </div>
                       </div>
                     </div>
@@ -1850,7 +1846,7 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
                   {/* Typing Indicator */}
                   {isTyping && (
                     <div className="ai-msg-row ai-msg-row-bot">
-                      <img src="/ai_robot.png" alt="VatikaBot" className="ai-msg-avatar" style={{ border: "2px solid #7c3aed" }} />
+                      <img src="/ai_robot.png" alt="MVP AI" className="ai-msg-avatar" style={{ border: "2px solid #7c3aed" }} />
                       <div className="ai-typing-indicator">
                         <span className="ai-typing-dot" />
                         <span className="ai-typing-dot" />
@@ -1889,7 +1885,7 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
                   <input
                     type="text"
                     className="ai-chat-text-input"
-                    placeholder="Ask VatikaBot about attendance, admissions, finances, solar grid, compliance..."
+                    placeholder="Ask MVP AI about attendance, admissions, finances, solar grid, compliance..."
                     value={chatInputText}
                     disabled={isTyping}
                     onChange={(e) => setChatInputText(e.target.value)}
@@ -1903,7 +1899,7 @@ export default function AdminDashboard({ onBackToKiosk }: DashboardProps) {
                     className="ai-chat-send-btn"
                     onClick={() => handleSendChatMessage()}
                     disabled={isTyping}
-                    title="Send instruction to VatikaBot"
+                    title="Send instruction to MVP AI"
                     style={{ background: isTyping ? "#94a3b8" : "#7c3aed", cursor: isTyping ? "not-allowed" : "pointer" }}
                   >
                     <Send size={15} />

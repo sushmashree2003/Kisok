@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import MarkdownResponse from "@/components/chat/MarkdownResponse";
 import { getUserSession, clearUserSession } from "@/lib/session";
 import { SessionInfo } from "@/types/auth";
 import {
@@ -667,7 +668,7 @@ export default function AlumniDashboard({ onBackToKiosk }: DashboardProps) {
     {
       id: "msg-welcome",
       sender: "bot",
-      text: "👋 Welcome back, Rohan! I am VatikaBot, your Madhuvan Vatika Alumni Assistant. Ask me anything about alumni meets, reunions, ordering transcripts, scheduling campus visits, or career mentorship opportunities.",
+      text: "👋 Welcome back, Rohan! I am **MVP AI**, your Madhuvan Vatika Alumni Assistant. Ask me anything about alumni meets, reunions, ordering transcripts, scheduling campus visits, or career mentorship opportunities.",
       time: "Just now",
     },
   ]);
@@ -939,16 +940,8 @@ export default function AlumniDashboard({ onBackToKiosk }: DashboardProps) {
       {/* TOP COMMAND NAVBAR (EXACT REPLICA OF STUDENT & STAFF DASHBOARDS) */}
       <header className="dash-navbar">
         <div className="command-brand" onClick={handleLogout} style={{ cursor: "pointer" }}>
-          <div className="command-mark" aria-hidden="true">
-            <svg width="34" height="34" viewBox="0 0 48 48" fill="none">
-              <path d="M24 7c4 4 10 6 14 3 0 8-7 13-14 14C17 23 10 18 10 10c4 3 10 1 14-3Z" fill="#ea580c" />
-              <path d="M24 24V11" stroke="#c2410c" strokeWidth="2.5" strokeLinecap="round" />
-              <path
-                d="M5 36c7-4.5 13-3.5 19 1 6-4.5 12-5.5 19-1V18c-7-4.5-13-3.5-19 1-6-4.5-12-5.5-19-1v18Z"
-                fill="#9a3412"
-              />
-              <path d="M24 19v18" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
-            </svg>
+          <div className="command-mark" aria-hidden="true" suppressHydrationWarning>
+            <img src="/mvps/brand/logo.png" alt="Madhuvan Vatika Public School Logo" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
           </div>
           <div>
             <p className="command-kicker">MADHUVAN VATIKA • SMART CAMPUS</p>
@@ -1084,7 +1077,7 @@ export default function AlumniDashboard({ onBackToKiosk }: DashboardProps) {
             { id: "visit" as AlumniScreen, name: "Plan a Visit", icon: MapPin },
             { id: "jobs" as AlumniScreen, name: "Job Board", icon: Briefcase },
             { id: "giveback" as AlumniScreen, name: "Give Back", icon: Heart },
-            { id: "aispace" as AlumniScreen, name: "VatikaBot AI", icon: Sparkles },
+            { id: "aispace" as AlumniScreen, name: "MVP AI", icon: Sparkles },
             { id: "gallery" as AlumniScreen, name: "Photo Gallery", icon: ImageIcon },
           ].map((tab) => {
             const Icon = tab.icon;
@@ -1285,17 +1278,17 @@ export default function AlumniDashboard({ onBackToKiosk }: DashboardProps) {
                 type="button"
                 onClick={() => setCurrentScreen("aispace")}
                 className="hero-ai-capsule-btn"
-                title="Launch Alumni VatikaBot AI Space"
+                title="Launch Alumni MVP AI Space"
               >
                 <div className="hero-ai-robo-wrap">
-                  <img src="/ai_robot.png" alt="VatikaBot" className="hero-ai-robo-img" />
+                  <img src="/ai_robot.png" alt="MVP AI" className="hero-ai-robo-img" />
                   <span className="hero-ai-pulse-dot" />
                 </div>
                 <div style={{ textAlign: "center" }}>
                   <div className="hero-ai-kicker">
                     <Sparkles size={9} style={{ display: "inline", verticalAlign: "middle", marginRight: 2 }} /> AI SPACE
                   </div>
-                  <span className="hero-ai-action">Ask VatikaBot →</span>
+                  <span className="hero-ai-action">Ask MVP AI →</span>
                 </div>
               </button>
             </div>
@@ -1882,7 +1875,7 @@ export default function AlumniDashboard({ onBackToKiosk }: DashboardProps) {
                   </div>
                 </div>
                 <div>
-                  <div className="alumni-tile-title">VatikaBot AI</div>
+                  <div className="alumni-tile-title">MVP AI</div>
                   <div className="alumni-tile-sub">Instant guidance</div>
                 </div>
               </div>
@@ -2100,7 +2093,7 @@ export default function AlumniDashboard({ onBackToKiosk }: DashboardProps) {
                         gap: "5px",
                       }}
                     >
-                      VatikaBot AI Assistant <Sparkles size={13} style={{ color: "#facc15" }} />
+                      MVP AI Assistant <Sparkles size={13} style={{ color: "#facc15" }} />
                     </h4>
                     <p style={{ margin: "2px 0 0", fontSize: "0.68rem", color: "#cbd5e1" }}>
                       Instant guidance on events, transcripts, visits & mentors.
@@ -2149,7 +2142,7 @@ export default function AlumniDashboard({ onBackToKiosk }: DashboardProps) {
                       marginBottom: "0.65rem",
                     }}
                   >
-                    <strong>VatikaBot:</strong> {chatMessages[chatMessages.length - 1].text}
+                    <strong>MVP AI:</strong> {chatMessages[chatMessages.length - 1].text}
                   </div>
                 )}
 
@@ -2168,7 +2161,7 @@ export default function AlumniDashboard({ onBackToKiosk }: DashboardProps) {
                   <Mic size={14} style={{ color: "#94a3b8" }} />
                   <input
                     type="text"
-                    placeholder="Ask VatikaBot anything..."
+                    placeholder="Ask MVP AI anything..."
                     value={chatInput}
                     disabled={isAiTyping}
                     onChange={(e) => setChatInput(e.target.value)}
@@ -4174,7 +4167,7 @@ export default function AlumniDashboard({ onBackToKiosk }: DashboardProps) {
                 <Bot size={20} />
               </div>
               <div>
-                <h2>VatikaBot AI Assistant (Alumni & Legacy Space)</h2>
+                <h2>MVP AI Assistant (Alumni &amp; Legacy Space)</h2>
                 <p>Instant guidance on reunions, transcript verification, campus passes, and mentorship opportunities.</p>
               </div>
             </div>
@@ -4263,7 +4256,7 @@ export default function AlumniDashboard({ onBackToKiosk }: DashboardProps) {
                     )}
                     <div
                       style={{
-                        maxWidth: "75%",
+                        maxWidth: "85%",
                         padding: "10px 14px",
                         borderRadius: "14px",
                         fontSize: "0.82rem",
@@ -4273,7 +4266,7 @@ export default function AlumniDashboard({ onBackToKiosk }: DashboardProps) {
                         border: msg.sender === "user" ? "none" : "1px solid rgba(251, 146, 60, 0.3)",
                       }}
                     >
-                      <p style={{ margin: 0 }}>{msg.text}</p>
+                      <MarkdownResponse content={msg.text} isUser={msg.sender === "user"} />
                       <span
                         style={{
                           display: "block",
@@ -4289,9 +4282,9 @@ export default function AlumniDashboard({ onBackToKiosk }: DashboardProps) {
                   </div>
                 ))}
                 {isAiTyping && (
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "#ea580c", fontSize: "0.78rem" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "#ea580c", fontSize: "0.78rem", fontWeight: 600 }}>
                     <RefreshCw size={14} className="animate-spin" />
-                    <span>VatikaBot is typing an answer...</span>
+                    <span>MVP AI is typing an answer...</span>
                   </div>
                 )}
                 <div ref={chatBottomRef} />
@@ -4334,7 +4327,7 @@ export default function AlumniDashboard({ onBackToKiosk }: DashboardProps) {
               >
                 <input
                   type="text"
-                  placeholder="Type a question for VatikaBot AI..."
+                  placeholder="Type a question for MVP AI..."
                   value={chatInput}
                   disabled={isAiTyping}
                   onChange={(e) => setChatInput(e.target.value)}

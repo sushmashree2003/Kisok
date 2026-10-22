@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import MarkdownResponse from "@/components/chat/MarkdownResponse";
 import {
   ArrowLeft,
   ArrowRight,
@@ -283,11 +284,11 @@ export default function VisitorDashboard({ onBackToKiosk }: VisitorDashboardProp
   const [hostAlertSent, setHostAlertSent] = useState(false);
   const [hostAlertTimer, setHostAlertTimer] = useState<string | null>(null);
 
-  // Ask CBS chatbot
+  // Ask MVP AI chatbot
   const [chatMessages, setChatMessages] = useState<Array<{ sender: "user" | "bot"; text: string }>>([
     {
       sender: "bot",
-      text: "Namaste! Welcome to Madhuvan Vatika - MVPS. I am CBS, your AI Campus Guide. Feel free to ask about admissions, campus buildings, fees, or host meetings!",
+      text: "Namaste! Welcome to Madhuvan Vatika - MVPS. I am **MVP AI**, your AI Campus Guide. Feel free to ask about admissions, fee structure, campus buildings, or timings!",
     },
   ]);
   const [chatInput, setChatInput] = useState("");
@@ -391,13 +392,8 @@ export default function VisitorDashboard({ onBackToKiosk }: VisitorDashboardProp
       {/* TOP COMMAND NAVBAR (Identical layout & alignment to Student/Staff) */}
       <header className="dash-navbar">
         <div className="command-brand" onClick={onBackToKiosk} style={{ cursor: "pointer" }}>
-          <div className="command-mark" aria-hidden="true">
-            <svg width="34" height="34" viewBox="0 0 48 48" fill="none">
-              <path d="M24 7c4 4 10 6 14 3 0 8-7 13-14 14C17 23 10 18 10 10c4 3 10 1 14-3Z" fill="#ea580c" />
-              <path d="M24 24V11" stroke="#c2410c" strokeWidth="2.5" strokeLinecap="round" />
-              <path d="M5 36c7-4.5 13-3.5 19 1 6-4.5 12-5.5 19-1V18c-7-4.5-13-3.5-19 1-6-4.5-12-5.5-19-1v18Z" fill="#9a3412" />
-              <path d="M24 19v18" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
-            </svg>
+          <div className="command-mark" aria-hidden="true" suppressHydrationWarning>
+            <img src="/mvps/brand/logo.png" alt="Madhuvan Vatika Public School Logo" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
           </div>
           <div>
             <p className="command-kicker">MADHUVAN VATIKA • SMART CAMPUS</p>
@@ -582,14 +578,14 @@ export default function VisitorDashboard({ onBackToKiosk }: VisitorDashboardProp
                 title="Launch Visitor AI Assistant"
               >
                 <div className="hero-ai-robo-wrap">
-                  <img src="/ai_robot.png" alt="VatikaBot" className="hero-ai-robo-img" />
+                  <img src="/ai_robot.png" alt="MVP AI" className="hero-ai-robo-img" />
                   <span className="hero-ai-pulse-dot" />
                 </div>
                 <div style={{ textAlign: "center" }}>
                   <div className="hero-ai-kicker">
                     <Sparkles size={9} style={{ display: "inline", verticalAlign: "middle", marginRight: 2 }} /> AI HELPDESK
                   </div>
-                  <span className="hero-ai-action">Ask CBS →</span>
+                  <span className="hero-ai-action">Ask MVP AI →</span>
                 </div>
               </button>
             </div>
@@ -1779,9 +1775,9 @@ export default function VisitorDashboard({ onBackToKiosk }: VisitorDashboardProp
             {/* Right: Interactive Chat Console */}
             <div style={{ background: "#ffffff", borderRadius: "18px", border: "1.5px solid rgba(254, 215, 170, 0.7)", boxShadow: "0 4px 18px rgba(0,0,0,0.03)", display: "flex", flexDirection: "column", height: "520px", overflow: "hidden" }}>
               <div style={{ padding: "0.85rem 1.25rem", background: "linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%)", borderBottom: "1px solid rgba(254, 215, 170, 0.8)", display: "flex", alignItems: "center", gap: "0.65rem" }}>
-                <img src="/ai_robot.png" alt="CBS" style={{ width: 34, height: 34, objectFit: "contain" }} />
+                <img src="/ai_robot.png" alt="MVP AI" style={{ width: 34, height: 34, objectFit: "contain" }} />
                 <div>
-                  <div style={{ fontSize: "0.88rem", fontWeight: 800, color: "#1e293b" }}>CBS Campus AI Assistant</div>
+                  <div style={{ fontSize: "0.88rem", fontWeight: 800, color: "#1e293b" }}>MVP AI Campus Assistant</div>
                   <div style={{ fontSize: "0.68rem", color: "#16a34a", fontWeight: 700 }}>● Online • Ready to answer</div>
                 </div>
               </div>
@@ -1793,21 +1789,22 @@ export default function VisitorDashboard({ onBackToKiosk }: VisitorDashboardProp
                     key={i}
                     style={{
                       alignSelf: msg.sender === "user" ? "flex-end" : "flex-start",
-                      maxWidth: "85%",
-                      background: msg.sender === "user" ? "#ea580c" : "#f1f5f9",
+                      maxWidth: "88%",
+                      background: msg.sender === "user" ? "#ea580c" : "#f8fafc",
                       color: msg.sender === "user" ? "#ffffff" : "#1e293b",
-                      padding: "0.65rem 0.95rem",
+                      padding: "0.75rem 1rem",
                       borderRadius: msg.sender === "user" ? "16px 16px 4px 16px" : "16px 16px 16px 4px",
-                      fontSize: "0.8rem",
-                      lineHeight: 1.45,
+                      fontSize: "0.82rem",
+                      border: msg.sender === "user" ? "none" : "1px solid #e2e8f0",
+                      boxShadow: "0 2px 6px rgba(0,0,0,0.03)",
                     }}
                   >
-                    {msg.text}
+                    <MarkdownResponse content={msg.text} isUser={msg.sender === "user"} />
                   </div>
                 ))}
                 {isChatTyping && (
-                  <div style={{ alignSelf: "flex-start", color: "#64748b", fontSize: "0.75rem", fontStyle: "italic", padding: "0.25rem 0.5rem" }}>
-                    CBS is thinking and typing an answer...
+                  <div style={{ alignSelf: "flex-start", color: "#ea580c", fontSize: "0.75rem", fontWeight: 600, padding: "0.25rem 0.5rem", display: "flex", alignItems: "center", gap: "6px" }}>
+                    <RefreshCw size={12} className="animate-spin" /> MVP AI is thinking and typing an answer...
                   </div>
                 )}
               </div>
@@ -1816,7 +1813,7 @@ export default function VisitorDashboard({ onBackToKiosk }: VisitorDashboardProp
               <div style={{ padding: "0.75rem 1rem", borderTop: "1px solid #e2e8f0", background: "#ffffff", display: "flex", gap: "0.5rem" }}>
                 <input
                   type="text"
-                  placeholder="Ask CBS about fees, timings, admissions, or directions..."
+                  placeholder="Ask MVP AI about admissions, fees, timings, or directions..."
                   value={chatInput}
                   disabled={isChatTyping}
                   onChange={(e) => setChatInput(e.target.value)}
