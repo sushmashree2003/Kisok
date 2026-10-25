@@ -843,27 +843,69 @@ export default function CampusInfoPortal({
             </div>
 
             <div className="mv-fac-mini-grid">
-              <div className="mv-fac-mini-item" onClick={() => { setActiveTourFacilityIndex(1); setVirtualTourOpen(true); }}>
+              <div
+                className="mv-fac-mini-item"
+                onClick={() => { setActiveTourFacilityIndex(1); setVirtualTourOpen(true); }}
+                onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { setActiveTourFacilityIndex(1); setVirtualTourOpen(true); } }}
+                role="button"
+                tabIndex={0}
+                title="Explore Modern Classrooms"
+              >
                 <img src="/mvps/facilities/classrooms_01.jpg" alt="Classrooms" className="mv-fac-mini-img" />
                 <span className="mv-fac-mini-title">Classrooms</span>
               </div>
-              <div className="mv-fac-mini-item" onClick={() => { setActiveTourFacilityIndex(2); setVirtualTourOpen(true); }}>
+              <div
+                className="mv-fac-mini-item"
+                onClick={() => { setActiveTourFacilityIndex(2); setVirtualTourOpen(true); }}
+                onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { setActiveTourFacilityIndex(2); setVirtualTourOpen(true); } }}
+                role="button"
+                tabIndex={0}
+                title="Explore AI & STEM Labs"
+              >
                 <img src="/mvps/facilities/labs.jpg" alt="STEM Labs" className="mv-fac-mini-img" />
                 <span className="mv-fac-mini-title">AI &amp; Labs</span>
               </div>
-              <div className="mv-fac-mini-item" onClick={() => { setActiveTourFacilityIndex(3); setVirtualTourOpen(true); }}>
+              <div
+                className="mv-fac-mini-item"
+                onClick={() => { setActiveTourFacilityIndex(3); setVirtualTourOpen(true); }}
+                onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { setActiveTourFacilityIndex(3); setVirtualTourOpen(true); } }}
+                role="button"
+                tabIndex={0}
+                title="Explore Central Library"
+              >
                 <img src="/mvps/facilities/library_01.jpg" alt="Library" className="mv-fac-mini-img" />
                 <span className="mv-fac-mini-title">Library</span>
               </div>
-              <div className="mv-fac-mini-item" onClick={() => { setActiveTourFacilityIndex(4); setVirtualTourOpen(true); }}>
+              <div
+                className="mv-fac-mini-item"
+                onClick={() => { setActiveTourFacilityIndex(4); setVirtualTourOpen(true); }}
+                onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { setActiveTourFacilityIndex(4); setVirtualTourOpen(true); } }}
+                role="button"
+                tabIndex={0}
+                title="Explore Sports Turf & Athletic Arenas"
+              >
                 <img src="/mvps/facilities/sports_01.jpg" alt="Sports Arena" className="mv-fac-mini-img" />
                 <span className="mv-fac-mini-title">Sports Turf</span>
               </div>
-              <div className="mv-fac-mini-item" onClick={() => { setActiveTourFacilityIndex(5); setVirtualTourOpen(true); }}>
+              <div
+                className="mv-fac-mini-item"
+                onClick={() => { setActiveTourFacilityIndex(5); setVirtualTourOpen(true); }}
+                onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { setActiveTourFacilityIndex(5); setVirtualTourOpen(true); } }}
+                role="button"
+                tabIndex={0}
+                title="Explore GPS-Enabled Bus Fleet"
+              >
                 <img src="/mvps/facilities/transport_buses.jpg" alt="Bus Fleet" className="mv-fac-mini-img" />
                 <span className="mv-fac-mini-title">Bus Fleet</span>
               </div>
-              <div className="mv-fac-mini-item" onClick={() => { setActiveTourFacilityIndex(6); setVirtualTourOpen(true); }}>
+              <div
+                className="mv-fac-mini-item"
+                onClick={() => { setActiveTourFacilityIndex(6); setVirtualTourOpen(true); }}
+                onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { setActiveTourFacilityIndex(6); setVirtualTourOpen(true); } }}
+                role="button"
+                tabIndex={0}
+                title="Explore Kindergarten Play Area"
+              >
                 <img src="/mvps/facilities/playarea_01.jpg" alt="Playground" className="mv-fac-mini-img" />
                 <span className="mv-fac-mini-title">Play Area</span>
               </div>

@@ -594,7 +594,7 @@ export default function RoleSelectionScreen({
 
           {/* Background Slideshow Controller Capsule */}
           <div className="kiosk-slideshow-capsule">
-            <div className="slideshow-capsule-meta">
+            {/* <div className="slideshow-capsule-meta">
               <div className="capsule-icon-wrap">
                 <Camera size={14} style={{ color: "#ea580c" }} />
               </div>
@@ -606,7 +606,7 @@ export default function RoleSelectionScreen({
                   {customBgImage ? "Selected Campus Moment" : currentSlide.title}
                 </span>
               </div>
-            </div>
+            </div> */}
 
             <div className="slideshow-capsule-controls">
               <button
@@ -649,7 +649,7 @@ export default function RoleSelectionScreen({
         </section>
 
         {/* 4 PERSONA ROLE SELECTION GRID (PREVIOUS LAYOUT RESTORED) */}
-        <section className="role-grid" aria-label="Choose your portal">
+        <section className="role-grid" style={{ "paddingTop": '50px' }} aria-label="Choose your portal">
           {roles.map((item, index) => (
             <article
               key={item.role}
@@ -659,6 +659,7 @@ export default function RoleSelectionScreen({
                   "--role-accent": item.accent,
                   "--role-soft": item.soft,
                   "--delay": `${index * 90}ms`,
+                  "height": '50vh'
                 } as React.CSSProperties
               }
               onClick={() => onSelectRole(item.role)}
@@ -698,7 +699,7 @@ export default function RoleSelectionScreen({
                 </div>
                 <div className="role-cta-bar">
                   <span className="role-cta-text">
-                    <Sparkles size={13} style={{ color: item.accent }} />
+                    <Sparkles size={14} style={{ color: item.accent }} />
                     Touch to Enter
                   </span>
                   <button
@@ -708,7 +709,7 @@ export default function RoleSelectionScreen({
                       event.stopPropagation();
                       setActiveRole(item);
                     }}
-                    aria-label="View portal details"
+                    aria-label={`View ${item.title} portal details`}
                   >
                     <span>Details</span>
                     <ArrowRight size={13} />
@@ -729,7 +730,7 @@ export default function RoleSelectionScreen({
           <div className="footer-links">
             <span>CBSE Affiliation 1930281</span>
             <span>NAAC Grade A++</span>
-            <span>Campus: 6,200 Students</span>
+            <span>Campus: 4,200 Students</span>
             <span>Digital Kiosk OS 3.2</span>
           </div>
 
@@ -920,7 +921,7 @@ export default function RoleSelectionScreen({
                 return (
                   <button
                     key={tab.key}
-                    onClick={() => setGalleryFilter(tab.key as any)}
+                    onClick={() => setGalleryFilter(tab.key as "all" | "sports" | "academics" | "events" | "campus")}
                     style={{
                       background: isActive ? "#ea580c" : "#ffffff",
                       color: isActive ? "#ffffff" : "#475569",
